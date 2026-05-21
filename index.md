@@ -62,6 +62,7 @@ title: 즐거움으로 성장하는 개발자
 [![GitHub](https://img.shields.io/badge/GitHub-소스코드-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/Project_BBB)
 [![YouTube](https://img.shields.io/badge/YouTube-플레이영상-FF0000?style=flat&logo=youtube&logoColor=white)](https://youtu.be/-PDFx8YqYMc)
 [![Notion](https://img.shields.io/badge/Notion-개발일지-000000?style=flat&logo=notion&logoColor=white)](https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be)
+[![상세보기](https://img.shields.io/badge/상세보기-📄-4A90D9?style=flat)](projects/project-bbb)
 
 
 ---
@@ -88,6 +89,7 @@ title: 즐거움으로 성장하는 개발자
 [![GitHub](https://img.shields.io/badge/GitHub-소스코드-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/CyberZ)
 [![YouTube](https://img.shields.io/badge/YouTube-플레이영상-FF0000?style=flat&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=1F4cTjuyq-g)
 [![Notion](https://img.shields.io/badge/Notion-상세문서-000000?style=flat&logo=notion&logoColor=white)](https://www.notion.so/CyberZ-Model-export-import-1fdeaebf4a0d803e8249d3bbcd2739e3)
+[![상세보기](https://img.shields.io/badge/상세보기-📄-4A90D9?style=flat)](projects/cyberz)
 
 ---
 
@@ -110,4 +112,5 @@ title: 즐거움으로 성장하는 개발자
 - 충돌 연산을 서버에서 처리 후 전체 클라이언트에 브로드캐스트하는 권위 서버 방식
 
 [![GitHub](https://img.shields.io/badge/GitHub-소스코드-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/NetworkGPTerm)
+[![상세보기](https://img.shields.io/badge/상세보기-📄-4A90D9?style=flat)](projects/tank-shoot)
 
