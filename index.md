@@ -40,6 +40,32 @@ title: 즐거움으로 성장하는 개발자
 
 ---
 
+### 🟣 Project BBB *(개발 중)*
+
+> Unreal 5 기반 1인 액션 게임 \| 개인 프로젝트
+
+- **기간** : 2026.02 ~ 진행 중
+- **인원** : 1인
+- **언어** : C++
+- **환경** : Unreal 5.4
+
+**게임 목표**
+원거리 공격(디버프)과 근거리 공격(데미지)을 적절히 사용하여 몬스터 처치
+
+**주요 구현**
+- 캐릭터 계층 구조 : `ACharacterBase` → Player / EnemyMelee / EnemyRange
+- 무기 추상화 (`PURE_VIRTUAL`) : `WeaponBase`의 `Attack()` / `StopAttack()` — Base 수정 없이 확장
+- AI Controller와 Enemy 클래스의 느슨한 결합 — 적 추가 시 Controller 수정 불필요
+- `UDebuffComponent` : TickComponent 기반 디버프 자동 만료 + 델리게이트 기반 UI 자동 반영
+- 원거리 n번 명중 → 디버프 발동 → 근거리 처치 가능한 전략적 교전 루프
+
+[![GitHub](https://img.shields.io/badge/GitHub-소스코드-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/Project_BBB)
+[![YouTube](https://img.shields.io/badge/YouTube-플레이영상-FF0000?style=flat&logo=youtube&logoColor=white)](https://youtu.be/-PDFx8YqYMc)
+[![Notion](https://img.shields.io/badge/Notion-개발일지-000000?style=flat&logo=notion&logoColor=white)](https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be)
+
+
+---
+
 ### 🔷 CyberZ
 
 > DirectX 12 / IOCP 기반 3인 협동 멀티플레이 게임 \| 졸업작품
@@ -85,27 +111,3 @@ title: 즐거움으로 성장하는 개발자
 
 [![GitHub](https://img.shields.io/badge/GitHub-소스코드-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/NetworkGPTerm)
 
----
-
-### 🟣 Project BBB *(개발 중)*
-
-> Unreal 5 기반 1인 액션 게임 \| 개인 프로젝트
-
-- **기간** : 2026.02 ~ 진행 중
-- **인원** : 1인
-- **언어** : C++
-- **환경** : Unreal 5.4
-
-**게임 목표**
-원거리 공격(디버프)과 근거리 공격(데미지)을 적절히 사용하여 몬스터 처치
-
-**주요 구현**
-- 캐릭터 계층 구조 : `ACharacterBase` → Player / EnemyMelee / EnemyRange
-- 무기 추상화 (`PURE_VIRTUAL`) : `WeaponBase`의 `Attack()` / `StopAttack()` — Base 수정 없이 확장
-- AI Controller와 Enemy 클래스의 느슨한 결합 — 적 추가 시 Controller 수정 불필요
-- `UDebuffComponent` : TickComponent 기반 디버프 자동 만료 + 델리게이트 기반 UI 자동 반영
-- 원거리 n번 명중 → 디버프 발동 → 근거리 처치 가능한 전략적 교전 루프
-
-[![GitHub](https://img.shields.io/badge/GitHub-소스코드-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/Project_BBB)
-[![YouTube](https://img.shields.io/badge/YouTube-플레이영상-FF0000?style=flat&logo=youtube&logoColor=white)](https://youtu.be/-PDFx8YqYMc)
-[![Notion](https://img.shields.io/badge/Notion-개발일지-000000?style=flat&logo=notion&logoColor=white)](https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be)
