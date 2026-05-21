@@ -1,0 +1,19 @@
+title: 김진선 포트폴리오
+description: 즐거움을 원동력으로 성장하는 게임 클라이언트 개발자
+author: 김진선
+email: happyjjinsun@naver.com
+github_username: KimJinsun610
+
+theme: minima
+
+minima:
+  skin: dark
+
+header_pages:
+  - index.md
+  - about.md
+
+plugins:
+  - jekyll-feed
+
+markdown: kramdown
