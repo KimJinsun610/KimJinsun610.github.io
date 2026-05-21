@@ -81,7 +81,3 @@ CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처
 ```
 
 서버에서 충돌 연산을 수행하고 결과를 브로드캐스트하는 **권위 서버(Authoritative Server)** 방식
-
----
-
-[← 목록으로](../)
