@@ -1,4 +1,3 @@
-```md
 ---
 layout: home
 title: 즐거움으로 성장하는 개발자
