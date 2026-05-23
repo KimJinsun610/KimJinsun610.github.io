@@ -4,8 +4,6 @@ title: Tank Shoot
 permalink: /projects/tank-shoot/
 ---
 
-# Tank Shoot
-
 > OpenGL / TCP 기반 네트워크 2인 대전 게임 | 팀 프로젝트
 
 [![GitHub](https://img.shields.io/badge/GitHub-NetworkGPTerm-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/NetworkGPTerm)

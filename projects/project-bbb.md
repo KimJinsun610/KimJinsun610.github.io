@@ -4,8 +4,6 @@ title: Project BBB
 permalink: /projects/project-bbb/
 ---
 
-# Project BBB
-
 > Unreal 5 기반 1인 액션 게임 | 개인 프로젝트 (개발 중)
 
 [![GitHub](https://img.shields.io/badge/GitHub-Project_BBB-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/Project_BBB)

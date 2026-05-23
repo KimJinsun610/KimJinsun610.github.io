@@ -4,8 +4,6 @@ title: CyberZ
 permalink: /projects/cyberz/
 ---
 
-# CyberZ
-
 > DirectX 12 기반 3인 협동 멀티플레이 해킹 미션 게임 | 졸업작품
 
 [![GitHub](https://img.shields.io/badge/GitHub-CyberZ-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/CyberZ)
