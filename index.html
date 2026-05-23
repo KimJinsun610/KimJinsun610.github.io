@@ -13,6 +13,7 @@
 
   <!-- ── Header ── -->
   <header class="site-header">
+    <p class="hero-tagline">즐거움을 만드는 개발자</p>
     <h1 class="hero-name">김진선</h1>
     <p class="hero-role">Game Client Developer</p>
     <div class="hero-contacts">
@@ -63,46 +64,75 @@
 
   <hr class="divider">
 
+  <!-- ── Interested In ── -->
+  <section class="section">
+    <p class="section-eyebrow">Interested In</p>
+    <div class="tag-row">
+      <span class="tag tag-interest">Gameplay Programming</span>
+      <span class="tag tag-interest">Graphics & Rendering</span>
+      <span class="tag tag-interest">Engine Architecture</span>
+    </div>
+  </section>
+
+  <hr class="divider">
+
   <!-- ── Tech Stack ── -->
   <section class="section">
     <p class="section-eyebrow">Tech Stack</p>
-    <div class="stack-grid">
-      <div class="stack-col">
-        <div class="stack-group">
-          <p class="stack-label">Language</p>
-          <div class="tag-row">
-            <span class="tag">C</span>
-            <span class="tag">C++</span>
-            <span class="tag">Python</span>
-            <span class="tag">HLSL</span>
-          </div>
-        </div>
-        <div class="stack-group">
-          <p class="stack-label">Graphics / API</p>
-          <div class="tag-row">
-            <span class="tag">DirectX 12</span>
-            <span class="tag">OpenGL</span>
-            <span class="tag">WinAPI</span>
-          </div>
-        </div>
+    <div class="stack-group">
+      <p class="stack-label">Core</p>
+      <div class="tag-row">
+        <span class="tag tag-main">C++</span>
+        <span class="tag tag-main">Unreal Engine 5</span>
+        <span class="tag tag-main">DirectX 12</span>
       </div>
-      <div class="stack-col">
-        <div class="stack-group">
-          <p class="stack-label">Engine</p>
-          <div class="tag-row">
-            <span class="tag">Unreal Engine 5</span>
-            <span class="tag">Unity</span>
-          </div>
-        </div>
-        <div class="stack-group">
-          <p class="stack-label">Tools</p>
-          <div class="tag-row">
-            <span class="tag">Git</span>
-            <span class="tag">Notion</span>
-            <span class="tag">Photoshop</span>
-          </div>
-        </div>
+    </div>
+    <div class="stack-group">
+      <p class="stack-label">Experienced</p>
+      <div class="tag-row">
+        <span class="tag">OpenGL</span>
+        <span class="tag">HLSL</span>
+        <span class="tag">WinAPI</span>
+        <span class="tag">IOCP</span>
       </div>
+    </div>
+    <div class="stack-group">
+      <p class="stack-label">Used</p>
+      <div class="tag-row">
+        <span class="tag tag-dim">Unity</span>
+        <span class="tag tag-dim">Python</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ── Project Experience ── -->
+  <section class="section" id="project-experience">
+    <p class="section-eyebrow">Project Experience</p>
+    <div class="proj-exp-list">
+      <a class="proj-exp-item" href="#project-bbb">
+        <span class="proj-exp-name">Project BBB</span>
+        <div class="tag-row">
+          <span class="tag tag-dim">Unreal Engine 5</span>
+          <span class="tag tag-dim">C++</span>
+        </div>
+      </a>
+      <a class="proj-exp-item" href="#cyberz">
+        <span class="proj-exp-name">CyberZ</span>
+        <div class="tag-row">
+          <span class="tag tag-dim">DirectX 12</span>
+          <span class="tag tag-dim">HLSL</span>
+          <span class="tag tag-dim">IOCP</span>
+        </div>
+      </a>
+      <a class="proj-exp-item" href="#tank-shoot">
+        <span class="proj-exp-name">Tank Shoot</span>
+        <div class="tag-row">
+          <span class="tag tag-dim">OpenGL</span>
+          <span class="tag tag-dim">TCP</span>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -114,7 +144,7 @@
     <div class="projects-list">
 
       <!-- Project BBB -->
-      <div class="card">
+      <div class="card" id="project-bbb">
         <div class="card-head">
           <h2 class="card-title">🟣 Project BBB</h2>
           <span class="badge badge-wip">In Progress</span>
@@ -149,7 +179,7 @@
       </div>
 
       <!-- CyberZ -->
-      <div class="card">
+      <div class="card" id="cyberz">
         <div class="card-head">
           <h2 class="card-title">🔷 CyberZ</h2>
           <span class="badge badge-team">Graduation Project</span>
@@ -184,7 +214,7 @@
       </div>
 
       <!-- Tank Shoot -->
-      <div class="card">
+      <div class="card" id="tank-shoot">
         <div class="card-head">
           <h2 class="card-title">🟩 Tank Shoot</h2>
           <span class="badge badge-team">Team Project</span>
@@ -223,6 +253,19 @@
 <footer class="site-footer">
   김진선 클라이언트 포트폴리오
 </footer>
+
+
+<a class="scroll-up-btn" id="scrollUpBtn" href="#project-experience" aria-label="Project Experience로 이동">↑</a>
+
+<script>
+  (function () {
+    var btn    = document.getElementById('scrollUpBtn');
+    var target = document.getElementById('project-experience');
+    window.addEventListener('scroll', function () {
+      btn.classList.toggle('visible', target.getBoundingClientRect().bottom < 0);
+    }, { passive: true });
+  })();
+</script>
 
 </body>
 </html>
