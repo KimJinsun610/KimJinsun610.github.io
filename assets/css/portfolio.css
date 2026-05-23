@@ -1,0 +1,428 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F8F9FA;
+  --surface: #FFFFFF;
+  --border: #E5E8EB;
+  --border-hover: #C9D4E8;
+  --text-1: #191F28;
+  --text-2: #4E5968;
+  --text-3: #8B95A1;
+  --accent: #3182F6;
+  --accent-bg: #EFF6FF;
+  --tag-bg: #F2F4F6;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --r: 20px;
+  --r-sm: 10px;
+  --r-pill: 100px;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Header ─────────────────────── */
+.site-header {
+  padding: 80px 0 64px;
+}
+
+.hero-name {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.hero-role {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.hero-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.contact-text {
+  font-size: 0.88rem;
+  color: var(--text-3);
+}
+
+/* ── Divider ─────────────────────── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+/* ── Section ─────────────────────── */
+.section { padding: 56px 0; }
+
+.section-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 28px;
+}
+
+/* ── About ─────────────────────── */
+.about-body {
+  font-size: 0.975rem;
+  color: var(--text-2);
+  line-height: 1.85;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Education ─────────────────────── */
+.edu-list { display: flex; flex-direction: column; gap: 20px; }
+
+.edu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.edu-school { font-size: 0.95rem; font-weight: 700; }
+.edu-dept   { font-size: 0.85rem; color: var(--text-2); margin-top: 2px; }
+.edu-period { font-size: 0.8rem; color: var(--text-3); white-space: nowrap; flex-shrink: 0; padding-top: 2px; }
+
+/* ── Tech Stack ─────────────────────── */
+.stack-group { margin-bottom: 22px; }
+.stack-group:last-child { margin-bottom: 0; }
+
+.stack-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tag {
+  display: inline-block;
+  padding: 5px 14px;
+  background: var(--tag-bg);
+  color: var(--text-2);
+  border-radius: var(--r-pill);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+/* ── Project Cards ─────────────────────── */
+.projects-list { display: flex; flex-direction: column; gap: 20px; }
+
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+}
+
+/* card top */
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--r-pill);
+  font-size: 0.73rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-team  { background: var(--accent-bg); color: var(--accent); }
+.badge-solo  { background: #F0FDF4; color: #16A34A; }
+.badge-wip   { background: #FFF7ED; color: #EA580C; }
+
+.card-desc {
+  font-size: 0.88rem;
+  color: var(--text-3);
+  margin-bottom: 20px;
+}
+
+/* meta grid */
+.card-meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  background: var(--bg);
+  border-radius: var(--r-sm);
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.meta-row { display: flex; gap: 6px; font-size: 0.84rem; }
+.meta-k { color: var(--text-3); font-weight: 500; }
+.meta-v { color: var(--text-1); font-weight: 600; }
+
+/* card body text */
+.card-sub {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.card-sub:first-of-type { margin-top: 0; }
+
+.card-goal {
+  font-size: 0.93rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.card-impl {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-impl li {
+  display: flex;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.card-impl li::before {
+  content: '—';
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.card-impl code {
+  background: var(--tag-bg);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82em;
+  color: var(--text-1);
+}
+
+/* card links */
+.card-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Link Buttons ─────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--r-pill);
+  font-size: 0.83rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1.5px solid var(--border);
+  color: var(--text-2);
+  background: var(--surface);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: #1B6BD8; border-color: #1B6BD8; color: #fff; }
+
+/* ── Detail page layout ─────────────────── */
+.page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-decoration: none;
+  margin-bottom: 32px;
+  transition: color 0.15s;
+}
+.page-back:hover { color: var(--accent); }
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-3);
+  margin-bottom: 32px;
+}
+
+.page-body { padding-bottom: 80px; }
+
+.page-body h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 36px 0 14px;
+  padding-top: 36px;
+  border-top: 1px solid var(--border);
+}
+
+.page-body h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+
+.page-body h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-2);
+  margin: 20px 0 10px;
+}
+
+.page-body p {
+  font-size: 0.93rem;
+  color: var(--text-2);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.page-body ul {
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.page-body ul li {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+
+.page-body ul li::before {
+  content: '—';
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.page-body code {
+  background: var(--tag-bg);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85em;
+  color: var(--text-1);
+}
+
+.page-body pre {
+  background: #1E2430;
+  color: #CDD6F4;
+  border-radius: var(--r-sm);
+  padding: 20px;
+  font-size: 0.83rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.page-body pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.page-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin: 16px 0;
+}
+
+.page-body th, .page-body td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-body th {
+  font-weight: 700;
+  color: var(--text-3);
+  background: var(--bg);
+}
+
+/* ── Footer ─────────────────────── */
+.site-footer {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-3);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Responsive ─────────────────── */
+@media (max-width: 600px) {
+  .site-header { padding: 56px 0 48px; }
+  .hero-name { font-size: 2rem; }
+  .section { padding: 44px 0; }
+  .card { padding: 24px; }
+  .card-meta { grid-template-columns: 1fr; }
+  .edu-item { flex-direction: column; gap: 2px; }
+}
