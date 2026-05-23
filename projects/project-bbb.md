@@ -105,3 +105,10 @@ UActorComponent
 
 - 델리게이트 기반 **느슨한 결합**으로 상태 변화 시 머리 위 위젯에 자동 반영
 - 디버프 카운트를 방패 UI로 시각화
+
+<div class="card-links" style="margin-top:40px;">
+  <a class="btn" href="https://github.com/KimJinsun610/Project_BBB" target="_blank">GitHub</a>
+  <a class="btn" href="https://youtu.be/-PDFx8YqYMc" target="_blank">YouTube</a>
+  <a class="btn" href="https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be" target="_blank">Notion</a>
+  <a class="btn btn-primary" href="/">← 목록으로</a>
+</div>

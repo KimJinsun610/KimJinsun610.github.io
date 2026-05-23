@@ -92,3 +92,10 @@ CyberZ_Client
 | `CTextInput` | 키보드 입력 처리, 문자열 편집 |
 | `CProgressBar` | 진행도 시각화, 동적 업데이트 |
 | `CTagButton` | 호버 감지, 2라운드 미니게임용 |
+
+<div class="card-links" style="margin-top:40px;">
+  <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
+  <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
+  <a class="btn" href="https://www.notion.so/CyberZ-Model-export-import-1fdeaebf4a0d803e8249d3bbcd2739e3" target="_blank">Notion</a>
+  <a class="btn btn-primary" href="/">← 목록으로</a>
+</div>

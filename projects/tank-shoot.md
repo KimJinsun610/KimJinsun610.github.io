@@ -81,3 +81,8 @@ CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처
 ```
 
 서버에서 충돌 연산을 수행하고 결과를 브로드캐스트하는 **권위 서버(Authoritative Server)** 방식
+
+<div class="card-links" style="margin-top:40px;">
+  <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
+  <a class="btn btn-primary" href="/">← 목록으로</a>
+</div>
