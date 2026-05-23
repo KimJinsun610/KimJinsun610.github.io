@@ -6,9 +6,7 @@ permalink: /projects/tank-shoot/
 
 > OpenGL / TCP 기반 네트워크 2인 대전 게임 | 팀 프로젝트
 
-<div class="card-links">
-  <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
-</div>
+[![GitHub](https://img.shields.io/badge/GitHub-NetworkGPTerm-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/NetworkGPTerm)
 
 ---
 
@@ -27,7 +25,7 @@ permalink: /projects/tank-shoot/
 ## 담당 구현 항목
 
 **클라이언트**
-- OBJ로더 구현, 맵 구성, 플레이어 이동&공격, 카메라 무빙, 아이템 시스템
+- OBJ 파서 직접 구현, 맵 구성, 플레이어 이동·공격, 카메라 무빙, 아이템 시스템
 
 **서버**
 - 아이템 세팅 및 상호작용 처리
@@ -79,21 +77,62 @@ TankShoot_Client
 
 다른 플레이어가 행동 중에도 패킷 처리가 가능하도록 구현
 
+---
+
+### OBJ 파서 직접 구현
+
+외부 라이브러리 없이 `v / vt / vn / f` 데이터를 직접 파싱하고, 로드 후 정점 좌표를 `[-1, 1]` 범위로 정규화하여 오브젝트 크기를 통일했습니다.
+
+<a class="btn" href="#" target="_blank">Notion에서 보기</a>
+
+---
+
+### VAO / VBO 직접 구성
+
+오브젝트별(탱크·맵·블록·아이템·탄환·HP바) `VAO`, `VBO_pos / VBO_normal / VBO_uv`를 각각 직접 구성하고, `glVertexAttribPointer`로 셰이더 attribute와 직접 연결했습니다.
+
+<a class="btn" href="#" target="_blank">Notion에서 보기</a>
+
+---
+
+### RecvThread 분리
+
+`glutMainLoop()`는 단일 스레드에서 렌더링을 처리하기 때문에, 블로킹 `recv()`를 같은 스레드에서 호출하면 렌더링 루프가 멈춥니다. `RecvThread`를 별도 스레드로 생성하여 렌더링 지연을 막고, `CRITICAL_SECTION`으로 공유 데이터를 보호했습니다.
+
+---
+
+### 아이템 시스템 서버 동기화
+
+3종 아이템의 상태를 서버에서 관리하고, 획득 시 `SC_SET_ITEM` 패킷으로 전체 클라이언트에 브로드캐스트하여 아이템 정보를 동기화했습니다.
+
+| 아이템 | 효과 |
+|--------|------|
+| HEAL | HP +20 회복 |
+| SPEEDUP | 이동 속도 +0.1 영구 증가 |
+| FREEZE | 다음 발사 탄환을 프리즈 탄환으로 변환 — 피격 시 상대 속도 -0.1 패널티 |
+
+---
+
+### 충돌 검증 패턴
+
+```
+CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처리
+                                        →  SC_UPDATE_PACKET  →  전체 클라이언트
+```
+
+서버에서 충돌 연산을 수행하고 결과를 브로드캐스트하는 **권위 서버(Authoritative Server)** 방식
+
+---
+
 ### Session Class (서버 측)
 
 - 네트워크 세션과 플레이어 상태를 함께 관리
 - `private` 멤버 + Getter/Setter로 **캡슐화**
 - 한 플레이어의 모든 정보를 단일 클래스에서 처리 (**높은 응집도**)
 
-### 충돌 검증 패턴
-
-```
-CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처리
-                                        →  CS_UPDATE_PACKET  →  전체 클라이언트
-```
-
-서버에서 충돌 연산을 수행하고 결과를 브로드캐스트하는 **권위 서버(Authoritative Server)** 방식
+---
 
 <div class="card-links" style="margin-top:40px;">
+  <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
