@@ -6,8 +6,11 @@ permalink: /projects/cyberz/
 
 > DirectX 12 기반 3인 협동 멀티플레이 해킹 미션 게임 | 졸업작품
 
-[![GitHub](https://img.shields.io/badge/GitHub-CyberZ-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/CyberZ)
-[![YouTube](https://img.shields.io/badge/YouTube-플레이영상-FF0000?style=flat&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=1F4cTjuyq-g)
+<div class="card-links">
+  <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
+  <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
+  <a class="btn" href="https://www.notion.so/CyberZ-Model-export-import-1fdeaebf4a0d803e8249d3bbcd2739e3" target="_blank">Notion</a>
+</div>
 
 ---
 
@@ -92,8 +95,5 @@ CyberZ_Client
 | `CTagButton` | 호버 감지, 2라운드 미니게임용 |
 
 <div class="card-links" style="margin-top:40px;">
-  <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
-  <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
-  <a class="btn" href="https://www.notion.so/CyberZ-Model-export-import-1fdeaebf4a0d803e8249d3bbcd2739e3" target="_blank">Notion</a>
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>

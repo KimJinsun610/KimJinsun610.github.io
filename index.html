@@ -170,10 +170,10 @@
 
         <p class="card-sub">주요 구현</p>
         <ul class="card-impl">
-          <li><code>ACharacterBase</code> 기반 플레이어/적 캐릭터 계층 구조 설계</li>
-          <li><code>PURE_VIRTUAL</code> 기반 무기 추상화 — Base 수정 없이 무기 확장 가능</li>
+          <li>플레이어/적 캐릭터 계층 구조 설계</li>
+          <li>무기 추상화 — Base 수정 없이 무기 확장 가능</li>
           <li>AI Controller와 Enemy 클래스의 느슨한 결합</li>
-          <li><code>UDebuffComponent</code> — Tick 기반 자동 만료 + Delegate 기반 UI 자동 갱신</li>
+          <li>Tick 기반 자동 만료 + Delegate 기반 UI 자동 갱신</li>
           <li>디버프 누적 → 근거리 마무리 구조의 전략적 전투 루프 구현</li>
         </ul>
       </div>
@@ -240,7 +240,7 @@
         <ul class="card-impl">
           <li>OpenGL 기반 클라이언트 개발 전반 (오브젝트, 카메라, 아이템 시스템)</li>
           <li>3스레드 서버 구조 설계 (Main / ClientThread / do_send) — 입력과 동기화 분리</li>
-          <li>Fine-Grained Locking으로 동시성 최적화 — <code>lock_guard</code> 데드락 방지</li>
+          <li>Fine-Grained Locking으로 동시성 최적화 — lock_guard 데드락 방지</li>
           <li>충돌 연산을 서버에서 처리 후 전체 클라이언트에 브로드캐스트하는 권위 서버 방식</li>
         </ul>
       </div>
