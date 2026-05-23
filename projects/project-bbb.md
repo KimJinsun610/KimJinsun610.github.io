@@ -9,7 +9,7 @@ permalink: /projects/project-bbb/
 <div class="card-links">
   <a class="btn" href="https://github.com/KimJinsun610/Project_BBB" target="_blank">GitHub</a>
   <a class="btn" href="https://youtu.be/-PDFx8YqYMc" target="_blank">YouTube</a>
-  <a class="btn" href="https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be" target="_blank">Notion</a>
+  <a class="btn" href="https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be" target="_blank">개발 일지(Notion)</a>
 </div>
 
 ---

@@ -9,7 +9,7 @@ permalink: /projects/cyberz/
 <div class="card-links">
   <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
   <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
-  <a class="btn" href="https://www.notion.so/CyberZ-Model-export-import-1fdeaebf4a0d803e8249d3bbcd2739e3" target="_blank">Notion</a>
+  <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
 </div>
 
 ---
