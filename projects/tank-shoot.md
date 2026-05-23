@@ -25,25 +25,11 @@ permalink: /projects/tank-shoot/
 ## 담당 구현 항목
 
 **클라이언트**
-- OBJ 파서 직접 구현, 맵 구성, 플레이어 이동·공격, 카메라 무빙, 아이템 시스템
+- OBJ 파서 구현, 맵 구성, 플레이어 이동·공격, 카메라 무빙, 아이템 시스템
 
 **서버**
 - 아이템 세팅 및 상호작용 처리
 - 충돌 처리 연산 및 충돌 정보 처리
-
----
-
-## 서버 구조
-
-```
-Main Thread       ← 로그인/레디, Recv + 패킷 처리
-ClientThread 1/2  ← 입력 처리 (클라이언트별 독립)
-do_send Thread    ← 33Hz 상태 브로드캐스트
-```
-
-- 입력 처리(`ClientThread`)와 상태 동기화(`do_send`)를 **분리**하여 입력 지연 최소화
-- 스레드: 3종 (Main, ClientThread × 2, do_send)
-- 패킷: CS 9개 + SC 15개 = **총 24개**
 
 ---
 
@@ -61,7 +47,43 @@ TankShoot_Client
 
 ---
 
+## 서버 구조
+
+```
+Main Thread       ← 로그인/레디, Recv + 패킷 처리
+ClientThread 1/2  ← 입력 처리 (클라이언트별 독립)
+do_send Thread    ← 33Hz 상태 브로드캐스트
+```
+
+- 입력 처리(`ClientThread`)와 상태 동기화(`do_send`)를 **분리**하여 입력 지연 최소화
+- 스레드: 3종 (Main, ClientThread × 2, do_send)
+- 패킷: CS 9개 + SC 15개 = **총 24개**
+
+---
+
 ## 기술 구현 상세
+
+### OBJ 파서 구현
+
+외부 라이브러리 없이 `v / vt / vn / f` 데이터를 파싱하고, 로드 후 정점 좌표를 `[-1, 1]` 범위로 정규화하여 오브젝트 크기를 통일했습니다.
+
+<a class="btn" href="#" target="_blank">개발 상세 (Notion)</a>
+
+---
+
+### VAO / VBO 구성
+
+오브젝트별(탱크·맵·블록·아이템·탄환·HP바) `VAO`, `VBO_pos / VBO_normal / VBO_uv`를 각각 구성하고, `glVertexAttribPointer`로 셰이더 attribute와 연결했습니다.
+
+<a class="btn" href="#" target="_blank">개발 상세 (Notion)</a>
+
+---
+
+### RecvThread 분리
+
+`glutMainLoop()`는 단일 스레드에서 렌더링을 처리하기 때문에, 블로킹 `recv()`를 같은 스레드에서 호출하면 렌더링 루프가 멈춥니다. `RecvThread`를 별도 스레드로 생성하여 렌더링 지연을 막고, `CRITICAL_SECTION`으로 공유 데이터를 보호했습니다.
+
+---
 
 ### Fine-Grained Locking
 
@@ -76,28 +98,6 @@ TankShoot_Client
 | do_send | 읽기는 락 없이, 전송 시에만 `g_Sendmutex` 획득 |
 
 다른 플레이어가 행동 중에도 패킷 처리가 가능하도록 구현
-
----
-
-### OBJ 파서 직접 구현
-
-외부 라이브러리 없이 `v / vt / vn / f` 데이터를 직접 파싱하고, 로드 후 정점 좌표를 `[-1, 1]` 범위로 정규화하여 오브젝트 크기를 통일했습니다.
-
-<a class="btn" href="#" target="_blank">Notion에서 보기</a>
-
----
-
-### VAO / VBO 직접 구성
-
-오브젝트별(탱크·맵·블록·아이템·탄환·HP바) `VAO`, `VBO_pos / VBO_normal / VBO_uv`를 각각 직접 구성하고, `glVertexAttribPointer`로 셰이더 attribute와 직접 연결했습니다.
-
-<a class="btn" href="#" target="_blank">Notion에서 보기</a>
-
----
-
-### RecvThread 분리
-
-`glutMainLoop()`는 단일 스레드에서 렌더링을 처리하기 때문에, 블로킹 `recv()`를 같은 스레드에서 호출하면 렌더링 루프가 멈춥니다. `RecvThread`를 별도 스레드로 생성하여 렌더링 지연을 막고, `CRITICAL_SECTION`으로 공유 데이터를 보호했습니다.
 
 ---
 
