@@ -6,7 +6,9 @@ permalink: /projects/tank-shoot/
 
 > OpenGL / TCP 기반 네트워크 2인 대전 게임 | 팀 프로젝트
 
-[![GitHub](https://img.shields.io/badge/GitHub-NetworkGPTerm-181717?style=flat&logo=github&logoColor=white)](https://github.com/KimJinsun610/NetworkGPTerm)
+<div class="card-links">
+  <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
+</div>
 
 ---
 
@@ -133,6 +135,5 @@ CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처
 ---
 
 <div class="card-links" style="margin-top:40px;">
-  <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
