@@ -528,6 +528,26 @@ body {
   transform: translateY(-3px);
 }
 
+/* ── Video Embed ─────────────────── */
+.video-wrap {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  margin-bottom: 20px;
+  background: #000;
+}
+
+.video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 /* ── Responsive ─────────────────── */
 @media (max-width: 600px) {
   .site-header { padding: 56px 0 48px; }

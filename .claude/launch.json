@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portfolio",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "3456", "--directory", "C:\\Users\\jinsu\\Desktop\\Portfolio\\GithubSite\\KimJinsun610.github.io"],
+      "port": 3456
+    }
+  ]
+}
