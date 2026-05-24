@@ -10,7 +10,6 @@ permalink: /projects/cyberz/
   <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
   <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
   <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d" target="_blank">개발 일지 (Notion)</a>
-  <a class="btn btn-primary" href="NOTION_DETAIL_URL" target="_blank">개발 상세 (Notion) →</a>
 </div>
 
 ---
@@ -96,8 +95,6 @@ DX12 저수준 API를 직접 다루는 게임 루프와 프레임워크를 설�
 - 대상 박스 코너 8개 → 각 면(삼각형 2개) 교차 검사 → 충돌 면의 법선 벡터 추출 → 이동 보정 방향 결정
 - 서버가 `send_update_packet`으로 최종 위치 전송, 클라이언트는 수신한 위치로 즉시 덮어쓰기
 
-<a class="btn" href="NOTION_DETAIL_URL" target="_blank">개발 상세 (Notion)</a>
-
 ---
 
 ### Direct2D + D3D11On12 UI 오버레이
@@ -124,8 +121,6 @@ DX12 파이프라인 위에 Direct2D UI를 올리기 위해 D3D11On12 인터롭 
 - `CDepthRenderShader`가 광원 시점에서 씬 전체를 깊이 텍스처로 렌더링
 - `TOLIGHTSPACES` 상수 버퍼 (광원 View·Projection 행렬) 를 합성 셰이더에 바인딩해 Shadow Lookup 수행
 - 플레이어 / 적 / 보스 / 지형을 별도 Pass로 분리해 그림자 레이어 제어
-
-<a class="btn" href="NOTION_DETAIL_URL" target="_blank">개발 상세 (Notion)</a>
 
 ---
 
