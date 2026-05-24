@@ -178,11 +178,14 @@
 
         <p class="card-sub">주요 구현</p>
         <ul class="card-impl">
-          <li>플레이어/적 캐릭터 계층 구조 설계</li>
-          <li>무기 추상화 — Base 수정 없이 무기 확장 가능</li>
-          <li>AI Controller와 Enemy 클래스의 느슨한 결합</li>
-          <li>Tick 기반 자동 만료 + Delegate 기반 UI 자동 갱신</li>
-          <li>디버프 누적 → 근거리 마무리 구조의 전략적 전투 루프 구현</li>
+          <li>플레이어/적 캐릭터 계층 구조 설계 (CharacterBase 공통화)</li>
+          <li>WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장</li>
+          <li>디버프 누적 → 근거리 마무리 구조의 전략적 전투 루프</li>
+          <li>TMap 기반 멀티 디버프 컴포넌트 — Tick 자동 만료 + Delegate UI 자동 갱신</li>
+          <li>BehaviorTree 기반 AI — 디버프 상태(Stun/Slow/Weaken)에 따른 행동 변화</li>
+          <li>DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가, Delegate UI 자동 갱신</li>
+          <li>HittableInterface 도입 — 발사체 코드 수정 없이 피격 가능 오브젝트 확장</li>
+          <li>Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장</li>
         </ul>
       </div>
 
