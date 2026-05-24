@@ -207,9 +207,10 @@
         <ul class="card-impl">
           <li>DirectX 12 기반 게임 프레임워크 설계 (Scene / Camera / Shader / UI)</li>
           <li>Scene 단위 GPU 리소스 관리 — Upload Heap → Default Heap 전송 후 즉시 해제</li>
+          <li>Direct2D + D3D11On12 기반 2D UI 오버레이 시스템</li>
           <li>AABB 충돌 처리 — 서버 위치 보정 + 클라이언트 충돌 연산 분리</li>
-          <li>Direct2D + 11on12 기반 2D UI 오버레이 시스템 </li>
-          <li>디퍼드 렌더링, 그림자, 스키닝 애니메이션, HLSL 셰이더 프로그래밍</li>
+          <li>MRT 기반 디퍼드 렌더링 + 섀도우 맵 (광원 시점 깊이 버퍼 기반)</li>
+          <li>Frustum Culling — 카메라 프러스텀 기반 드로우콜 최적화</li>
         </ul>
       </div>
 

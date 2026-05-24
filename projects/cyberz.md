@@ -1,99 +1,106 @@
 ---
 layout: page
-title: CyberZ
-permalink: /projects/cyberz/
+title: "🔷 CyberZ"
+subtitle: "DirectX 12 / IOCP 기반 3인 협동 멀티플레이 게임 · 졸업작품 · 2023.08 – 2024.07"
 ---
-
-> DirectX 12 기반 3인 협동 멀티플레이 해킹 미션 게임 | 졸업작품
 
 <div class="card-links">
   <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
   <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
-  <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
+  <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d" target="_blank">개발 일지 (Notion)</a>
+  <a class="btn btn-primary" href="NOTION_DETAIL_URL" target="_blank">개발 상세 (Notion) →</a>
 </div>
 
----
+| | |
+|---|---|
+| **기간** | 2023.08 – 2024.07 |
+| **인원** | 3명 (클라이언트 2, 서버 1) |
+| **역할** | 클라이언트 |
+| **언어** | C++, HLSL |
+| **환경** | DirectX 12, Direct2D, IOCP |
 
-## 개요
+## 개발 개요
 
-| 항목 | 내용 |
-|------|------|
-| 개발 언어 | C, C++, HLSL |
-| 개발 환경 | Visual Studio 2022, DirectX 12, DirectX 2D, IOCP, GitHub |
-| 개발 인원 | 3명 (클라이언트 2, 서버 1) |
-| 개발 기간 | 2023.08 ~ 2024.07 |
-| 담당 역할 | 클라이언트 개발 |
-
-**게임 목표** : 3명의 플레이어가 협동하여 적대 NPC를 피해 총 2라운드의 해킹 미션을 수행
-
----
-
-## 담당 구현 항목
-
-- 그림자 / UI / 미션 구성 / 오브젝트 로드 / 씬 구성
-- 디퍼드 렌더링 / 플레이어 조작 및 카메라
-- 리소스 관리 / 쉐이더 프로그래밍
-
----
+DirectX 12 기반 게임 클라이언트 프레임워크를 처음부터 설계·구현한 졸업작품입니다. 3인 협동으로 진행되는 스텔스형 미션 탈출 게임이며, IOCP 서버와 TCP 소켓으로 연결해 멀티플레이를 지원합니다.
 
 ## 클라이언트 프레임워크 구조
 
-```
-CyberZ_Client
-├── Game          ← 게임 루프, Direct3D 12 초기화, Scene 관리, GPU 동기화
-├── Camera        ← 뷰/프로젝션 행렬, 플레이어 추적, 프러스텀 컬링
-├── Scene         ← 씬 단위 리소스·오브젝트·조명·셰이더 관리
-├── Object        ← Texture / Material 정의, 바이너리 리소스 로드
-│   ├── Mesh      ← 기본 메쉬, 바이너리 리소스 파싱
-│   └── Animation ← 스키닝 애니메이션, 애니메이션 블렌딩
-├── Shader        ← HLSL 컴파일/로딩, PSO 생성, 그림자 연산
-└── UI            ← Direct2D 기반 오버레이, 텍스트·이미지 렌더링
-```
-
----
-
-## 기술 구현 상세
-
-### 오브젝트 리소스 로드
-
-- Unity Asset Store에서 구매한 모델을 C# 스크립트로 `.bin` 파일 추출 후 프로젝트에서 로드
-- 상호작용 없는 오브젝트들을 **하나의 메쉬로 병합** 추출하여 메모리 사용량 감소
-- Albedo, Normal, Metallic, Emission 등 셰이더 정보를 포함하여 추출, 로드 시 자동 적용
-
-### Scene 기반 리소스 관리
-
-```
-게임 실행  →  Scene Load  →  CPU▶GPU 데이터 전송  →  Upload 버퍼 즉시 해제
-                                                       ↓
-                                              Scene Unload → 전체 리소스 해제
-                                              (Shader → Object → Upload Buffer 순서)
+```text
+GameFramework  ── 메인 루프 (ProcessInput → Animate → Render) / DX12 초기화
+│
+├── Scene (추상 클래스) ── 씬별 BuildObjects / Render / AnimateObjects / Input 분리
+│   ├── CStartScene            타이틀 / 로그인
+│   ├── CPrepareRoomScene      캐릭터 선택 로비
+│   ├── CLoadingScene          씬 전환 로딩
+│   ├── CFirstRoundScene       Stage 1
+│   └── CSecondRoundScene      Stage 2 (Boss)
+│
+├── Shader Pipeline ── CShader 추상 클래스 기반 계층 구조
+│   ├── CDepthRenderShader              Shadow Map (광원 시점 깊이)
+│   ├── CStandardShader                 지형 / 정적 오브젝트
+│   ├── CSkinnedAnimationObjectsShader  플레이어·NPC 스키닝 (팀원 구현)
+│   ├── ParticleShader                  파티클
+│   └── CTextureDeferdShader            MRT 합성 / Post-Process
+│
+├── CUI ── Direct2D + D3D11On12 오버레이
+│          Button · TextInput · ProgressBar · WIC Image
+│
+└── Network ── TCP Winsock
+               send_packet / Recv_Packet
 ```
 
-- DirectX 12 메모리 계층 구조(Upload Heap / Default Heap) 이해 기반 설계
-- Scene 단위 독립 리소스 관리 → Scene 전환 시 메모리 누수 방지
-- GPU 종속성을 고려한 **계층적 해제 순서** 적용
+## 담당 및 주요 구현
 
-### 충돌 처리
+### 1. DirectX 12 기반 게임 프레임워크 설계
 
-- 플레이어 / 일반 오브젝트 / 미션 오브젝트 충돌을 구별하여 처리
-- **AABB 기반** `CheckFaceIntersection()` 구현 — 충돌 면의 법선 벡터 방향 반환
-- 플레이어 간 충돌 제외, 오브젝트-플레이어 / 오브젝트-NPC 충돌 분리
-- 서버에서 각 플레이어 위치를 받아 **각 클라이언트에서 충돌 연산** + 서버 주기적 보정
-- 디버그용 컬러 바운딩 박스 메쉬 (빨강: 고정 객체 / 초록: 이동 객체 / 파랑: 미션 구역)
+DX12의 저수준 API를 직접 다루는 프레임워크를 설계·구현했습니다. Command Queue / Command List, Descriptor Heap, Resource Barrier 등을 수동으로 관리합니다.
 
-### UI 시스템
+- **메인 루프**: `CGameFramework::FrameAdvance` — ProcessInput → AnimateObjects → Scene Render → UI Draw → Present 순으로 고정
+- **씬 추상화**: `CScene` 기반 클래스로 BuildObjects / Render / AnimateObjects / ProcessInput 인터페이스 통일
+- **Descriptor Heap**: CBV/SRV Heap을 `CScene` 내 static으로 공유해 씬 간 리소스 참조 일관성 확보
+- **Root Signature**: Constant Buffer, Shader Resource View, Sampler 슬롯을 용도별로 직접 정의
 
-- Scene별 전용 UI 인스턴스 소유 — Scene 전환 시 UI 메모리 함께 해제
-- **Direct2D + 11on12 Device** 활용 → DirectX 12 위에 2D UI 오버레이
-- `RenderUIElements()`에서 UI 객체 동적 생성
+### 2. Scene 단위 GPU 리소스 관리
 
-| 컴포넌트 | 기능 |
-|---------|------|
-| `CButton` | 클릭 감지, 상태별 색상 변경 |
-| `CTextInput` | 키보드 입력 처리, 문자열 편집 |
-| `CProgressBar` | 진행도 시각화, 동적 업데이트 |
-| `CTagButton` | 호버 감지, 2라운드 미니게임용 |
+GPU 리소스를 씬 단위로 생성/해제해, 씬 전환 시 메모리 누수 없이 안전하게 교체합니다.
 
-<div class="card-links" style="margin-top:40px;">
-  <a class="btn btn-primary" href="/">← 목록으로</a>
-</div>
+- **업로드**: `BuildObjects`에서 Upload Heap 적재 → `ExecuteCommandLists` → `WaitForGpuComplete` → `ReleaseUploadBuffers`로 전송 즉시 정리
+- **전환**: `ChangeScene`에서 `ReleaseObjects` 완전 해제 후 새 씬 생성 / `BuildObjects` 순서로 진행
+- **소멸 패턴**: 모든 DX12 리소스에 Reference Count 기반 `AddRef / Release` 패턴을 일관 적용
+
+### 3. AABB 충돌 처리
+
+플레이어와 지형 오브젝트 간 충돌을 클라이언트에서 연산하고, 권위 서버가 최종 위치를 보정하는 구조입니다.
+
+- `BoundingOrientedBox`의 orientation quaternion을 항등 값으로 고정해 AABB처럼 동작
+- `CheckObjByObjCollition`: 대상 박스 코너 8개 → 각 면(삼각형 2개) 교차 검사 → 충돌 면의 법선 벡터 추출 → 이동 보정 방향 결정
+- **권위 서버 보정**: 서버가 `send_update_packet`으로 최종 위치 전송, 클라이언트는 수신한 위치로 즉시 덮어쓰기
+
+### 4. Direct2D + D3D11On12 UI 오버레이
+
+DX12 파이프라인 위에 Direct2D UI를 올리기 위해 D3D11On12 인터롭 레이어를 직접 구성했습니다.
+
+- `D3D11On12CreateDevice`로 D3D11 장치를 DX12 Command Queue에 연결
+- SwapChain 백버퍼를 D2D RenderTarget으로 래핑 → 3D 렌더 완료 후 동일 백버퍼에 2D UI 오버레이
+- **컴포넌트**: DirectWrite 텍스트, WIC 이미지 로더, 버튼·텍스트 입력·프로그레스바 직접 구현
+- 씬별 독립 `CUI` 인스턴스로 타이틀 / 로비 / 인게임 UI 분리 관리
+
+### 5. MRT 기반 디퍼드 렌더링 + 섀도우 맵
+
+#### 디퍼드 렌더링
+
+- MRT 4채널(`Albedo`, `Normal`, `Material`, `Depth(R32F)`)에 G-Buffer 기록
+- `CTextureDeferdShader`가 Screen-space Quad에서 4채널을 합성해 최종 픽셀 색상 출력
+- `PS_CB_DRAW_OPTIONS` 상수 버퍼로 그림자 ON/OFF 등 드로우 옵션을 픽셀 셰이더에 전달
+
+#### 섀도우 맵
+
+- `CDepthRenderShader`가 광원 시점에서 씬 전체를 깊이 텍스처로 렌더링
+- `TOLIGHTSPACES` 상수 버퍼(광원 View·Projection 행렬)를 G-Buffer 합성 셰이더에 바인딩해 Shadow Lookup 수행
+- 플레이어 / 적 / 보스 / 지형을 별도 Pass로 분리해 그림자 레이어 제어
+
+### 6. Frustum Culling
+
+- 카메라 프러스텀 6개 평면을 매 프레임 갱신 (`Frustum::FinalUpdate`)
+- 오브젝트 렌더 전 `CThirdPersonCamera::IsInFrustum(boundingBox)` 검사 → 프러스텀 밖이면 드로우콜 스킵
+- 대형 맵에서 화면 밖 오브젝트의 불필요한 GPU 호출 제거
