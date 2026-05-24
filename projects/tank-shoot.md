@@ -126,14 +126,6 @@ CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처
 
 ---
 
-### Session Class (서버 측)
-
-- 네트워크 세션과 플레이어 상태를 함께 관리
-- `private` 멤버 + Getter/Setter로 **캡슐화**
-- 한 플레이어의 모든 정보를 단일 클래스에서 처리 (**높은 응집도**)
-
----
-
 <div class="card-links" style="margin-top:40px;">
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
