@@ -1,4 +1,4 @@
----
+﻿---
 layout: page
 title: CyberZ
 permalink: /projects/cyberz/
@@ -90,9 +90,9 @@ DX12 저수준 API를 직접 다루는 게임 루프와 프레임워크를 설�
 
 ### 설계 포인트
 
-- `CGameFramework::FrameAdvance` — ProcessInput → AnimateObjects → Render → UI Draw → Present 순으로 고정
-- `CScene` 추상 클래스로 씬별 BuildObjects / Render / AnimateObjects / ProcessInput 인터페이스 통일
-- CBV/SRV Descriptor Heap을 `CScene` 내 static으로 공유해 씬 간 리소스 참조 일관성 확보
+- **CGameFramework::FrameAdvance** — ProcessInput → AnimateObjects → Render → UI Draw → Present 순으로 고정
+- **CScene** 추상 클래스로 씬별 BuildObjects / Render / AnimateObjects / ProcessInput 인터페이스 통일
+- CBV/SRV Descriptor Heap을 **CScene** 내 static으로 공유해 씬 간 리소스 참조 일관성 확보
 - Root Signature에 Constant Buffer, SRV, Sampler 슬롯을 용도별로 직접 정의
 
 ---
@@ -107,9 +107,9 @@ DX12 저수준 API를 직접 다루는 게임 루프와 프레임워크를 설�
 
 ### 설계 포인트
 
-- `BuildObjects` — Upload Heap 적재 → `ExecuteCommandLists` → `WaitForGpuComplete` → `ReleaseUploadBuffers` 즉시 정리
-- `ChangeScene` — `ReleaseObjects` 완전 해제 후 새 씬 `BuildObjects` 순서로 진행
-- 모든 DX12 리소스에 Reference Count 기반 `AddRef / Release` 패턴 일관 적용
+- **BuildObjects** — Upload Heap 적재 → **ExecuteCommandLists** → **WaitForGpuComplete** → **ReleaseUploadBuffers** 즉시 정리
+- **ChangeScene** — **ReleaseObjects** 완전 해제 후 새 씬 **BuildObjects** 순서로 진행
+- 모든 DX12 리소스에 Reference Count 기반 **AddRef / Release** 패턴 일관 적용
 
 ---
 
@@ -123,9 +123,9 @@ DX12 저수준 API를 직접 다루는 게임 루프와 프레임워크를 설�
 
 ### 설계 포인트
 
-- `BoundingOrientedBox`의 orientation quaternion을 항등 값으로 고정해 AABB처럼 동작
+- **BoundingOrientedBox**의 orientation quaternion을 항등 값으로 고정해 AABB처럼 동작
 - 대상 박스 코너 8개 → 각 면(삼각형 2개) 교차 검사 → 충돌 면의 법선 벡터 추출 → 이동 보정 방향 결정
-- 서버가 `send_update_packet`으로 최종 위치 전송, 클라이언트는 수신한 위치로 즉시 덮어쓰기
+- 서버가 **send_update_packet**으로 최종 위치 전송, 클라이언트는 수신한 위치로 즉시 덮어쓰기
 
 ---
 
@@ -139,10 +139,10 @@ DX12 파이프라인 위에 Direct2D UI를 올리기 위해 D3D11On12 인터롭 
 
 ### 설계 포인트
 
-- `D3D11On12CreateDevice`로 D3D11 장치를 DX12 Command Queue에 연결
+- **D3D11On12CreateDevice**로 D3D11 장치를 DX12 Command Queue에 연결
 - SwapChain 백버퍼를 D2D RenderTarget으로 래핑 → 3D 렌더 완료 후 동일 백버퍼에 2D UI 오버레이
 - DirectWrite 텍스트, WIC 이미지 로더, 버튼·텍스트 입력·프로그레스바 컴포넌트 직접 구현
-- 씬별 독립 `CUI` 인스턴스로 타이틀 / 로비 / 인게임 UI 분리 관리
+- 씬별 독립 **CUI** 인스턴스로 타이틀 / 로비 / 인게임 UI 분리 관리
 
 ---
 
@@ -158,14 +158,14 @@ G-Buffer 기반 디퍼드 렌더링과 광원 시점 깊이 버퍼를 활용한 
 
 **디퍼드 렌더링**
 
-- MRT 4채널 (`Albedo`, `Normal`, `Material`, `Depth(R32F)`) 에 G-Buffer 기록
-- `CTextureDeferdShader`가 Screen-space Quad에서 4채널을 합성해 최종 픽셀 색상 출력
-- `PS_CB_DRAW_OPTIONS` 상수 버퍼로 그림자 ON/OFF 등 드로우 옵션을 픽셀 셰이더에 전달
+- MRT 4채널 (**Albedo**, **Normal**, **Material**, **Depth(R32F)**) 에 G-Buffer 기록
+- **CTextureDeferdShader**가 Screen-space Quad에서 4채널을 합성해 최종 픽셀 색상 출력
+- **PS_CB_DRAW_OPTIONS** 상수 버퍼로 그림자 ON/OFF 등 드로우 옵션을 픽셀 셰이더에 전달
 
 **섀도우 맵**
 
-- `CDepthRenderShader`가 광원 시점에서 씬 전체를 깊이 텍스처로 렌더링
-- `TOLIGHTSPACES` 상수 버퍼 (광원 View·Projection 행렬) 를 합성 셰이더에 바인딩해 Shadow Lookup 수행
+- **CDepthRenderShader**가 광원 시점에서 씬 전체를 깊이 텍스처로 렌더링
+- **TOLIGHTSPACES** 상수 버퍼 (광원 View·Projection 행렬) 를 합성 셰이더에 바인딩해 Shadow Lookup 수행
 - 플레이어 / 적 / 보스 / 지형을 별도 Pass로 분리해 그림자 레이어 제어
 
 ---
@@ -180,8 +180,8 @@ G-Buffer 기반 디퍼드 렌더링과 광원 시점 깊이 버퍼를 활용한 
 
 ### 설계 포인트
 
-- 카메라 프러스텀 6개 평면을 매 프레임 갱신 (`Frustum::FinalUpdate`)
-- 오브젝트 렌더 전 `CThirdPersonCamera::IsInFrustum(boundingBox)` 검사 → 프러스텀 밖이면 드로우콜 스킵
+- 카메라 프러스텀 6개 평면을 매 프레임 갱신 (**Frustum::FinalUpdate**)
+- 오브젝트 렌더 전 **CThirdPersonCamera::IsInFrustum(boundingBox)** 검사 → 프러스텀 밖이면 드로우콜 스킵
 - 대형 맵에서 화면 밖 오브젝트의 불필요한 GPU 호출 제거
 
 ---
