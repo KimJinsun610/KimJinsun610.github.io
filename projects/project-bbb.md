@@ -111,13 +111,13 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ### 3. 전략적 전투 루프 — 디버프 누적 → 근거리 마무리
 
-<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
-
 #### 설계 목표
 
 단순히 데미지를 누적하는 전투가 아닌, 원거리 디버프로 상황을 만들고 근거리로 마무리하는 전략적 교전 흐름 구현.
 
 원거리 공격은 데미지가 없는 대신 디버프를 부여, 디버프 상태에서 근거리 마무리
+
+<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
 
 ```
 원거리 모드 (기본)
@@ -198,14 +198,15 @@ Root
 
 ### 6. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
 
-<img class="detail-img" src="{{ '/assets/img/인벤토리.gif' | relative_url }}" alt="인벤토리 시스템 시연">
-
 #### 설계 목표
 
 C++ 수정 없이 DataTable 행만 추가해 새 아이템을 확장할 수 있는 데이터 주도 설계.
 인벤토리 로직과 UI를 Delegate로 완전히 분리.
 
 **픽업 → 보관 → 사용 흐름**
+
+<img class="detail-img" src="{{ '/assets/img/인벤토리.gif' | relative_url }}" alt="인벤토리 시스템 시연">
+
 
 ```
 [픽업]
@@ -289,7 +290,7 @@ void BBBProjectileDebuff::OnProjectileHit()
 
 **증상** : 공중에 배치한 사과 오브젝트가 총에 맞자마자 즉시 사라지고 아이템이 스폰됨
 
-**원인** : `ABBBAppleOnTree`가 `ACharacter`를 상속하므로 PIE 시작 시 `CharacterMovementComponent`가 중력을 적용.
+**원인** : `ABBBAppleOnTree`가 `ACharacter`를 상속하므로 게임 시작 시 `CharacterMovementComponent`가 중력을 적용.
 에디터에서 공중에 배치해도 런타임에서는 이미 바닥에 착지한 상태로 게임이 시작됨.
 이후 `SetSimulatePhysics(true)` 호출 시 이미 접촉 중인 지형과 `OnComponentHit`이 즉시 발동.
 
@@ -316,14 +317,14 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 ### 8. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
-<img class="detail-img" src="{{ '/assets/img/Apple.gif' | relative_url }}" alt="아이템&이팩트 시스템 시연">
-
 #### 설계 목표
 
 몽타주 유무와 관계없이 모든 적 유형에서 사망 이펙트와 아이템 드롭 타이밍이 일관되게 동작하도록 보장.
 이펙트·드롭 로직을 단일 함수에 집중하여 경로가 달라도 동일하게 처리.
 
 사망 시 이펙트 재생 타이밍을 몽타주 유무에 관계없이 일관되게 처리
+
+<img class="detail-img" src="{{ '/assets/img/Apple.gif' | relative_url }}" alt="아이템&이팩트 시스템 시연">
 
 ```
 [몽타주 있는 적]
@@ -348,15 +349,57 @@ Physics 착지 → SpawnItemAndDestroy()
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
 
+<nav class="floating-toc" id="floatingToc">
+  <p class="ftoc-title">구현 상세</p>
+  <ol>
+    <li><a href="#sec-1">캐릭터 계층 구조</a></li>
+    <li><a href="#sec-2">WeaponBase 추상화</a></li>
+    <li><a href="#sec-3">전략적 전투 루프</a></li>
+    <li><a href="#sec-4">멀티 디버프 컴포넌트</a></li>
+    <li><a href="#sec-5">BehaviorTree AI</a></li>
+    <li><a href="#sec-6">아이템 / 인벤토리</a></li>
+    <li><a href="#sec-7">HittableInterface</a></li>
+    <li><a href="#sec-8">Niagara 이펙트</a></li>
+  </ol>
+</nav>
+
 <a class="scroll-up-left" id="scrollUpLeft" href="#" aria-label="맨 위로 이동">↑</a>
 
 <script>
   (function () {
     var btn = document.getElementById('scrollUpLeft');
-    window.addEventListener('scroll', function () {
-      btn.classList.toggle('visible', window.scrollY > 300);
-    }, { passive: true });
-    btn.addEventListener('click', function (e) {
+    var toc = document.getElementById('floatingToc');
+    var tocLinks = Array.from(toc.querySelectorAll('a'));
+    var sections = [1,2,3,4,5,6,7,8].map(function(n) {
+      return document.getElementById('sec-' + n);
+    }).filter(Boolean);
+    var trigger = document.querySelector('.detail-toc');
+
+    function onScroll() {
+      var y = window.scrollY;
+
+      // 위로 버튼
+      btn.classList.toggle('visible', y > 300);
+
+      // 플로팅 TOC: 상단 인라인 TOC를 완전히 지나쳤을 때 표시
+      if (trigger) {
+        toc.classList.toggle('visible', trigger.getBoundingClientRect().bottom < 0);
+      }
+
+      // 현재 섹션 하이라이트
+      var current = -1;
+      sections.forEach(function(sec, i) {
+        if (sec.getBoundingClientRect().top <= 100) current = i;
+      });
+      tocLinks.forEach(function(link, i) {
+        link.classList.toggle('ftoc-active', i === current);
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    btn.addEventListener('click', function(e) {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
