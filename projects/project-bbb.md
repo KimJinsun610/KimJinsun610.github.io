@@ -73,9 +73,7 @@ UActorComponent
 
 ### 설계 목표
 
-플레이어와 적이 공유하는 공격 방식, 피격 처리, 컴포넌트 부착을 하나의 Base로 통합하였습니다.
-
-새 캐릭터 추가 시 중복 코드 없이 상속만으로 기반 기능 확보하도록 설계하였습니다.
+플레이어와 적이 공통으로 사용하는 공격, 피격 처리, 컴포넌트 관리 기능을 CharacterBase에 통합하였습니다. 이를 통해 중복 구현을 제거하고 공통 로직을 일관되게 관리할 수 있도록 설계하였으며, 새로운 캐릭터는 CharacterBase를 상속하는 것만으로 기본 기능을 확보할 수 있도록 확장성을 고려하였습니다.
 
 ### 설계 포인트
 
@@ -91,11 +89,9 @@ UActorComponent
 
 ### 설계 목표
 
-무기 종류가 늘어도 캐릭터나 Base 코드를 수정하지 않고 확장 가능한 구조로 설계하였습니다.
+무기 종류가 증가하더라도 캐릭터나 상위 클래스의 수정 없이 기능을 확장할 수 있도록 WeaponBase를 추상화하였습니다.
 
-캐릭터는 무기 종류를 몰라도 **Attack()** 한 줄로 공격 가능하도록 설계하였습니다.
-
-**Attack()** / **StopAttack()**을 순수 가상 함수로 선언하여 무기 종류별 독립 구현
+Attack() / StopAttack()을 순수 가상 함수로 선언하여 무기별 공격 방식을 독립적으로 구현하였으며, 캐릭터는 무기의 구체적인 타입을 알 필요 없이 Attack() 호출만으로 공격을 수행할 수 있도록 설계하였습니다.
 
 ```
 WeaponBase::Attack()   ← PURE_VIRTUAL
@@ -114,9 +110,9 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ### 설계 목표
 
-단순히 데미지를 누적하는 전투가 아닌, 원거리 방어 게이지를 제거하고 근거리로 마무리하는 전략적 교전 흐름 구현하였습니다.
+단순히 데미지를 누적하는 전투가 아닌, 원거리 공격과 근거리 공격이 서로 다른 역할을 갖도록 전투 구조를 설계하였습니다.
 
-**원거리로 방어 게이지 제거 -> 근거리로 마무리**의 형태로 로직을 설계하였습니다. 
+원거리 공격으로 적의 방어 게이지를 제거한 뒤 근거리 공격으로 마무리하는 교전 흐름을 구현하여, 공격 방식 전환과 전투 타이밍이 전략 요소로 작용하도록 설계하였습니다.
 
 ### 설계 포인트
 - 원거리만으로는 처치 불가 → 방어 게이지 제거 후 접근하는 플레이 유도
@@ -152,9 +148,9 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ### 설계 목표
 
-플레이어 감지 여부와 공격 가능 거리에 따라 AI 행동을 자동 전환하도록 설계하였습니다.
+플레이어 감지 여부와 공격 가능 거리에 따라 AI의 행동이 자동으로 전환되도록 설계하였습니다.
 
-Blackboard 값만으로 상태를 분기하여 C++ 코드 수정 없이 행동 패턴 조정 가능하도록 설계하였습니다.
+행동 결정에 필요한 상태를 Blackboard로 관리하여, C++ 로직 수정 없이도 값 조정만으로 AI 패턴을 변경할 수 있는 유연한 구조를 구현하였습니다.
 
 | 상태 | 조건 | 행동 |
 |------|------|------|
@@ -190,7 +186,7 @@ Root
 
 ### 설계 목표
 
-초기에는 재화(Gold) 아이템만 존재했습니다. HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코드를 수정하지 않아도 되는 구조가 필요해졌고, 
+초기에는 재화(Gold) 아이템만 존재했습니다. HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코드를 수정하지 않아도 되는 구조가 필요해졌고,
 
 DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있도록 설계했습니다.
 
@@ -208,9 +204,9 @@ DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있
 
 ### 설계 목표
 
-인벤토리 로직과 UI를 Delegate로 완전히 분리하였습니다.
+인벤토리 로직과 UI를 Delegate 기반 이벤트 구조로 분리하였습니다.
 
-컴포넌트가 UI를 직접 참조하지 않아 독립적으로 동작하는 구조로 설계하였습니다. 
+컴포넌트가 UI를 직접 참조하지 않고 상태 변화만 알리도록 설계하여, 시스템 간 의존도를 낮추고 각각 독립적으로 동작할 수 있는 구조를 구현하였습니다.
 
 ### 설계 포인트
 
@@ -250,18 +246,20 @@ if (bIsInventoryOpen)
 
 <a id="sec-6"></a>
 
-## 6. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
+## 6. 피격 가능 오브젝트 확장 (Hittable Interface)
 
 ### 설계 목표
 
-발사체가 Enemy 클래스를 직접 참조하지 않고, 인터페이스 구현 여부만으로
-새로운 피격 오브젝트를 추가할 수 있는 구조로 설계하였습니다.
+코드 재사용성을 높이기 위해 EnemyBase를 상속받는 자연물 오브젝트를 추가하였습니다. 원거리 공격에 반응하는 자연물 오브젝트를 추가하는 과정에서, 기존 발사체가 Enemy의 디버프 처리 로직에 의존하는 구조의 한계를 확인하였습니다.
 
-발사체가 피격 대상의 구체적인 클래스를 직접 참조하지 않도록 인터페이스 도입하였습니다.
+이를 해결하기 위해 HittableInterface를 도입하여 피격 대상의 구체적인 클래스가 아닌 인터페이스 구현 여부만 확인하도록 설계하였으며, Enemy는 방어도 감소, 자연물은 낙하와 같은 서로 다른 피격 반응을 독립적으로 구현할 수 있도록 구성하였습니다.
+
+이를 통해 발사체 코드를 수정하지 않고도 새로운 피격 오브젝트를 손쉽게 확장할 수 있는 구조를 구현하였습니다.
 
 ### 설계 포인트
-- **ABBBAppleOnTree**가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
-- Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
+- 발사체가 특정 Enemy 클래스에 의존하지 않도록 HittableInterface를 도입
+- Enemy와 자연물이 서로 다른 피격 반응을 독립적으로 구현할 수 있도록 구조 분리
+- 새로운 피격 오브젝트 추가 시 발사체 코드 수정 없이 확장 가능한 구조 설계
 
 ```cpp
 void BBBProjectileDebuff::OnProjectileHit()
@@ -280,25 +278,51 @@ void BBBProjectileDebuff::OnProjectileHit()
 
 #### Trouble Shooting
 
-**증상** : 공중에 배치한 사과 오브젝트가 총에 맞자마자 즉시 사라지고 아이템이 스폰됨
+**증상** : 공중에 배치한 사과 오브젝트가 총에 맞자마자 즉시 사라지고, 아이템이 낙하 위치가 아닌 사과 초기 위치(공중)에 스폰되는 문제가 발생했습니다.
 
-**원인** : **ABBBAppleOnTree**가 **ACharacter**를 상속하므로 게임 시작 시 **CharacterMovementComponent**가 중력을 적용.
-에디터에서 공중에 배치해도 런타임에서는 이미 바닥에 착지한 상태로 게임이 시작됨.
-이후 **SetSimulatePhysics(true)** 호출 시 이미 접촉 중인 지형과 **OnComponentHit**이 즉시 발동.
+**원인 1 — 피격 직후 즉시 아이템 생성**
 
-**해결** : **BeginPlay**에서 **CharacterMovement** 비활성화 + `GravityScale = 0` 설정.
-**SetSimulatePhysics** 호출 후 0.1초 딜레이를 두고 **OnComponentHit** 등록.
+**ABBBAppleOnTree**는 **ACharacter**를 상속받고 있어 게임 시작과 동시에 **CharacterMovementComponent**의 중력 영향을 받았습니다.
+
+이 과정에서 루트 컴포넌트인 **CapsuleComponent**는 지면으로 이동했지만, **AppleMesh**는 공중 위치를 유지하고 있었습니다.
+
+이후 **SetSimulatePhysics(true)**를 호출하자 **AppleMesh**가 인접한 나무 지오메트리와 이미 충돌 중인 상태로 판정되었고, 그 결과 **OnComponentHit** 이벤트가 즉시 발생하여 아이템이 바로 생성되는 문제가 발생했습니다.
+
+**원인 2 — 아이템이 공중에 생성됨**
+
+**SetSimulatePhysics(true)** 이후 물리 시뮬레이션은 **AppleMesh**에만 적용되고, Actor의 루트인 **CapsuleComponent**는 기존 위치에 그대로 유지되었습니다.
+
+따라서 사과가 실제로 바닥에 착지하더라도 **GetActorLocation()**은 **AppleMesh**의 위치가 아닌 루트 컴포넌트의 초기 위치를 반환하였습니다.
+
+그 결과 아이템 생성 위치 계산에 잘못된 좌표가 사용되어 아이템이 공중에 생성되는 문제가 발생했습니다.
+
+
+**해결 1 — 즉시 사라짐 방지:** **CharacterMovement** 비활성화 + **GravityScale = 0** 설정으로 루트 컴포넌트의 이동을 차단하였습니다. 또한, **SetSimulatePhysics(true)** 호출 후 0.1초 딜레이를 두고 OnComponentHit 등록하여 나무 접촉 이벤트 무시하도록 구현하였습니다.
 
 ```cpp
-// BeginPlay — 오브젝트 위치 고정
+// BeginPlay
 GetCharacterMovement()->DisableMovement();
 GetCharacterMovement()->GravityScale = 0.0f;
 
-// 낙하 시작 후 — 즉시 발동 방지
+// SetSimulatePhysics 호출 후
 GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 {
-    AppleMesh->OnComponentHit.AddDynamic(this, &ABBBAppleOnTree::OnAppleLanded);
+    if (AppleMesh && !bHasLanded)
+        AppleMesh->OnComponentHit.AddDynamic(this, &ABBBAppleOnTree::OnAppleLanded);
 }, 0.1f, false);
+```
+
+**해결 2 — 아이템 스폰 위치 보정:** **DropItems()** 호출 전 Actor 위치를 **AppleMesh**의 현재 위치로 갱신하였습니다.
+
+```cpp
+void ABBBAppleOnTree::SpawnItemAndDestroy()
+{
+    if (AppleMesh)
+        SetActorLocation(AppleMesh->GetComponentLocation());
+
+    OnDeathEffectNotify(); // 이펙트 + DropItems()
+    Destroy();
+}
 ```
 
 </div>
@@ -311,11 +335,9 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 ### 설계 목표
 
-몽타주 유무와 관계없이 모든 적 유형에서 사망 이펙트와 아이템 드롭 타이밍이 일관되게 동작하도록 보장하였습니다.
+사망 애니메이션의 존재 여부와 관계없이 모든 적 유형에서 이펙트와 아이템 드롭이 동일한 시점에 처리되도록 설계하였습니다.
 
-이펙트·드롭 로직을 단일 함수에 집중하여 경로가 달라도 동일하게 처리하였습니다.
-
-사망 시 이펙트 재생 타이밍을 몽타주 유무에 관계없이 일관되게 처리하였습니다.
+이펙트 및 드롭 로직을 단일 함수로 통합하고, AnimNotify와 타이머가 동일한 진입점을 사용하도록 구성하여 다양한 사망 처리 경로에서도 일관된 결과를 보장하였습니다.
 
 ### 설계 포인트
 - **OnDeathEffectNotify()** 한 곳에 이펙트·드롭 로직 집중 — 진입 경로가 달라도 동일 함수 호출
