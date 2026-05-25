@@ -111,6 +111,8 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ### 3. 전략적 전투 루프 — 디버프 누적 → 근거리 마무리
 
+<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
+
 #### 설계 목표
 
 단순히 데미지를 누적하는 전투가 아닌, 원거리 디버프로 상황을 만들고 근거리로 마무리하는 전략적 교전 흐름 구현.
@@ -229,7 +231,9 @@ WBP_ItemContextMenu::BtnUse OnClicked
 - `BBBInventoryComponent`를 ActorComponent로 분리 → 캐릭터 외 다른 Actor에도 부착 가능
 - 슬롯 클릭 → 컨텍스트 메뉴 방식 / BgDismiss(전체화면 투명 버튼, ZOrder 0)로 외부 클릭 감지
 
-#### Trouble Shooting {:.ts}
+<div class="ts-box" markdown="1">
+
+#### Trouble Shooting
 
 **증상** : 인벤토리를 처음 열면 이미 주운 아이템이 표시되지 않음
 
@@ -247,6 +251,8 @@ if (bIsInventoryOpen)
     if (Func) InventoryWidget->ProcessEvent(Func, nullptr);
 }
 ```
+
+</div>
 
 ---
 
@@ -277,7 +283,9 @@ void BBBProjectileDebuff::OnProjectileHit()
 - `ABBBAppleOnTree`가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
 - Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
 
-#### Trouble Shooting {:.ts}
+<div class="ts-box" markdown="1">
+
+#### Trouble Shooting
 
 **증상** : 공중에 배치한 사과 오브젝트가 총에 맞자마자 즉시 사라지고 아이템이 스폰됨
 
@@ -299,6 +307,8 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
     AppleMesh->OnComponentHit.AddDynamic(this, &ABBBAppleOnTree::OnAppleLanded);
 }, 0.1f, false);
 ```
+
+</div>
 
 ---
 

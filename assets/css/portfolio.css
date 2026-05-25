@@ -425,6 +425,37 @@ body {
   color: #EA580C;
 }
 
+/* ── Trouble Shooting Box ────────── */
+.ts-box {
+  background: #FFF7ED;
+  border: 1.5px solid #FDBA74;
+  border-left: 4px solid #EA580C;
+  border-radius: var(--r-sm);
+  padding: 16px 20px;
+  margin: 20px 0;
+}
+
+.ts-box h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #EA580C;
+  margin: 0 0 12px;
+  border-top: none;
+  padding-top: 0;
+}
+
+.ts-box p {
+  font-size: 0.95rem;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+
+.ts-box pre {
+  margin: 10px 0 4px;
+}
+
 .page-body p {
   font-size: 1rem;            /* 0.93 → 1.0 */
   color: var(--text-2);
