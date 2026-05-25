@@ -90,8 +90,8 @@ do_send Thread    ← 33Hz 상태 브로드캐스트
 
 ### 설계 포인트
 
-- `v / vt / vn / f` 데이터를 순차 파싱 후 인덱스로 재조합하여 렌더링용 배열 구성
-- 파싱 중 각 축의 min / max를 추적, 로드 완료 후 min-max 정규화로 `[-1, 1]` 범위 매핑 — 모델 크기 통일
+- **v / vt / vn / f** 데이터를 순차 파싱 후 인덱스로 재조합하여 렌더링용 배열 구성
+- 파싱 중 각 축의 min / max를 추적, 로드 완료 후 min-max 정규화로 **[-1, 1]** 범위 매핑 — 모델 크기 통일
 - 정점 좌표를 원점 중심으로 이동(centering)하여 모델 변환 기준점 일관성 확보
 
 ```cpp
@@ -113,8 +113,8 @@ temp.x = ((temp.x * 2.0f) / scaleX) - 1.0f;  // [-1, 1] 매핑
 ### 설계 포인트
 
 - 오브젝트별 독립 VAO로 드로우콜 전환 시 상태 재설정 비용 최소화
-- 위치(`VBO_pos`) · 법선(`VBO_normal`) · UV(`VBO_uv`)를 분리된 VBO로 관리하여 데이터 레이아웃 명확화
-- `glVertexAttribPointer`로 각 VBO를 셰이더 attribute location에 바인딩 (0: 위치, 1: 법선, 2: UV)
+- 위치(**VBO_pos**) · 법선(**VBO_normal**) · UV(**VBO_uv**)를 분리된 VBO로 관리하여 데이터 레이아웃 명확화
+- **glVertexAttribPointer**로 각 VBO를 셰이더 attribute location에 바인딩 (0: 위치, 1: 법선, 2: UV)
 
 ```cpp
 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0); // 위치
@@ -130,13 +130,13 @@ glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // UV
 
 ### 설계 목표
 
-`glutMainLoop()`는 단일 스레드에서 렌더링을 처리합니다. 같은 스레드에서 블로킹 `recv()`를 호출하면 패킷이 도착할 때까지 렌더링 루프 전체가 멈추어 화면이 멈추는 문제가 발생합니다. 수신 로직을 별도 스레드로 분리하여 렌더링과 네트워크 수신이 독립적으로 동작하도록 설계하였습니다.
+**glutMainLoop()**는 단일 스레드에서 렌더링을 처리합니다. 같은 스레드에서 블로킹 **recv()**를 호출하면 패킷이 도착할 때까지 렌더링 루프 전체가 멈추어 화면이 멈추는 문제가 발생합니다. 수신 로직을 별도 스레드로 분리하여 렌더링과 네트워크 수신이 독립적으로 동작하도록 설계하였습니다.
 
 ### 설계 포인트
 
-- `RecvThread`를 별도 스레드로 생성하여 렌더링 루프와 네트워크 수신 완전 분리
-- 길이 헤더(`sizeof(int)`) 먼저 수신 후 페이로드를 `MSG_WAITALL`로 수신하는 2단계 방식으로 패킷 경계 보장
-- 수신 스레드와 렌더링 스레드가 공유하는 플레이어 상태 배열을 `CRITICAL_SECTION`으로 보호하여 경합 방지
+- **RecvThread**를 별도 스레드로 생성하여 렌더링 루프와 네트워크 수신 완전 분리
+- 길이 헤더(**sizeof(int)**) 먼저 수신 후 페이로드를 **MSG_WAITALL**로 수신하는 2단계 방식으로 패킷 경계 보장
+- 수신 스레드와 렌더링 스레드가 공유하는 플레이어 상태 배열을 **CRITICAL_SECTION**으로 보호하여 경합 방지
 
 ---
 
@@ -146,23 +146,23 @@ glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // UV
 
 ### 설계 목표
 
-서버에서 플레이어 상태 배열은 전역으로 관리되며, `ClientThread(×2)`와 `do_send` 스레드가 동시에 접근합니다. 배열 전체를 단일 락으로 감싸면 서로 무관한 연산(로그인과 공격 등)도 서로를 대기하게 되어 불필요한 직렬화가 발생합니다. 연산 유형별로 락을 분리하여 다른 플레이어의 처리 중에도 패킷 처리가 가능하도록 설계하였습니다.
+서버에서 플레이어 상태 배열은 전역으로 관리되며, **ClientThread(×2)**와 **do_send** 스레드가 동시에 접근합니다. 배열 전체를 단일 락으로 감싸면 서로 무관한 연산(로그인과 공격 등)도 서로를 대기하게 되어 불필요한 직렬화가 발생합니다. 연산 유형별로 락을 분리하여 다른 플레이어의 처리 중에도 패킷 처리가 가능하도록 설계하였습니다.
 
 ### 설계 포인트
 
-- `std::lock_guard`(RAII 패턴)로 예외 발생 시에도 락 자동 해제 — 데드락 방지
-- `do_send`는 상태 읽기 시 락 없이 진행, 전송 시에만 `g_Sendmutex` 획득 — 읽기 경합 최소화
-- 로그인·이동 등 진입 빈도가 높은 경로에는 `CRITICAL_SECTION` 사용 — Windows 환경에서 `mutex` 대비 낮은 오버헤드
+- **std::lock_guard**(RAII 패턴)로 예외 발생 시에도 락 자동 해제 — 데드락 방지
+- **do_send**는 상태 읽기 시 락 없이 진행, 전송 시에만 **g_Sendmutex** 획득 — 읽기 경합 최소화
+- 로그인·이동 등 진입 빈도가 높은 경로에는 **CRITICAL_SECTION** 사용 — Windows 환경에서 **mutex** 대비 낮은 오버헤드
 
 플레이어 배열이 전역으로 관리되어 2개의 스레드에서 동시 접근 → 락을 세분화하여 동시성 최적화
 
 | 상황 | 락 전략 |
 |------|---------|
-| 로그인 | `g_Recvmutex_login` 사용 |
+| 로그인 | **g_Recvmutex_login** 사용 |
 | 이동 | Critical Section으로 보호 |
-| 공격 | 탄환 배열 + 브로드캐스트 보호, `lock_guard`로 데드락 방지 |
+| 공격 | 탄환 배열 + 브로드캐스트 보호, **lock_guard**로 데드락 방지 |
 | 아이템 | 아이템별 짧은 락 획득 후 즉시 해제 |
-| do_send | 읽기는 락 없이, 전송 시에만 `g_Sendmutex` 획득 |
+| do_send | 읽기는 락 없이, 전송 시에만 **g_Sendmutex** 획득 |
 
 다른 플레이어가 행동 중에도 패킷 처리가 가능하도록 구현
 
@@ -178,9 +178,9 @@ glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // UV
 
 ### 설계 포인트
 
-- 아이템 충돌 감지는 클라이언트(AABB) → `CS_ITEM` 패킷으로 서버에 보고
-- 서버에서 효과 적용(HP 증가 / 속도 증가 / 동결 플래그 설정) 후 `SC_SET_ITEM`으로 전체 클라이언트에 브로드캐스트 — 양측 동기화
-- 동결(FREEZE) 아이템: 서버에서 다음 탄환에 freeze 플래그 설정 → 피격 시 `CS_HIT.freeze_bullet=true` → 서버에서 피격 플레이어 속도 -0.1 패널티 부여
+- 아이템 충돌 감지는 클라이언트(AABB) → **CS_ITEM** 패킷으로 서버에 보고
+- 서버에서 효과 적용(HP 증가 / 속도 증가 / 동결 플래그 설정) 후 **SC_SET_ITEM**으로 전체 클라이언트에 브로드캐스트 — 양측 동기화
+- 동결(FREEZE): 다음 탄환에 freeze 플래그 설정, 피격 시 상대 속도 -0.1 패널티 부여
 
 3종 아이템의 상태를 서버에서 관리하고, 획득 시 `SC_SET_ITEM` 패킷으로 전체 클라이언트에 브로드캐스트하여 아이템 정보를 동기화했습니다.
 
@@ -202,9 +202,9 @@ glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // UV
 
 ### 설계 포인트
 
-- **이동 충돌** : 서버에서 위치 갱신 → AABB 검사 → 충돌 시 이동량 롤백 → `SC_UPDATE`로 보정 위치 전달 (Authoritative Server)
-- **탄환 충돌** : 클라이언트에서 AABB 감지 → `CS_HIT` 보고 → 서버에서 HP 처리 후 전체 브로드캐스트
-- 탱크 간 충돌 / 벽 충돌은 서버에서 `tank_collid()` / `wall_collid()` 함수로 일괄 처리 — 클라이언트 위치 조작 불가
+- **이동 충돌** : 서버에서 위치 갱신 → AABB 검사 → 충돌 시 이동량 롤백 → **SC_UPDATE**로 보정 위치 전달 (Authoritative Server)
+- **탄환 충돌** : 클라이언트에서 AABB 감지 → **CS_HIT** 보고 → 서버에서 HP 처리 후 전체 브로드캐스트
+- 탱크 간 충돌 / 벽 충돌은 서버에서 **tank_collid()** / **wall_collid()** 함수로 일괄 처리 — 클라이언트 위치 조작 불가
 
 ```
 CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처리
