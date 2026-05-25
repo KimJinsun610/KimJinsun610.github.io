@@ -123,7 +123,7 @@
         <div class="tag-row">
           <span class="tag tag-dim">DirectX 12</span>
           <span class="tag tag-dim">HLSL</span>
-          <span class="tag tag-dim">IOCP</span>
+          <span class="tag tag-dim">Git</span>
         </div>
       </a>
       <a class="proj-exp-item" href="#tank-shoot">
@@ -253,10 +253,12 @@
 
         <p class="card-sub">담당 및 주요 구현</p>
         <ul class="card-impl">
-          <li>OpenGL 기반 클라이언트 개발 전반 (오브젝트, 카메라, 아이템 시스템)</li>
-          <li>3스레드 서버 구조 설계 (Main / ClientThread / do_send) — 입력과 동기화 분리</li>
-          <li>Fine-Grained Locking으로 동시성 최적화</li>
-          <li>충돌 연산을 서버에서 처리 후 전체 클라이언트에 브로드캐스트하는 권위 서버 방식</li>
+          <li>OBJ 파서 구현 — v/vt/vn/f 파싱, min-max 정규화로 모델 크기 통일</li>
+          <li>오브젝트별 VAO / VBO 구성 — 정점·법선·UV 분리, 셰이더 attribute 바인딩</li>
+          <li>RecvThread 분리 — glutMainLoop 단일 스레드 한계 해소, CRITICAL_SECTION으로 공유 데이터 보호</li>
+          <li>Fine-Grained Locking — 연산 유형별 락 분리, std::lock_guard RAII 패턴으로 데드락 방지</li>
+          <li>아이템 시스템 서버 동기화 — 클라이언트 감지 → 서버 처리 후 전체 브로드캐스트</li>
+          <li>충돌 검증 패턴 — 이동은 서버 권위(Authoritative Server), 탄환은 클라이언트 감지 후 서버 처리</li>
         </ul>
 
         <div class="card-links">
