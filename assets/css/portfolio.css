@@ -673,8 +673,8 @@ body {
   transform: translateY(-3px);
 }
 
-/* ── DT Highlight ───────────────── */
-.dt-highlight {
+/* ── Highlight ───────────────── */
+.highlight {
   background: var(--accent-bg);
   border-left: 4px solid var(--accent);
   border-radius: var(--r-sm);

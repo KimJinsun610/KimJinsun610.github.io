@@ -178,46 +178,39 @@ Root
 
 <a id="sec-5"></a>
 
-## 5. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
+## 5. DataTable 기반 아이템 / 인벤토리
+
+### 5-1. 아이템 시스템 — DataTable로 확장성 확보
 
 #### 설계 목표
 
-C++ 수정 없이 DataTable 행만 추가해 새 아이템을 확장할 수 있는 데이터 주도 설계.
-인벤토리 로직과 UI를 Delegate로 완전히 분리.
-
-<img class="detail-img" src="{{ '/assets/img/DataTable.png' | relative_url }}" alt="DT_ItemData 구조">
-
-<div class="dt-highlight">
-  📋 <code>DT_ItemData</code>에 행만 추가하면 새 아이템 등록 완료 — C++ 수정 불필요
-</div>
+초기에는 재화(Gold) 아이템만 존재했습니다.
+HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코드를 수정하지 않아도 되는 구조가 필요해졌고,
+`DT_ItemData` DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있도록 설계했습니다.
 
 **설계 포인트**
 
+- `DT_ItemData` DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
 - `BBBInventoryComponent`를 ActorComponent로 분리 → 캐릭터 외 다른 Actor에도 부착 가능
+
+<img class="detail-img" src="{{ '/assets/img/DataTable.png' | relative_url }}" alt="DT_ItemData 구조">
+
+---
+
+### 5-2. 인벤토리 시스템 — Delegate 기반 UI 분리
+
+#### 설계 목표
+
+인벤토리 로직과 UI를 Delegate로 완전히 분리.
+컴포넌트가 UI를 직접 참조하지 않아 독립적으로 동작하는 구조.
+
+**설계 포인트**
+
 - 슬롯 클릭 → 컨텍스트 메뉴 방식 / BgDismiss(전체화면 투명 버튼, ZOrder 0)로 외부 클릭 감지
 
 **픽업 → 보관 → 사용 흐름**
 
 <img class="detail-img" src="{{ '/assets/img/인벤토리.gif' | relative_url }}" alt="인벤토리 시스템 시연">
-
-
-```
-[픽업]
-ABBBItemApple::OnPickup()
-  → InventoryComponent->AddItem("Apple", 1)
-  → OnInventoryChanged.Broadcast()
-
-[UI 갱신]
-OnInventoryChanged
-  → WBP_Inventory::RefreshInventory()
-  → WBP_InventorySlot 생성 → InitSlot(SlotData)
-
-[사용]
-WBP_ItemContextMenu::BtnUse OnClicked
-  → HP Max 체크
-  → InventoryComponent->UseItem(ItemID)
-  → StatComponent->Heal(HealAmount)
-```
 
 <div class="ts-box" markdown="1">
 
