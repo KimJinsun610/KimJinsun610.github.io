@@ -71,13 +71,13 @@ UActorComponent
 
 ## 1. 캐릭터 계층 구조 (CharacterBase 공통화)
 
-**설계 목표**
+### 설계 목표
 
 플레이어와 적이 공유하는 공격 방식, 피격 처리, 컴포넌트 부착을 하나의 Base로 통합하였습니다.
 
 새 캐릭터 추가 시 중복 코드 없이 상속만으로 기반 기능 확보하도록 설계하였습니다.
 
-**설계 포인트**
+### 설계 포인트
 
 - **StatComponent**, **DebuffComponent** 부착 — 플레이어/적 모두 동일한 피격·사망 처리
 - 공격 방식 지정/교환 로직을 Base에서 통합 — Player, Enemy 모두 재사용
@@ -89,7 +89,7 @@ UActorComponent
 
 ## 2. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
 
-**설계 목표**
+### 설계 목표
 
 무기 종류가 늘어도 캐릭터나 Base 코드를 수정하지 않고 확장 가능한 구조로 설계하였습니다.
 
@@ -102,7 +102,7 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
    ├── WeaponMelee     : HitBox 활성화, 콤보 애니메이션 재생
    └── WeaponRanged    : ProjectileDebuff 스폰, 발사 쿨다운 관리
 ```
-**설계 포인트**
+### 설계 포인트
 - 캐릭터는 **CurrentWeapon->Attack()** 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
 - V키 입력 시 **Equip()** / **Unequip()**으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
 
@@ -112,13 +112,13 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ## 3. 전략적 전투 루프 — 방어 게이지 제거 → 근거리 마무리
 
-**설계 목표**
+### 설계 목표
 
 단순히 데미지를 누적하는 전투가 아닌, 원거리 방어 게이지를 제거하고 근거리로 마무리하는 전략적 교전 흐름 구현하였습니다.
 
 **원거리로 방어 게이지 제거 -> 근거리로 마무리**의 형태로 로직을 설계하였습니다. 
 
-**설계 포인트**
+### 설계 포인트
 - 원거리만으로는 처치 불가 → 방어 게이지 제거 후 접근하는 플레이 유도
 - 일정 시간 후 방어 게이지 초기화 → 타이밍 관리가 전략 요소로 작용
 
@@ -150,7 +150,7 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ## 4. BehaviorTree 기반 AI — 탐지·순찰·추격·공격 상태 전환
 
-**설계 목표**
+### 설계 목표
 
 플레이어 감지 여부와 공격 가능 거리에 따라 AI 행동을 자동 전환하도록 설계하였습니다.
 
@@ -188,13 +188,13 @@ Root
 
 ### 5-1. 아이템 시스템 — DataTable로 확장성 확보
 
-**설계 목표**
+### 설계 목표
 
-초기에는 재화(Gold) 아이템만 존재했습니다.
+초기에는 재화(Gold) 아이템만 존재했습니다. HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코드를 수정하지 않아도 되는 구조가 필요해졌고, 
 
-HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코드를 수정하지 않아도 되는 구조가 필요해졌고, DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있도록 설계했습니다.
+DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있도록 설계했습니다.
 
-**설계 포인트**
+### 설계 포인트
 
 - DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
 - Row Name(ItemID)으로 아이템 식별 → 별도 enum 추가 없이 DataTable 행 키만으로 구별
@@ -206,13 +206,13 @@ HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코
 
 ### 5-2. 인벤토리 시스템 — Delegate 기반 UI 분리
 
-**설계 목표**
+### 설계 목표
 
 인벤토리 로직과 UI를 Delegate로 완전히 분리하였습니다.
 
 컴포넌트가 UI를 직접 참조하지 않아 독립적으로 동작하는 구조로 설계하였습니다. 
 
-**설계 포인트**
+### 설계 포인트
 
 - OnInventoryChanged Multicast Delegate 브로드캐스트 — InventoryComponent가 UI를 직접 참조하지 않는 구조
 - RefreshInventory 시 WBP_InventorySlot 동적 생성으로 슬롯 구성
@@ -227,12 +227,12 @@ HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코
 
 #### Trouble Shooting
 
-**증상** : 인벤토리를 처음 열면 이미 주운 아이템이 표시되지 않음
+**증상** : 게임 시작 시 아이템을 주운 후 인벤토리를 처음 열면 아이템이 표시되지 않는 문제가 발생했습니다.
 
-**원인** : **WBP_Inventory**는 첫 오픈 시 **CreateWidget**으로 생성 (Lazy 생성).
-생성 전에 발생한 **OnInventoryChanged.Broadcast()**는 수신자가 없어 무시됨.
+**원인** : **WBP_Inventory**는 인벤토리 첫 오픈 시 **CreateWidget**으로 동적생성되어, 
+생성 전에 발생한 **OnInventoryChanged.Broadcast()**의 수신자가 없어 무시되었습니다.
 
-**해결** : **ToggleInventory()**에서 인벤토리를 열 때마다 **ProcessEvent**로 **RefreshInventory** 강제 호출
+**해결** : **ToggleInventory()**에서 인벤토리를 열 때마다 **ProcessEvent**로 **RefreshInventory** 강제 호출하여 문제를 해결하였습니다.
 
 ```cpp
 if (bIsInventoryOpen)
@@ -252,14 +252,14 @@ if (bIsInventoryOpen)
 
 ## 6. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
 
-**설계 목표**
+### 설계 목표
 
 발사체가 Enemy 클래스를 직접 참조하지 않고, 인터페이스 구현 여부만으로
 새로운 피격 오브젝트를 추가할 수 있는 구조로 설계하였습니다.
 
 발사체가 피격 대상의 구체적인 클래스를 직접 참조하지 않도록 인터페이스 도입하였습니다.
 
-**설계 포인트**
+### 설계 포인트
 - **ABBBAppleOnTree**가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
 - Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
 
@@ -309,7 +309,7 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 ## 7. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
-**설계 목표**
+### 설계 목표
 
 몽타주 유무와 관계없이 모든 적 유형에서 사망 이펙트와 아이템 드롭 타이밍이 일관되게 동작하도록 보장하였습니다.
 
@@ -317,7 +317,7 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 사망 시 이펙트 재생 타이밍을 몽타주 유무에 관계없이 일관되게 처리하였습니다.
 
-**설계 포인트**
+### 설계 포인트
 - **OnDeathEffectNotify()** 한 곳에 이펙트·드롭 로직 집중 — 진입 경로가 달라도 동일 함수 호출
 - AnimNotify로 몽타주 길이와 무관하게 적마다 정확한 타이밍 제어
 - 몽타주 없는 적은 타이머 폴백으로 처리 — 경우를 빠짐없이 대응
