@@ -152,7 +152,7 @@ glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // UV
 
 - **std::lock_guard**(RAII 패턴)로 예외 발생 시에도 락 자동 해제 — 데드락 방지
 - **do_send**는 상태 읽기 시 락 없이 진행, 전송 시에만 **g_Sendmutex** 획득 — 읽기 경합 최소화
-- 로그인·이동 등 진입 빈도가 높은 경로에는 **CRITICAL_SECTION** 사용 — Windows 환경에서 **mutex** 대비 낮은 오버헤드
+- 이동 경로에는 **CRITICAL_SECTION** 사용 — Windows 환경에서 **mutex** 대비 낮은 오버헤드
 
 플레이어 배열이 전역으로 관리되어 2개의 스레드에서 동시 접근 → 락을 세분화하여 동시성 최적화
 
