@@ -70,15 +70,15 @@ GameFramework  ── 메인 루프 / DX12 초기화
   <span class="toc-sep">*</span>
   <a href="#sec-2">2. GPU 리소스 관리</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-3">3. AABB 충돌 처리</a>
+  <a href="#sec-3">3. Direct2D UI 오버레이</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-4">4. Direct2D UI 오버레이</a>
+  <a href="#sec-4">4. 디퍼드 렌더링 + 섀도우 맵</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-5">5. 디퍼드 렌더링 + 섀도우 맵</a>
+  <a href="#sec-5">5. Frustum Culling</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-6">6. Frustum Culling</a>
+  <a href="#sec-6">6. 멀티플레이 인터랙션 동기화</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-7">7. 멀티플레이 인터랙션 동기화</a>
+  <a href="#sec-7">7. AABB 충돌 처리</a>
 </div>
 
 
@@ -136,23 +136,7 @@ DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 
 
 <a id="sec-3"></a>
 
-## 3. AABB 충돌 처리
-
-### 설계 목표
-
-멀티플레이 환경에서 충돌 처리를 서버에만 위임하면 네트워크 지연으로 인해 클라이언트 측에서 벽을 통과하는 것처럼 보이는 문제가 생깁니다. 반대로 클라이언트에만 맡기면 위치 조작에 취약해집니다. 이를 절충하기 위해 클라이언트가 먼저 충돌을 연산해 즉각적인 반응성을 확보하고, 서버가 최종 위치를 전송해 동기화를 보정하는 구조를 적용하였습니다.
-
-### 설계 포인트
-
-- **BoundingOrientedBox**의 orientation quaternion을 항등 값으로 고정해 AABB처럼 동작
-- 대상 박스 코너 8개 → 각 면(삼각형 2개) 교차 검사 → 충돌 면의 법선 벡터 추출 → 이동 보정 방향 결정
-- 서버가 **send_update_packet**으로 최종 위치 전송, 클라이언트는 수신한 위치로 즉시 덮어쓰기
-
----
-
-<a id="sec-4"></a>
-
-## 4. Direct2D + D3D11On12 UI 오버레이
+## 3. Direct2D + D3D11On12 UI 오버레이
 
 ### 설계 목표
 
@@ -169,9 +153,9 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
 
 ---
 
-<a id="sec-5"></a>
+<a id="sec-4"></a>
 
-## 5. MRT 기반 디퍼드 렌더링 + 섀도우 맵
+## 4. MRT 기반 디퍼드 렌더링 + 섀도우 맵
 
 ### 설계 목표
 
@@ -204,9 +188,9 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
 
 ---
 
-<a id="sec-6"></a>
+<a id="sec-5"></a>
 
-## 6. Frustum Culling
+## 5. Frustum Culling
 
 ### 설계 목표
 
@@ -220,9 +204,9 @@ Stage 2는 대형 실내 맵으로 구성되어 있어 카메라 시야 밖에 �
 
 ---
 
-<a id="sec-7"></a>
+<a id="sec-6"></a>
 
-## 7. 멀티플레이 씬 인터랙션 동기화
+## 6. 멀티플레이 씬 인터랙션 동기화
 
 ### 설계 목표
 
@@ -285,6 +269,22 @@ m_ppPlayer[type]->SetCrawl(false);
 
 ---
 
+<a id="sec-7"></a>
+
+## 7. AABB 충돌 처리
+
+### 설계 목표
+
+멀티플레이 환경에서 충돌 처리를 서버에만 위임하면 네트워크 지연으로 인해 클라이언트 측에서 벽을 통과하는 것처럼 보이는 문제가 생깁니다. 반대로 클라이언트에만 맡기면 위치 조작에 취약해집니다. 이를 절충하기 위해 클라이언트가 먼저 충돌을 연산해 즉각적인 반응성을 확보하고, 서버가 최종 위치를 전송해 동기화를 보정하는 구조를 적용하였습니다.
+
+### 설계 포인트
+
+- **BoundingOrientedBox**의 orientation quaternion을 항등 값으로 고정해 AABB처럼 동작
+- 대상 박스 코너 8개 → 각 면(삼각형 2개) 교차 검사 → 충돌 면의 법선 벡터 추출 → 이동 보정 방향 결정
+- 서버가 **send_update_packet**으로 최종 위치 전송, 클라이언트는 수신한 위치로 즉시 덮어쓰기
+
+---
+
 <div class="card-links" style="margin-top: 40px;">
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
@@ -294,11 +294,11 @@ m_ppPlayer[type]->SetCrawl(false);
   <ol>
     <li><a href="#sec-1">게임 프레임워크 설계</a></li>
     <li><a href="#sec-2">GPU 리소스 관리</a></li>
-    <li><a href="#sec-3">AABB 충돌 처리</a></li>
-    <li><a href="#sec-4">Direct2D UI 오버레이</a></li>
-    <li><a href="#sec-5">디퍼드 렌더링 + 섀도우 맵</a></li>
-    <li><a href="#sec-6">Frustum Culling</a></li>
-    <li><a href="#sec-7">멀티플레이 인터랙션 동기화</a></li>
+    <li><a href="#sec-3">Direct2D UI 오버레이</a></li>
+    <li><a href="#sec-4">디퍼드 렌더링 + 섀도우 맵</a></li>
+    <li><a href="#sec-5">Frustum Culling</a></li>
+    <li><a href="#sec-6">멀티플레이 인터랙션 동기화</a></li>
+    <li><a href="#sec-7">AABB 충돌 처리</a></li>
   </ol>
 </nav>
 
