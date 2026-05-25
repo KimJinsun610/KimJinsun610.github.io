@@ -185,13 +185,19 @@ Root
 C++ 수정 없이 DataTable 행만 추가해 새 아이템을 확장할 수 있는 데이터 주도 설계.
 인벤토리 로직과 UI를 Delegate로 완전히 분리.
 
+<img class="detail-img" src="{{ '/assets/img/DataTable.png' | relative_url }}" alt="DT_ItemData 구조">
+
+<div class="dt-highlight">
+  📋 <code>DT_ItemData</code>에 행만 추가하면 새 아이템 등록 완료 — C++ 수정 불필요
+</div>
+
 **설계 포인트**
 
-- `DT_ItemData` DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
 - `BBBInventoryComponent`를 ActorComponent로 분리 → 캐릭터 외 다른 Actor에도 부착 가능
 - 슬롯 클릭 → 컨텍스트 메뉴 방식 / BgDismiss(전체화면 투명 버튼, ZOrder 0)로 외부 클릭 감지
 
 **픽업 → 보관 → 사용 흐름**
+
 <img class="detail-img" src="{{ '/assets/img/인벤토리.gif' | relative_url }}" alt="인벤토리 시스템 시연">
 
 
