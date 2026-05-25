@@ -76,9 +76,9 @@ UActorComponent
 플레이어와 적이 공유하는 공격 방식, 피격 처리, 컴포넌트 부착을 하나의 Base로 통합.
 새 캐릭터 추가 시 중복 코드 없이 상속만으로 기반 기능 확보.
 
-- `StatComponent`, `DebuffComponent` 부착 — 플레이어/적 모두 동일한 피격·사망 처리
+- **StatComponent**, **DebuffComponent** 부착 — 플레이어/적 모두 동일한 피격·사망 처리
 - 공격 방식 지정/교환 로직을 Base에서 통합 — Player, Enemy 모두 재사용
-- 새 캐릭터 추가 시 `CharacterBase` 상속만으로 기반 기능 자동 확보
+- 새 캐릭터 추가 시 **CharacterBase** 상속만으로 기반 기능 자동 확보
 
 ---
 
@@ -89,9 +89,9 @@ UActorComponent
 #### 설계 목표
 
 무기 종류가 늘어도 캐릭터나 Base 코드를 수정하지 않고 확장 가능한 구조.
-캐릭터는 무기 종류를 몰라도 `Attack()` 한 줄로 공격 가능.
+캐릭터는 무기 종류를 몰라도 **Attack()** 한 줄로 공격 가능.
 
-`Attack()` / `StopAttack()`을 순수 가상 함수로 선언하여 무기 종류별 독립 구현
+**Attack()** / **StopAttack()**을 순수 가상 함수로 선언하여 무기 종류별 독립 구현
 
 ```
 WeaponBase::Attack()   ← PURE_VIRTUAL
@@ -99,8 +99,8 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
    └── WeaponRanged    : ProjectileDebuff 스폰, 발사 쿨다운 관리
 ```
 **설계 포인트**
-- 캐릭터는 `CurrentWeapon->Attack()` 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
-- V키 입력 시 `Equip()` / `Unequip()`으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
+- 캐릭터는 **CurrentWeapon->Attack()** 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
+- V키 입력 시 **Equip()** / **Unequip()**으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
 
 ---
 
@@ -186,13 +186,13 @@ Root
 
 초기에는 재화(Gold) 아이템만 존재했습니다.
 HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코드를 수정하지 않아도 되는 구조가 필요해졌고,
-`DT_ItemData` DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있도록 설계했습니다.
+**DT_ItemData** DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있도록 설계했습니다.
 
 **설계 포인트**
 
-- `DT_ItemData` DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
-- `FName` Row Name(ItemID)으로 아이템 식별 → 별도 enum 추가 없이 DataTable 행 키만으로 구별
-- `BBBItemBase`를 AActor 기반으로 추상화 → OnPickup() 오버라이드만으로 아이템별 독립 동작 구현
+- **DT_ItemData** DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
+- **FName** Row Name(ItemID)으로 아이템 식별 → 별도 enum 추가 없이 DataTable 행 키만으로 구별
+- **BBBItemBase**를 AActor 기반으로 추상화 → **OnPickup()** 오버라이드만으로 아이템별 독립 동작 구현
 
 <img class="detail-img" src="{{ '/assets/img/DataTable.png' | relative_url }}" alt="DT_ItemData 구조">
 
@@ -222,10 +222,10 @@ HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코
 
 **증상** : 인벤토리를 처음 열면 이미 주운 아이템이 표시되지 않음
 
-**원인** : `WBP_Inventory`는 첫 오픈 시 `CreateWidget`으로 생성 (Lazy 생성).
-생성 전에 발생한 `OnInventoryChanged.Broadcast()`는 수신자가 없어 무시됨.
+**원인** : **WBP_Inventory**는 첫 오픈 시 **CreateWidget**으로 생성 (Lazy 생성).
+생성 전에 발생한 **OnInventoryChanged.Broadcast()**는 수신자가 없어 무시됨.
 
-**해결** : `ToggleInventory()`에서 인벤토리를 열 때마다 `ProcessEvent`로 `RefreshInventory` 강제 호출
+**해결** : **ToggleInventory()**에서 인벤토리를 열 때마다 **ProcessEvent**로 **RefreshInventory** 강제 호출
 
 ```cpp
 if (bIsInventoryOpen)
@@ -253,7 +253,7 @@ if (bIsInventoryOpen)
 발사체가 피격 대상의 구체적인 클래스를 직접 참조하지 않도록 인터페이스 도입
 
 **설계 포인트**
-- `ABBBAppleOnTree`가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
+- **ABBBAppleOnTree**가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
 - Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
 
 ```cpp
@@ -275,12 +275,12 @@ void BBBProjectileDebuff::OnProjectileHit()
 
 **증상** : 공중에 배치한 사과 오브젝트가 총에 맞자마자 즉시 사라지고 아이템이 스폰됨
 
-**원인** : `ABBBAppleOnTree`가 `ACharacter`를 상속하므로 게임 시작 시 `CharacterMovementComponent`가 중력을 적용.
+**원인** : **ABBBAppleOnTree**가 **ACharacter**를 상속하므로 게임 시작 시 **CharacterMovementComponent**가 중력을 적용.
 에디터에서 공중에 배치해도 런타임에서는 이미 바닥에 착지한 상태로 게임이 시작됨.
-이후 `SetSimulatePhysics(true)` 호출 시 이미 접촉 중인 지형과 `OnComponentHit`이 즉시 발동.
+이후 **SetSimulatePhysics(true)** 호출 시 이미 접촉 중인 지형과 **OnComponentHit**이 즉시 발동.
 
-**해결** : `BeginPlay`에서 `CharacterMovement` 비활성화 + `GravityScale = 0` 설정.
-`SetSimulatePhysics` 호출 후 0.1초 딜레이를 두고 `OnComponentHit` 등록.
+**해결** : **BeginPlay**에서 **CharacterMovement** 비활성화 + `GravityScale = 0` 설정.
+**SetSimulatePhysics** 호출 후 0.1초 딜레이를 두고 **OnComponentHit** 등록.
 
 ```cpp
 // BeginPlay — 오브젝트 위치 고정
@@ -310,7 +310,7 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 사망 시 이펙트 재생 타이밍을 몽타주 유무에 관계없이 일관되게 처리
 
 **설계 포인트**
-- `OnDeathEffectNotify()` 한 곳에 이펙트·드롭 로직 집중 — 진입 경로가 달라도 동일 함수 호출
+- **OnDeathEffectNotify()** 한 곳에 이펙트·드롭 로직 집중 — 진입 경로가 달라도 동일 함수 호출
 - AnimNotify로 몽타주 길이와 무관하게 적마다 정확한 타이밍 제어
 - 몽타주 없는 적은 타이머 폴백으로 처리 — 경우를 빠짐없이 대응
 
