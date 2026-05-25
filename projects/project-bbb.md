@@ -33,7 +33,12 @@ AActor
     ├── ABBBCharacterPlayer    ← 입력/이동, 조준, 무기 전환, 인벤토리
     └── ABBBEnemyBase          ← AI, 아이템 드롭, 사망 처리
         ├── ABBBEnemyMelee
-        └── ABBBEnemyRange
+        ├── ABBBEnemyRange
+        └── ABBBAppleOnTree    ← 피격 낙하 오브젝트
+
+AActor
+└── ABBBItemBase               ← OnPickup() 추상화
+    └── ABBBItemApple          ← HP 회복 아이템
 
 AActor
 └── ABBBWeaponBase             ← Attack() / StopAttack() 순수 가상 함수
@@ -44,6 +49,10 @@ UActorComponent
 ├── UBBBStatComponent          ← HP, 데미지, 사망
 ├── UBBBDebuffComponent        ← 디버프 적용/만료/UI 연동
 └── UBBBInventoryComponent     ← 아이템 보관/사용
+
+interface
+└── IBBBHittableInterface      ← 피격 가능 오브젝트 인터페이스
+
 ```
 
 ---
@@ -349,9 +358,9 @@ void ABBBAppleOnTree::SpawnItemAndDestroy()
 
 <img class="detail-img" src="{{ '/assets/img/Apple.gif' | relative_url }}" alt="아이템&이팩트 시스템 시연">
 
-<div class="box_highlight">🎬 <strong>몽타주 있는 적</strong> — OnEnemyDeath() → 사망 몽타주 재생 → AnimNotify 발동 → OnDeathEffectNotify() : 이펙트 스폰 + DropItems()</div>
-<div class="box_highlight">💀 <strong>몽타주 없는 적 (래그돌)</strong> — OnEnemyDeath() → 타이머(3.0f) 후 → OnDeathEffectNotify() : 이펙트 스폰 + DropItems()</div>
-<div class="box_highlight">🍎 <strong>사과 오브젝트</strong> — Physics 착지 → SpawnItemAndDestroy() → OnDeathEffectNotify() : 이펙트 스폰 + DropItems()</div>
+<div class="box_highlight">🎬 <strong>몽타주 있는 적</strong> — OnEnemyDeath() → 사망 몽타주 재생 → AnimNotify 발동 → 이펙트 스폰 + DropItems()</div>
+<div class="box_highlight">💀 <strong>몽타주 없는 적 (래그돌)</strong> — OnEnemyDeath() → 타이머(3.0f) 후 → 이펙트 스폰 + DropItems()</div>
+<div class="box_highlight">🍎 <strong>사과 오브젝트</strong> — Physics 착지 → SpawnItemAndDestroy() → 이펙트 스폰 + DropItems()</div>
 
 
 <div class="card-links" style="margin-top: 40px;">
