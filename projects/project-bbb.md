@@ -14,7 +14,7 @@ permalink: /projects/project-bbb/
 
 ---
 
-# 개요
+## 개요
 
 | 항목 | 내용 |
 |------|------|
@@ -25,7 +25,7 @@ permalink: /projects/project-bbb/
 
 ---
 
-# 클래스 계층 구조
+## 클래스 계층 구조
 
 ```
 AActor
@@ -68,7 +68,6 @@ UActorComponent
   <a href="#sec-8">8. Niagara 이펙트</a>
 </div>
 
----
 
 <a id="sec-1"></a>
 
@@ -109,38 +108,38 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 <a id="sec-3"></a>
 
-## 3. 전략적 전투 루프 — 디버프 누적 → 근거리 마무리
+## 3. 전략적 전투 루프 — 방어 게이지 제거 → 근거리 마무리
 
 #### 설계 목표
 
-단순히 데미지를 누적하는 전투가 아닌, 원거리 디버프로 상황을 만들고 근거리로 마무리하는 전략적 교전 흐름 구현.
+단순히 데미지를 누적하는 전투가 아닌, 원거리 방어 게이지를 제거하고 근거리로 마무리하는 전략적 교전 흐름 구현.
 
-원거리 공격은 데미지가 없는 대신 디버프를 부여, 디버프 상태에서 근거리 마무리
-
-<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
-
-- 원거리만으로는 처치 불가 → 디버프 누적 후 접근하는 플레이 유도
-- 디버프 만료 시 카운트 초기화 → 타이밍 관리가 전략 요소로 작용
+원거리 공격은 데미지가 없는 대신 방어 게이지 제거, 디버프 상태에서 근거리 마무리
 
 
 <div class="flow-card">
   <div class="flow-phase">
     <span class="flow-phase-label">원거리 모드 (기본)</span>
     <ul class="flow-steps">
-      <li>발사체 명중 → <code>DebuffComponent.ApplyDebuff()</code></li>
-      <li>디버프 적용 — <code>Stun</code> / <code>Slow</code> / <code>Weaken</code></li>
-      <li>적 행동 약화</li>
+      <li>발사체 명중 → 방어 게이지 감소</li>
+      <li>방어 게이지 0 → 방어 해제 + Stun 적용</li>
+      <li>HP바 위 방패 아이콘으로 잔여 게이지 표시</li>
     </ul>
   </div>
   <div class="flow-switch">V키 전환 ↓</div>
   <div class="flow-phase">
     <span class="flow-phase-label">근거리 모드</span>
     <ul class="flow-steps">
-      <li>디버프 상태 적에게 높은 데미지</li>
-      <li><code>Weaken</code> 상태 시 받는 데미지 50% 추가</li>
+      <li>방어 해제 상태 적에게 데미지</li>
+      <li>방어 게이지 잔존 시 처치 불가</li>
     </ul>
   </div>
 </div>
+
+<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
+
+- 원거리만으로는 처치 불가 → 방어 게이지 제거 후 접근하는 플레이 유도
+- 일정 시간 후 방어 게이지 초기화 → 타이밍 관리가 전략 요소로 작용
 
 ---
 
