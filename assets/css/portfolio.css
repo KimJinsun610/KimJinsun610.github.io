@@ -410,6 +410,21 @@ body {
   margin: 20px 0 10px;
 }
 
+.page-body h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 20px 0 8px;
+  padding-top: 0;
+  border-top: none;
+}
+
+.page-body h4.ts {
+  color: #EA580C;
+}
+
 .page-body p {
   font-size: 1rem;            /* 0.93 → 1.0 */
   color: var(--text-2);
@@ -587,7 +602,7 @@ body {
 .scroll-up-left {
   position: fixed;
   bottom: 40px;
-  left: 32px;
+  right: 32px;
   width: 44px;
   height: 44px;
   border-radius: 50%;
