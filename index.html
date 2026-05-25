@@ -172,12 +172,12 @@
         <p class="card-sub">주요 구현</p>
         <ul class="card-impl">
           <li>전략적 전투 루프 — 원거리로 방어 게이지 제거 후 근거리 마무리하는 교전 구조</li>
-          <li>DataTable 기반 아이템 시스템 — 행 추가만으로 확장, Delegate 기반 인벤토리 UI 분리</li>
-          <li><code>HittableInterface</code> — 발사체 코드 수정 없이 피격 가능 오브젝트 확장</li>
+          <li>DataTable 기반 아이템 / Delegate 기반 인벤토리 UI 분리</li>
+          <li>피격 가능 오브젝트 확장 (Hittable Interface)</li>
           <li>BehaviorTree AI — 탐지·순찰·추격·공격 상태 자동 전환</li>
           <li>Niagara 사망 이펙트 — AnimNotify / 타이머 이중 구조로 모든 적 드롭 타이밍 보장</li>
-          <li>캐릭터 계층 구조 — <code>CharacterBase</code> 공통화로 Player / Enemy 로직 재사용</li>
-          <li>WeaponBase 추상화 — <code>Attack()</code> 순수 가상 함수로 무기 종류 독립 확장</li>
+          <li>캐릭터 계층 구조 — CharacterBase 공통화로 Player / Enemy 로직 재사용</li>
+          <li>WeaponBase 추상화 — 순수 가상 함수로 무기 종류 독립 확장</li>
         </ul>
 
         <div class="card-links">
@@ -195,13 +195,6 @@
           <span class="badge badge-team">Graduation Project</span>
         </div>
         <p class="card-desc">DirectX 12 / IOCP 기반 3인 협동 멀티플레이 게임</p>
-
-        <div class="card-links">
-          <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
-          <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
-          <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
-          <a class="btn btn-primary" href="projects/cyberz">상세보기 →</a>
-        </div>
 
         <div class="video-wrap">
           <iframe src="https://www.youtube.com/embed/1F4cTjuyq-g?rel=0"
@@ -230,6 +223,13 @@
           <li>MRT 기반 디퍼드 렌더링 + 섀도우 맵 (광원 시점 깊이 버퍼 기반)</li>
           <li>Direct2D + D3D11On12 기반 2D UI 오버레이 시스템</li>
         </ul>
+
+        <div class="card-links">
+          <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
+          <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
+          <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
+          <a class="btn btn-primary" href="projects/cyberz">상세보기 →</a>
+        </div>
       </div>
 
       <!-- Tank Shoot -->
@@ -239,11 +239,6 @@
           <span class="badge badge-team">Team Project</span>
         </div>
         <p class="card-desc">OpenGL / TCP 기반 네트워크 2인 대전 게임</p>
-
-        <div class="card-links">
-          <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
-          <a class="btn btn-primary" href="projects/tank-shoot">상세보기 →</a>
-        </div>
 
         <div class="card-meta">
           <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2023.11 ~ 2023.12</span></div>
@@ -262,6 +257,11 @@
           <li>Fine-Grained Locking으로 동시성 최적화</li>
           <li>충돌 연산을 서버에서 처리 후 전체 클라이언트에 브로드캐스트하는 권위 서버 방식</li>
         </ul>
+
+        <div class="card-links">
+          <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
+          <a class="btn btn-primary" href="projects/tank-shoot">상세보기 →</a>
+        </div>
       </div>
 
     </div>
