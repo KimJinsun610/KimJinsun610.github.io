@@ -57,15 +57,13 @@ UActorComponent
   <span class="toc-sep">*</span>
   <a href="#sec-3">3. 전략적 전투 루프</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-4">4. 멀티 디버프 컴포넌트</a>
+  <a href="#sec-4">4. BehaviorTree AI</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-5">5. BehaviorTree AI</a>
+  <a href="#sec-5">5. 아이템 / 인벤토리</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-6">6. 아이템 / 인벤토리</a>
+  <a href="#sec-6">6. HittableInterface</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-7">7. HittableInterface</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-8">8. Niagara 이펙트</a>
+  <a href="#sec-7">7. Niagara 이펙트</a>
 </div>
 
 
@@ -145,35 +143,7 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 <a id="sec-4"></a>
 
-## 4. TMap 기반 멀티 디버프 컴포넌트 — Tick 자동 만료 + Delegate UI 자동 갱신
-
-#### 설계 목표
-
-복수의 디버프가 독립적으로 동작하고 자동 만료되는 컴포넌트 구현.
-UI와 디버프 로직을 완전히 분리하여 컴포넌트가 UI를 직접 참조하지 않는 구조.
-
-여러 디버프가 독립적으로 동작하도록 TMap 구조로 설계
-
-```cpp
-TMap<EDebuffType, FDebuffData> ActiveDebuffs;  // 활성 디버프 데이터
-TMap<EDebuffType, float>       DebuffTimers;   // 디버프별 남은 시간
-```
-
-**Tick 자동 만료**
-
-별도 TimerHandle 없이 `TickComponent`에서 `DebuffTimers`를 순회하여 만료 처리.
-만료된 항목을 별도 배열에 모은 뒤 루프 종료 후 일괄 제거 (순회 중 맵 수정 방지)
-
-**Delegate 기반 UI 연동**
-
-`OnDebuffApplied` / `OnDebuffRemoved` Multicast Delegate 브로드캐스트.
-디버프 컴포넌트는 UI를 직접 알지 못하고, 위젯이 Delegate에 바인딩하여 상태 변화 시 자동 갱신
-
----
-
-<a id="sec-5"></a>
-
-## 5. BehaviorTree 기반 AI — 디버프 상태에 따른 행동 변화
+## 4. BehaviorTree 기반 AI — 디버프 상태에 따른 행동 변화
 
 #### 설계 목표
 
@@ -202,9 +172,9 @@ Root
 
 ---
 
-<a id="sec-6"></a>
+<a id="sec-5"></a>
 
-## 6. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
+## 5. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
 
 #### 설계 목표
 
@@ -265,9 +235,9 @@ if (bIsInventoryOpen)
 
 ---
 
-<a id="sec-7"></a>
+<a id="sec-6"></a>
 
-## 7. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
+## 6. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
 
 #### 설계 목표
 
@@ -321,9 +291,9 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 ---
 
-<a id="sec-8"></a>
+<a id="sec-7"></a>
 
-## 8. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
+## 7. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
 #### 설계 목표
 
@@ -363,11 +333,10 @@ Physics 착지 → SpawnItemAndDestroy()
     <li><a href="#sec-1">캐릭터 계층 구조</a></li>
     <li><a href="#sec-2">WeaponBase 추상화</a></li>
     <li><a href="#sec-3">전략적 전투 루프</a></li>
-    <li><a href="#sec-4">멀티 디버프 컴포넌트</a></li>
-    <li><a href="#sec-5">BehaviorTree AI</a></li>
-    <li><a href="#sec-6">아이템 / 인벤토리</a></li>
-    <li><a href="#sec-7">HittableInterface</a></li>
-    <li><a href="#sec-8">Niagara 이펙트</a></li>
+    <li><a href="#sec-4">BehaviorTree AI</a></li>
+    <li><a href="#sec-5">아이템 / 인벤토리</a></li>
+    <li><a href="#sec-6">HittableInterface</a></li>
+    <li><a href="#sec-7">Niagara 이펙트</a></li>
   </ol>
 </nav>
 
@@ -378,7 +347,7 @@ Physics 착지 → SpawnItemAndDestroy()
     var btn = document.getElementById('scrollUpLeft');
     var toc = document.getElementById('floatingToc');
     var tocLinks = Array.from(toc.querySelectorAll('a'));
-    var sections = [1,2,3,4,5,6,7,8].map(function(n) {
+    var sections = [1,2,3,4,5,6,7].map(function(n) {
       return document.getElementById('sec-' + n);
     }).filter(Boolean);
     var trigger = document.querySelector('.detail-toc');
