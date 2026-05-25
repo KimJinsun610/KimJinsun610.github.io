@@ -280,23 +280,24 @@ void BBBProjectileDebuff::OnProjectileHit()
 
 **증상** : 공중에 배치한 사과 오브젝트가 총에 맞자마자 즉시 사라지고, 아이템이 낙하 위치가 아닌 사과 초기 위치(공중)에 스폰되는 문제가 발생했습니다.
 
+---
 **원인 1 — 피격 직후 즉시 아이템 생성**
 
-**ABBBAppleOnTree**는 **ACharacter**를 상속받고 있어 게임 시작과 동시에 **CharacterMovementComponent**의 중력 영향을 받았습니다.
+사과 오브젝트는 **ACharacter**를 상속받고 있어 게임 시작과 동시에 **CharacterMovementComponent**의 중력 영향을 받았습니다.
 
-이 과정에서 루트 컴포넌트인 **CapsuleComponent**는 지면으로 이동했지만, **AppleMesh**는 공중 위치를 유지하고 있었습니다.
+이 과정에서 루트 컴포넌트인 **CapsuleComponent**는 지면으로 이동했지만, 메쉬는 공중 위치를 유지하고 있었습니다.
 
-이후 **SetSimulatePhysics(true)**를 호출하자 **AppleMesh**가 인접한 나무 지오메트리와 이미 충돌 중인 상태로 판정되었고, 그 결과 **OnComponentHit** 이벤트가 즉시 발생하여 아이템이 바로 생성되는 문제가 발생했습니다.
+이후 **SetSimulatePhysics(true)**를 호출하자 메쉬가 인접한 나무 지오메트리와 이미 충돌 중인 상태로 판정되었고, 그 결과 **OnComponentHit** 이벤트가 즉시 발생하여 아이템이 바로 생성되는 문제가 발생했습니다.
 
 **원인 2 — 아이템이 공중에 생성됨**
 
-**SetSimulatePhysics(true)** 이후 물리 시뮬레이션은 **AppleMesh**에만 적용되고, Actor의 루트인 **CapsuleComponent**는 기존 위치에 그대로 유지되었습니다.
+**SetSimulatePhysics(true)** 이후 물리 시뮬레이션은 메쉬에만 적용되고, Actor의 루트인 **CapsuleComponent**는 기존 위치에 그대로 유지되었습니다.
 
-따라서 사과가 실제로 바닥에 착지하더라도 **GetActorLocation()**은 **AppleMesh**의 위치가 아닌 루트 컴포넌트의 초기 위치를 반환하였습니다.
+따라서 사과가 실제로 바닥에 착지하더라도 **GetActorLocation()**은 사과 메쉬의 위치가 아닌 루트 컴포넌트의 초기 위치를 반환하였습니다.
 
 그 결과 아이템 생성 위치 계산에 잘못된 좌표가 사용되어 아이템이 공중에 생성되는 문제가 발생했습니다.
 
-
+---
 **해결 1 — 즉시 사라짐 방지:** **CharacterMovement** 비활성화 + **GravityScale = 0** 설정으로 루트 컴포넌트의 이동을 차단하였습니다. 또한, **SetSimulatePhysics(true)** 호출 후 0.1초 딜레이를 두고 OnComponentHit 등록하여 나무 접촉 이벤트 무시하도록 구현하였습니다.
 
 ```cpp
@@ -308,7 +309,9 @@ GetCharacterMovement()->GravityScale = 0.0f;
 GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 {
     if (AppleMesh && !bHasLanded)
-        AppleMesh->OnComponentHit.AddDynamic(this, &ABBBAppleOnTree::OnAppleLanded);
+        AppleMesh->OnComponentHit.AddDynamic(
+                              this, 
+                              &ABBBAppleOnTree::OnAppleLanded);
 }, 0.1f, false);
 ```
 
