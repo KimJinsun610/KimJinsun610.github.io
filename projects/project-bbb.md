@@ -14,7 +14,7 @@ permalink: /projects/project-bbb/
 
 ---
 
-## 개요
+# 개요
 
 | 항목 | 내용 |
 |------|------|
@@ -25,7 +25,7 @@ permalink: /projects/project-bbb/
 
 ---
 
-## 클래스 계층 구조
+# 클래스 계층 구조
 
 ```
 AActor
@@ -72,22 +72,22 @@ UActorComponent
 
 <a id="sec-1"></a>
 
-### 1. 캐릭터 계층 구조 (CharacterBase 공통화)
+## 1. 캐릭터 계층 구조 (CharacterBase 공통화)
 
 #### 설계 목표
 
-플레이어와 적이 공유하는 무기 장착, 피격 처리, 컴포넌트 부착을 하나의 Base로 통합.
+플레이어와 적이 공유하는 공격 방식, 피격 처리, 컴포넌트 부착을 하나의 Base로 통합.
 새 캐릭터 추가 시 중복 코드 없이 상속만으로 기반 기능 확보.
 
 - `StatComponent`, `DebuffComponent` 부착 — 플레이어/적 모두 동일한 피격·사망 처리
-- 무기 장착/교환 로직을 Base에서 통합 — Player, Enemy 모두 재사용
+- 공격 방식 지정/교환 로직을 Base에서 통합 — Player, Enemy 모두 재사용
 - 새 캐릭터 추가 시 `CharacterBase` 상속만으로 기반 기능 자동 확보
 
 ---
 
 <a id="sec-2"></a>
 
-### 2. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
+## 2. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
 
 #### 설계 목표
 
@@ -103,13 +103,13 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 ```
 
 - 캐릭터는 `CurrentWeapon->Attack()` 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
-- V키 전환 시 `Equip()` / `Unequip()`으로 무기 교체, WeaponBase 코드 수정 불필요
+- V키 입력 시 `Equip()` / `Unequip()`으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
 
 ---
 
 <a id="sec-3"></a>
 
-### 3. 전략적 전투 루프 — 디버프 누적 → 근거리 마무리
+## 3. 전략적 전투 루프 — 디버프 누적 → 근거리 마무리
 
 #### 설계 목표
 
@@ -119,25 +119,34 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 <img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
 
-```
-원거리 모드 (기본)
-  → 발사체 명중 → DebuffComponent.ApplyDebuff()
-  → 디버프 적용 (Stun / Slow / Weaken)
-  → 적 행동 약화
-       ↓
-V키 전환 → 근거리 모드
-  → 디버프 상태 적에게 높은 데미지
-  → Weaken 상태 시 받는 데미지 50% 추가
-```
-
 - 원거리만으로는 처치 불가 → 디버프 누적 후 접근하는 플레이 유도
 - 디버프 만료 시 카운트 초기화 → 타이밍 관리가 전략 요소로 작용
+
+
+<div class="flow-card">
+  <div class="flow-phase">
+    <span class="flow-phase-label">원거리 모드 (기본)</span>
+    <ul class="flow-steps">
+      <li>발사체 명중 → <code>DebuffComponent.ApplyDebuff()</code></li>
+      <li>디버프 적용 — <code>Stun</code> / <code>Slow</code> / <code>Weaken</code></li>
+      <li>적 행동 약화</li>
+    </ul>
+  </div>
+  <div class="flow-switch">V키 전환 ↓</div>
+  <div class="flow-phase">
+    <span class="flow-phase-label">근거리 모드</span>
+    <ul class="flow-steps">
+      <li>디버프 상태 적에게 높은 데미지</li>
+      <li><code>Weaken</code> 상태 시 받는 데미지 50% 추가</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
 <a id="sec-4"></a>
 
-### 4. TMap 기반 멀티 디버프 컴포넌트 — Tick 자동 만료 + Delegate UI 자동 갱신
+## 4. TMap 기반 멀티 디버프 컴포넌트 — Tick 자동 만료 + Delegate UI 자동 갱신
 
 #### 설계 목표
 
@@ -165,7 +174,7 @@ TMap<EDebuffType, float>       DebuffTimers;   // 디버프별 남은 시간
 
 <a id="sec-5"></a>
 
-### 5. BehaviorTree 기반 AI — 디버프 상태에 따른 행동 변화
+## 5. BehaviorTree 기반 AI — 디버프 상태에 따른 행동 변화
 
 #### 설계 목표
 
@@ -196,7 +205,7 @@ Root
 
 <a id="sec-6"></a>
 
-### 6. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
+## 6. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
 
 #### 설계 목표
 
@@ -259,7 +268,7 @@ if (bIsInventoryOpen)
 
 <a id="sec-7"></a>
 
-### 7. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
+## 7. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
 
 #### 설계 목표
 
@@ -315,7 +324,7 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 <a id="sec-8"></a>
 
-### 8. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
+## 8. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
 #### 설계 목표
 

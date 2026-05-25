@@ -673,6 +673,57 @@ body {
   transform: translateY(-3px);
 }
 
+/* ── Flow Card ──────────────────── */
+.flow-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  margin: 16px 0;
+  overflow: hidden;
+}
+.flow-phase {
+  padding: 16px 20px;
+}
+.flow-phase-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 10px;
+}
+.flow-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.flow-steps li {
+  font-size: 0.92rem;
+  color: var(--text-2);
+  padding-left: 14px;
+  position: relative;
+}
+.flow-steps li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--text-3);
+}
+.flow-switch {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+}
+
 /* ── Floating TOC (detail page) ──── */
 .floating-toc {
   position: fixed;
