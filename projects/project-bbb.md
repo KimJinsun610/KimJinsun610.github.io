@@ -60,62 +60,25 @@ interface
 ## 구현 상세
 
 <div class="detail-toc">
-  <a href="#sec-1">1. 캐릭터 계층 구조</a>
+  <a href="#sec-1">1. 전략적 전투 루프</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-2">2. WeaponBase 추상화</a>
+  <a href="#sec-2">2. 아이템 / 인벤토리</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-3">3. 전략적 전투 루프</a>
+  <a href="#sec-3">3. HittableInterface</a>
   <span class="toc-sep">*</span>
   <a href="#sec-4">4. BehaviorTree AI</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-5">5. 아이템 / 인벤토리</a>
+  <a href="#sec-5">5. Niagara 이펙트</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-6">6. HittableInterface</a>
+  <a href="#sec-6">6. 캐릭터 계층 구조</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-7">7. Niagara 이펙트</a>
+  <a href="#sec-7">7. WeaponBase 추상화</a>
 </div>
 
 
 <a id="sec-1"></a>
 
-## 1. 캐릭터 계층 구조 (CharacterBase 공통화)
-
-### 설계 목표
-
-플레이어와 적이 공통으로 사용하는 공격, 피격 처리, 컴포넌트 관리 기능을 CharacterBase에 통합하였습니다. 이를 통해 중복 구현을 제거하고 공통 로직을 일관되게 관리할 수 있도록 설계하였으며, 새로운 캐릭터는 CharacterBase를 상속하는 것만으로 기본 기능을 확보할 수 있도록 확장성을 고려하였습니다.
-
-### 설계 포인트
-
-- **StatComponent**, **DebuffComponent** 부착 — 플레이어/적 모두 동일한 피격·사망 처리
-- 공격 방식 지정/교환 로직을 Base에서 통합 — Player, Enemy 모두 재사용
-- 새 캐릭터 추가 시 **CharacterBase** 상속만으로 기반 기능 자동 확보
-
----
-
-<a id="sec-2"></a>
-
-## 2. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
-
-### 설계 목표
-
-무기 종류가 증가하더라도 캐릭터나 상위 클래스의 수정 없이 기능을 확장할 수 있도록 WeaponBase를 추상화하였습니다.
-
-Attack() / StopAttack()을 순수 가상 함수로 선언하여 무기별 공격 방식을 독립적으로 구현하였으며, 캐릭터는 무기의 구체적인 타입을 알 필요 없이 Attack() 호출만으로 공격을 수행할 수 있도록 설계하였습니다.
-
-```
-WeaponBase::Attack()   ← PURE_VIRTUAL
-   ├── WeaponMelee     : HitBox 활성화, 콤보 애니메이션 재생
-   └── WeaponRanged    : ProjectileDebuff 스폰, 발사 쿨다운 관리
-```
-### 설계 포인트
-- 캐릭터는 **CurrentWeapon->Attack()** 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
-- V키 입력 시 **Equip()** / **Unequip()**으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
-
----
-
-<a id="sec-3"></a>
-
-## 3. 전략적 전투 루프 — 방어 게이지 제거 → 근거리 마무리
+## 1. 전략적 전투 루프 — 방어 게이지 제거 → 근거리 마무리
 
 ### 설계 목표
 
@@ -151,47 +114,11 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 ---
 
-<a id="sec-4"></a>
+<a id="sec-2"></a>
 
-## 4. BehaviorTree 기반 AI — 탐지·순찰·추격·공격 상태 전환
+## 2. DataTable 기반 아이템 / 인벤토리
 
-### 설계 목표
-
-플레이어 감지 여부와 공격 가능 거리에 따라 AI의 행동이 자동으로 전환되도록 설계하였습니다.
-
-행동 결정에 필요한 상태를 Blackboard로 관리하여, C++ 로직 수정 없이도 값 조정만으로 AI 패턴을 변경할 수 있는 유연한 구조를 구현하였습니다.
-
-| 상태 | 조건 | 행동 |
-|------|------|------|
-| 순찰 | Target 없음 | 랜덤 위치 이동 → 대기 반복 |
-| 추격 | Target 있음, 사정거리 밖 | 플레이어 방향으로 이동 |
-| 공격 | Target 있음, 사정거리 내 | 발사체 공격 |
-
-
-<img class="detail-img" src="{{ '/assets/img/AI_BT.png' | relative_url }}" alt="BehaviorTree 구조">
-
-```
-Root
- └── Selector  (Detect 서비스 : 0.9s ~ 1.1s 주기 탐색)
-      ├── On Target  (Blackboard: Target is Set)
-      │    └── Selector  (Detect 서비스 : 0.0s ~ 0.2s 재탐색)
-      │         ├── CanAttack_Ranged  →  Attack              ← 사정거리 내
-      │         └── CanAttack_Ranged (inversed)  →  Move To  ← 추격
-      └── No Target  (Blackboard: Target is Not Set)
-           └── Sequence
-                ├── Wait  (0.5 ± 1.0s)
-                ├── FindPatrolPos
-                └── Move To PatrolPos
-```
-
-
----
-
-<a id="sec-5"></a>
-
-## 5. DataTable 기반 아이템 / 인벤토리
-
-### 5-1. 아이템 시스템 — DataTable로 확장성 확보
+### 2-1. 아이템 시스템 — DataTable로 확장성 확보
 
 ### 설계 목표
 
@@ -209,7 +136,7 @@ DataTable을 도입하여 행 추가만으로 새 아이템을 등록할 수 있
 
 ---
 
-### 5-2. 인벤토리 시스템 — Delegate 기반 UI 분리
+### 2-2. 인벤토리 시스템 — Delegate 기반 UI 분리
 
 ### 설계 목표
 
@@ -253,9 +180,9 @@ if (bIsInventoryOpen)
 
 ---
 
-<a id="sec-6"></a>
+<a id="sec-3"></a>
 
-## 6. 피격 가능 오브젝트 확장 (Hittable Interface)
+## 3. 피격 가능 오브젝트 확장 (Hittable Interface)
 
 ### 설계 목표
 
@@ -341,9 +268,45 @@ void ABBBAppleOnTree::SpawnItemAndDestroy()
 
 ---
 
-<a id="sec-7"></a>
+<a id="sec-4"></a>
 
-## 7. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
+## 4. BehaviorTree 기반 AI — 탐지·순찰·추격·공격 상태 전환
+
+### 설계 목표
+
+플레이어 감지 여부와 공격 가능 거리에 따라 AI의 행동이 자동으로 전환되도록 설계하였습니다.
+
+행동 결정에 필요한 상태를 Blackboard로 관리하여, C++ 로직 수정 없이도 값 조정만으로 AI 패턴을 변경할 수 있는 유연한 구조를 구현하였습니다.
+
+| 상태 | 조건 | 행동 |
+|------|------|------|
+| 순찰 | Target 없음 | 랜덤 위치 이동 → 대기 반복 |
+| 추격 | Target 있음, 사정거리 밖 | 플레이어 방향으로 이동 |
+| 공격 | Target 있음, 사정거리 내 | 발사체 공격 |
+
+
+<img class="detail-img" src="{{ '/assets/img/AI_BT.png' | relative_url }}" alt="BehaviorTree 구조">
+
+```
+Root
+ └── Selector  (Detect 서비스 : 0.9s ~ 1.1s 주기 탐색)
+      ├── On Target  (Blackboard: Target is Set)
+      │    └── Selector  (Detect 서비스 : 0.0s ~ 0.2s 재탐색)
+      │         ├── CanAttack_Ranged  →  Attack              ← 사정거리 내
+      │         └── CanAttack_Ranged (inversed)  →  Move To  ← 추격
+      └── No Target  (Blackboard: Target is Not Set)
+           └── Sequence
+                ├── Wait  (0.5 ± 1.0s)
+                ├── FindPatrolPos
+                └── Move To PatrolPos
+```
+
+
+---
+
+<a id="sec-5"></a>
+
+## 5. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
 ### 설계 목표
 
@@ -363,6 +326,45 @@ void ABBBAppleOnTree::SpawnItemAndDestroy()
 <div class="box_highlight">🍎 <strong>사과 오브젝트</strong> — Physics 착지 → SpawnItemAndDestroy() → 이펙트 스폰 + DropItems()</div>
 
 
+---
+
+<a id="sec-6"></a>
+
+## 6. 캐릭터 계층 구조 (CharacterBase 공통화)
+
+### 설계 목표
+
+플레이어와 적이 공통으로 사용하는 공격, 피격 처리, 컴포넌트 관리 기능을 CharacterBase에 통합하였습니다. 이를 통해 중복 구현을 제거하고 공통 로직을 일관되게 관리할 수 있도록 설계하였으며, 새로운 캐릭터는 CharacterBase를 상속하는 것만으로 기본 기능을 확보할 수 있도록 확장성을 고려하였습니다.
+
+### 설계 포인트
+
+- **StatComponent**, **DebuffComponent** 부착 — 플레이어/적 모두 동일한 피격·사망 처리
+- 공격 방식 지정/교환 로직을 Base에서 통합 — Player, Enemy 모두 재사용
+- 새 캐릭터 추가 시 **CharacterBase** 상속만으로 기반 기능 자동 확보
+
+---
+
+<a id="sec-7"></a>
+
+## 7. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
+
+### 설계 목표
+
+무기 종류가 증가하더라도 캐릭터나 상위 클래스의 수정 없이 기능을 확장할 수 있도록 WeaponBase를 추상화하였습니다.
+
+Attack() / StopAttack()을 순수 가상 함수로 선언하여 무기별 공격 방식을 독립적으로 구현하였으며, 캐릭터는 무기의 구체적인 타입을 알 필요 없이 Attack() 호출만으로 공격을 수행할 수 있도록 설계하였습니다.
+
+```
+WeaponBase::Attack()   ← PURE_VIRTUAL
+   ├── WeaponMelee     : HitBox 활성화, 콤보 애니메이션 재생
+   └── WeaponRanged    : ProjectileDebuff 스폰, 발사 쿨다운 관리
+```
+### 설계 포인트
+- 캐릭터는 **CurrentWeapon->Attack()** 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
+- V키 입력 시 **Equip()** / **Unequip()**으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
+
+---
+
 <div class="card-links" style="margin-top: 40px;">
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
@@ -370,13 +372,13 @@ void ABBBAppleOnTree::SpawnItemAndDestroy()
 <nav class="floating-toc" id="floatingToc">
   <p class="ftoc-title">구현 상세</p>
   <ol>
-    <li><a href="#sec-1">캐릭터 계층 구조</a></li>
-    <li><a href="#sec-2">WeaponBase 추상화</a></li>
-    <li><a href="#sec-3">전략적 전투 루프</a></li>
+    <li><a href="#sec-1">전략적 전투 루프</a></li>
+    <li><a href="#sec-2">아이템 / 인벤토리</a></li>
+    <li><a href="#sec-3">HittableInterface</a></li>
     <li><a href="#sec-4">BehaviorTree AI</a></li>
-    <li><a href="#sec-5">아이템 / 인벤토리</a></li>
-    <li><a href="#sec-6">HittableInterface</a></li>
-    <li><a href="#sec-7">Niagara 이펙트</a></li>
+    <li><a href="#sec-5">Niagara 이펙트</a></li>
+    <li><a href="#sec-6">캐릭터 계층 구조</a></li>
+    <li><a href="#sec-7">WeaponBase 추상화</a></li>
   </ol>
 </nav>
 
