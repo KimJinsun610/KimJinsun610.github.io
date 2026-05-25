@@ -23,8 +23,6 @@ permalink: /projects/project-bbb/
 | 개발 인원 | 1인 |
 | 개발 기간 | 2026.02 ~ 진행 중 |
 
-**게임 목표** : 원거리 공격(디버프)으로 적을 약화시킨 뒤 근거리 공격으로 처치
-
 ---
 
 ## 클래스 계층 구조
@@ -197,6 +195,8 @@ Root
 <a id="sec-6"></a>
 
 ### 6. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
+
+<img class="detail-img" src="{{ '/assets/img/인벤토리.gif' | relative_url }}" alt="인벤토리 시스템 시연">
 
 #### 설계 목표
 

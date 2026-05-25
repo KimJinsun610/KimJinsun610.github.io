@@ -563,6 +563,16 @@ body {
   border: none;
 }
 
+/* ── Detail Image ───────────────── */
+.page-body .detail-img {
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border);
+  margin: 0 0 20px;
+  display: block;
+}
+
 /* ── Detail TOC ─────────────────── */
 .detail-toc {
   display: flex;
