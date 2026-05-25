@@ -98,7 +98,7 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
    ├── WeaponMelee     : HitBox 활성화, 콤보 애니메이션 재생
    └── WeaponRanged    : ProjectileDebuff 스폰, 발사 쿨다운 관리
 ```
-
+**설계 포인트**
 - 캐릭터는 `CurrentWeapon->Attack()` 한 줄만 호출 — 무기 종류를 직접 알 필요 없음
 - V키 입력 시 `Equip()` / `Unequip()`으로 플레이어 무기 교체, WeaponBase 코드 수정 불필요
 
@@ -111,9 +111,13 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 #### 설계 목표
 
 단순히 데미지를 누적하는 전투가 아닌, 원거리 방어 게이지를 제거하고 근거리로 마무리하는 전략적 교전 흐름 구현.
-
 원거리 공격은 데미지가 없는 대신 방어 게이지 제거, 디버프 상태에서 근거리 마무리
 
+**설계 포인트**
+- 원거리만으로는 처치 불가 → 방어 게이지 제거 후 접근하는 플레이 유도
+- 일정 시간 후 방어 게이지 초기화 → 타이밍 관리가 전략 요소로 작용
+
+<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
 
 <div class="flow-card">
   <div class="flow-phase">
@@ -134,10 +138,6 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
   </div>
 </div>
 
-<img class="detail-img" src="{{ '/assets/img/debuff.gif' | relative_url }}" alt="공격 루프 시스템 시연">
-
-- 원거리만으로는 처치 불가 → 방어 게이지 제거 후 접근하는 플레이 유도
-- 일정 시간 후 방어 게이지 초기화 → 타이밍 관리가 전략 요소로 작용
 
 ---
 
@@ -149,6 +149,12 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 플레이어 감지 여부와 공격 가능 거리에 따라 AI 행동을 자동 전환.
 Blackboard 값만으로 상태를 분기하여 C++ 코드 수정 없이 행동 패턴 조정 가능.
+| 상태 | 조건 | 행동 |
+|------|------|------|
+| 순찰 | Target 없음 | 랜덤 위치 이동 → 대기 반복 |
+| 추격 | Target 있음, 사정거리 밖 | 플레이어 방향으로 이동 |
+| 공격 | Target 있음, 사정거리 내 | 발사체 공격 |
+
 
 <img class="detail-img" src="{{ '/assets/img/AI_BT.png' | relative_url }}" alt="BehaviorTree 구조">
 
@@ -166,11 +172,6 @@ Root
                 └── Move To PatrolPos
 ```
 
-| 상태 | 조건 | 행동 |
-|------|------|------|
-| 순찰 | Target 없음 | 랜덤 위치 이동 → 대기 반복 |
-| 추격 | Target 있음, 사정거리 밖 | 플레이어 방향으로 이동 |
-| 공격 | Target 있음, 사정거리 내 | 발사체 공격 |
 
 ---
 
@@ -183,8 +184,13 @@ Root
 C++ 수정 없이 DataTable 행만 추가해 새 아이템을 확장할 수 있는 데이터 주도 설계.
 인벤토리 로직과 UI를 Delegate로 완전히 분리.
 
-**픽업 → 보관 → 사용 흐름**
+**설계 포인트**
 
+- `DT_ItemData` DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
+- `BBBInventoryComponent`를 ActorComponent로 분리 → 캐릭터 외 다른 Actor에도 부착 가능
+- 슬롯 클릭 → 컨텍스트 메뉴 방식 / BgDismiss(전체화면 투명 버튼, ZOrder 0)로 외부 클릭 감지
+
+**픽업 → 보관 → 사용 흐름**
 <img class="detail-img" src="{{ '/assets/img/인벤토리.gif' | relative_url }}" alt="인벤토리 시스템 시연">
 
 
@@ -205,12 +211,6 @@ WBP_ItemContextMenu::BtnUse OnClicked
   → InventoryComponent->UseItem(ItemID)
   → StatComponent->Heal(HealAmount)
 ```
-
-**설계 포인트**
-
-- `DT_ItemData` DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
-- `BBBInventoryComponent`를 ActorComponent로 분리 → 캐릭터 외 다른 Actor에도 부착 가능
-- 슬롯 클릭 → 컨텍스트 메뉴 방식 / BgDismiss(전체화면 투명 버튼, ZOrder 0)로 외부 클릭 감지
 
 <div class="ts-box" markdown="1">
 
@@ -248,6 +248,10 @@ if (bIsInventoryOpen)
 
 발사체가 피격 대상의 구체적인 클래스를 직접 참조하지 않도록 인터페이스 도입
 
+**설계 포인트**
+- `ABBBAppleOnTree`가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
+- Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
+
 ```cpp
 void BBBProjectileDebuff::OnProjectileHit()
 {
@@ -260,9 +264,6 @@ void BBBProjectileDebuff::OnProjectileHit()
         Hittable->OnHitByProjectile();
 }
 ```
-
-- `ABBBAppleOnTree`가 인터페이스를 구현 → 발사체에 맞으면 Physics 낙하 후 아이템 스폰
-- Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
 
 <div class="ts-box" markdown="1">
 
@@ -304,6 +305,11 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 사망 시 이펙트 재생 타이밍을 몽타주 유무에 관계없이 일관되게 처리
 
+**설계 포인트**
+- `OnDeathEffectNotify()` 한 곳에 이펙트·드롭 로직 집중 — 진입 경로가 달라도 동일 함수 호출
+- AnimNotify로 몽타주 길이와 무관하게 적마다 정확한 타이밍 제어
+- 몽타주 없는 적은 타이머 폴백으로 처리 — 경우를 빠짐없이 대응
+
 <img class="detail-img" src="{{ '/assets/img/Apple.gif' | relative_url }}" alt="아이템&이팩트 시스템 시연">
 
 ```
@@ -321,9 +327,6 @@ Physics 착지 → SpawnItemAndDestroy()
   → OnDeathEffectNotify() : 이펙트 스폰 + DropItems()
 ```
 
-- `OnDeathEffectNotify()` 한 곳에 이펙트·드롭 로직 집중 — 진입 경로가 달라도 동일 함수 호출
-- AnimNotify로 몽타주 길이와 무관하게 적마다 정확한 타이밍 제어
-- 몽타주 없는 적은 타이머 폴백으로 처리 — 경우를 빠짐없이 대응
 
 <div class="card-links" style="margin-top: 40px;">
   <a class="btn btn-primary" href="/">← 목록으로</a>
