@@ -70,6 +70,8 @@ UActorComponent
   <a href="#sec-8">8. Niagara 이펙트</a>
 </div>
 
+---
+
 <a id="sec-1"></a>
 
 ### 1. 캐릭터 계층 구조 (CharacterBase 공통화)
