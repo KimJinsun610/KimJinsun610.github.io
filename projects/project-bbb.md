@@ -143,32 +143,34 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 
 <a id="sec-4"></a>
 
-## 4. BehaviorTree 기반 AI — 디버프 상태에 따른 행동 변화
+## 4. BehaviorTree 기반 AI — 탐지·순찰·추격·공격 상태 전환
 
 #### 설계 목표
 
-디버프 상태 변화를 BehaviorTree에서 실시간 감지하여 AI 행동을 전환.
-전략적 전투 루프와 AI 반응이 자연스럽게 연동되도록 설계.
+플레이어 감지 여부와 공격 가능 거리에 따라 AI 행동을 자동 전환.
+Blackboard 값만으로 상태를 분기하여 C++ 코드 수정 없이 행동 패턴 조정 가능.
 
-디버프 상태를 BehaviorTree에서 직접 감지하여 행동을 전환
+<img class="detail-img" src="{{ '/assets/img/AI_BT.png' | relative_url }}" alt="BehaviorTree 구조">
 
 ```
 Root
- └── Selector
-      ├── Sequence (Stun 확인)
-      │    ├── HasDebuff(Stun)?
-      │    └── Wait (기절 중 대기)
-      ├── Sequence (공격)
-      │    ├── IsInRange?
-      │    └── Attack
-      └── Chase Player
+ └── Selector  (Detect 서비스 : 0.9s ~ 1.1s 주기 탐색)
+      ├── On Target  (Blackboard: Target is Set)
+      │    └── Selector  (Detect 서비스 : 0.0s ~ 0.2s 재탐색)
+      │         ├── CanAttack_Ranged  →  Attack              ← 사정거리 내
+      │         └── CanAttack_Ranged (inversed)  →  Move To  ← 추격
+      └── No Target  (Blackboard: Target is Not Set)
+           └── Sequence
+                ├── Wait  (0.5 ± 1.0s)
+                ├── FindPatrolPos
+                └── Move To PatrolPos
 ```
 
-| 디버프 | AI 행동 변화 |
-|--------|-------------|
-| Stun   | 이동 / 공격 완전 정지 |
-| Slow   | MaxWalkSpeed 50% 감소 |
-| Weaken | 받는 데미지 1.5배 증가 |
+| 상태 | 조건 | 행동 |
+|------|------|------|
+| 순찰 | Target 없음 | 랜덤 위치 이동 → 대기 반복 |
+| 추격 | Target 있음, 사정거리 밖 | 플레이어 방향으로 이동 |
+| 공격 | Target 있음, 사정거리 내 | 발사체 공격 |
 
 ---
 
