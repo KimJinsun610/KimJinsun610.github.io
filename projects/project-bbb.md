@@ -306,6 +306,8 @@ GetWorld()->GetTimerManager().SetTimer(LandingDetectTimer, [this]()
 
 ### 8. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
+<img class="detail-img" src="{{ '/assets/img/Apple.gif' | relative_url }}" alt="아이템&이팩트 시스템 시연">
+
 #### 설계 목표
 
 몽타주 유무와 관계없이 모든 적 유형에서 사망 이펙트와 아이템 드롭 타이밍이 일관되게 동작하도록 보장.
