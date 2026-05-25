@@ -548,6 +548,75 @@ body {
   border: none;
 }
 
+/* ── Detail TOC ─────────────────── */
+.detail-toc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 0;
+  padding: 14px 18px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 32px;
+}
+
+.detail-toc a {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  transition: color 0.15s, background 0.15s;
+}
+
+.detail-toc a:hover {
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.toc-sep {
+  color: var(--text-3);
+  font-size: 0.78rem;
+  padding: 0 2px;
+  user-select: none;
+}
+
+/* ── Scroll-Up Left (detail page) ── */
+.scroll-up-left {
+  position: fixed;
+  bottom: 40px;
+  left: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.2s, background 0.18s;
+  z-index: 200;
+}
+
+.scroll-up-left.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-up-left:hover {
+  background: #1B6BD8;
+  transform: translateY(-3px);
+}
+
 /* ── Responsive ─────────────────── */
 @media (max-width: 600px) {
   .site-header { padding: 56px 0 48px; }

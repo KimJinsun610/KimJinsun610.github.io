@@ -52,6 +52,26 @@ UActorComponent
 
 ## 구현 상세
 
+<div class="detail-toc">
+  <a href="#sec-1">1. 캐릭터 계층 구조</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-2">2. WeaponBase 추상화</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-3">3. 전략적 전투 루프</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-4">4. 멀티 디버프 컴포넌트</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-5">5. BehaviorTree AI</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-6">6. 아이템 / 인벤토리</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-7">7. HittableInterface</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-8">8. Niagara 이펙트</a>
+</div>
+
+<a id="sec-1"></a>
+
 ### 1. 캐릭터 계층 구조 (CharacterBase 공통화)
 
 `ABBBCharacterBase`가 플레이어와 적의 공통 로직을 담당한다.
@@ -61,6 +81,8 @@ UActorComponent
 - 새 캐릭터 추가 시 `CharacterBase` 상속만으로 기반 기능 자동 확보
 
 ---
+
+<a id="sec-2"></a>
 
 ### 2. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
 
@@ -76,6 +98,8 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
 - V키 전환 시 `Equip()` / `Unequip()`으로 무기 교체, WeaponBase 코드 수정 불필요
 
 ---
+
+<a id="sec-3"></a>
 
 ### 3. 전략적 전투 루프 — 디버프 누적 → 근거리 마무리
 
@@ -97,6 +121,8 @@ V키 전환 → 근거리 모드
 
 ---
 
+<a id="sec-4"></a>
+
 ### 4. TMap 기반 멀티 디버프 컴포넌트 — Tick 자동 만료 + Delegate UI 자동 갱신
 
 여러 디버프가 독립적으로 동작하도록 TMap 구조로 설계
@@ -117,6 +143,8 @@ TMap<EDebuffType, float>       DebuffTimers;   // 디버프별 남은 시간
 디버프 컴포넌트는 UI를 직접 알지 못하고, 위젯이 Delegate에 바인딩하여 상태 변화 시 자동 갱신
 
 ---
+
+<a id="sec-5"></a>
 
 ### 5. BehaviorTree 기반 AI — 디버프 상태에 따른 행동 변화
 
@@ -141,6 +169,8 @@ Root
 | Weaken | 받는 데미지 1.5배 증가 |
 
 ---
+
+<a id="sec-6"></a>
 
 ### 6. DataTable 기반 아이템/인벤토리 — C++ 수정 없이 아이템 추가
 
@@ -172,6 +202,8 @@ WBP_ItemContextMenu::BtnUse OnClicked
 
 ---
 
+<a id="sec-7"></a>
+
 ### 7. HittableInterface — 발사체 코드 수정 없이 피격 가능 오브젝트 확장
 
 발사체가 피격 대상의 구체적인 클래스를 직접 참조하지 않도록 인터페이스 도입
@@ -193,6 +225,8 @@ void BBBProjectileDebuff::OnProjectileHit()
 - Enemy 로직과 완전 분리 — 새 피격 오브젝트 추가 시 발사체 코드 수정 불필요
 
 ---
+
+<a id="sec-8"></a>
 
 ### 8. Niagara 사망 이펙트 — AnimNotify/타이머 이중 구조로 모든 적 드롭 타이밍 보장
 
@@ -220,3 +254,18 @@ Physics 착지 → SpawnItemAndDestroy()
 <div class="card-links" style="margin-top: 40px;">
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
+
+<a class="scroll-up-left" id="scrollUpLeft" href="#" aria-label="맨 위로 이동">↑</a>
+
+<script>
+  (function () {
+    var btn = document.getElementById('scrollUpLeft');
+    window.addEventListener('scroll', function () {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+</script>
