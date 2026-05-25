@@ -704,14 +704,18 @@ body {
 .flow-steps li {
   font-size: 0.92rem;
   color: var(--text-2);
-  padding-left: 14px;
-  position: relative;
+  padding-left: 0;
+  position: static;
 }
-.flow-steps li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--text-3);
+.flow-card .flow-steps li {
+  gap: 16px !important;
+  display: flex !important;
+}
+.flow-card .flow-steps li::before {
+  content: '→' !important;
+  color: var(--accent) !important;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 .flow-switch {
   background: var(--bg);
@@ -734,7 +738,7 @@ body {
   border: 1.5px solid var(--border);
   border-radius: var(--r-sm);
   padding: 14px 16px;
-  width: 162px;
+  width: 180px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s;
