@@ -1,4 +1,4 @@
-﻿---
+---
 layout: page
 title: CyberZ
 permalink: /projects/cyberz/
@@ -41,7 +41,7 @@ GameFramework  ── 메인 루프 / DX12 초기화
 ├── Shader Pipeline
 │   ├── CDepthRenderShader              Shadow Map
 │   ├── CStandardShader                 지형 / 정적 오브젝트
-│   ├── CSkinnedAnimationObjectsShader  스키닝 (팀원 구현)
+│   ├── CSkinnedAnimationObjectsShader  스키닝
 │   └── CTextureDeferdShader            MRT 합성 / Post-Process
 │
 ├── CUI ── Direct2D + D3D11On12 오버레이
@@ -111,7 +111,7 @@ DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 
 
 ### 설계 포인트
 
-- **BuildObjects** — Upload Heap 적재 → **ExecuteCommandLists** → **WaitForGpuComplete** → **ReleaseUploadBuffers** 즉시 정리
+- BuildObjects — Upload Heap 적재 → ExecuteCommandLists → WaitForGpuComplete → ReleaseUploadBuffers 즉시 정리
 - **ChangeScene** — **ReleaseObjects** 완전 해제 후 새 씬 **BuildObjects** 순서로 진행
 - 모든 DX12 리소스에 Reference Count 기반 **AddRef / Release** 패턴 일관 적용
 - 캐릭터 선택 씬 진입 시 모든 캐릭터를 미리 생성, 선택 시 렌더링 활성화 상태만 전환
@@ -127,6 +127,8 @@ DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 
 멀티플레이 환경 특성상 플레이어 3명이 독립적으로 캐릭터를 선택하며, 동시에 같은 캐릭터를 고를 수 있어 슬롯별 프리뷰가 필요했습니다. 이 구조에서 매번 모델을 생성·해제하는 방식은 근본적인 문제라고 판단했습니다.
 
 **해결** : 씬 진입 시 더미 포함 4종 캐릭터를 3개 슬롯분 총 12개 미리 생성하고, 선택 시에는 렌더링 활성화 상태만 변경하도록 구조를 변경하였습니다. 캐릭터 수가 적은 프로젝트 규모에서는 추가 메모리 부담이 크지 않다고 판단하였으며, 반복적인 생성·해제 과정을 완전히 제거하여 메모리 증가와 선택 반응 속도 문제를 함께 해결하였습니다.
+
+<img class="detail-img" src="{{ '/assets/img/character.gif' | relative_url }}" alt="캐릭터 선택 시연">
 
 </div>
 
@@ -163,6 +165,8 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
 - DirectWrite 텍스트, WIC 이미지 로더, 버튼·텍스트 입력·프로그레스바 컴포넌트 직접 구현
 - 씬별 독립 **CUI** 인스턴스로 타이틀 / 로비 / 인게임 UI 분리 관리
 
+<img class="detail-img" src="{{ '/assets/img/UI.gif' | relative_url }}" alt="Direct2D UI 오버레이 시연">
+
 ---
 
 <a id="sec-5"></a>
@@ -186,6 +190,17 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
 - **CDepthRenderShader**가 광원 시점에서 씬 전체를 깊이 텍스처로 렌더링
 - **TOLIGHTSPACES** 상수 버퍼 (광원 View·Projection 행렬) 를 합성 셰이더에 바인딩해 Shadow Lookup 수행
 - 플레이어 / 적 / 보스 / 지형을 별도 Pass로 분리해 그림자 레이어 제어
+
+<div style="display:flex; gap:8px; margin:16px 0;">
+  <div style="flex:1; text-align:center;">
+    <img class="detail-img" src="{{ '/assets/img/Albedo.png' | relative_url }}" alt="Albedo Pass">
+    <p style="font-size:0.85em; color:#888; margin-top:4px;">Albedo Pass — 조명 없는 텍스처 원색</p>
+  </div>
+  <div style="flex:1; text-align:center;">
+    <img class="detail-img" src="{{ '/assets/img/Shadow.png' | relative_url }}" alt="Final Composite">
+    <p style="font-size:0.85em; color:#888; margin-top:4px;">Final Composite — 디퍼드 합성 + 섀도우</p>
+  </div>
+</div>
 
 ---
 
@@ -262,7 +277,9 @@ m_ppPlayer[type]->SetCrawl(false);
 
 ---
 
-**해결** : 서버 개발자, 팀원과 패킷 흐름을 단계별로 추적하여 세 가지 원인을 특정하고 수정하였습니다. 이 과정을 통해 패킷 필드 정의와 인덱스 체계를 팀 전체가 동일하게 이해하고 있는 것이 멀티플레이 동기화에서 얼마나 중요한지 체감하였습니다.
+**해결** : 서버 개발자, 팀원과 패킷 흐름을 단계별로 추적하여 세 가지 원인을 특정하고 수정하였습니다.
+
+<img class="detail-img" src="{{ '/assets/img/mission2.png' | relative_url }}" alt="Stage 2 동시 인터랙션 미션"> 이 과정을 통해 패킷 필드 정의와 인덱스 체계를 팀 전체가 동일하게 이해하고 있는 것이 멀티플레이 동기화에서 얼마나 중요한지 체감하였습니다.
 
 </div>
 

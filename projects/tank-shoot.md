@@ -63,31 +63,50 @@ do_send Thread    ← 33Hz 상태 브로드캐스트
 
 ---
 
-## 기술 구현 상세
+## 구현 상세
 
-### OBJ 파서 구현
+<div class="detail-toc">
+  <a href="#sec-1">1. OBJ 파서 구현</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-2">2. VAO / VBO 구성</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-3">3. RecvThread 분리</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-4">4. Fine-Grained Locking</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-5">5. 아이템 시스템 서버 동기화</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-6">6. 충돌 검증 패턴</a>
+</div>
+
+
+<a id="sec-1"></a>
+
+## 1. OBJ 파서 구현
 
 외부 라이브러리 없이 `v / vt / vn / f` 데이터를 파싱하고, 로드 후 정점 좌표를 `[-1, 1]` 범위로 정규화하여 오브젝트 크기를 통일했습니다.
 
-<a class="btn" href="#" target="_blank">개발 상세 (Notion)</a>
-
 ---
 
-### VAO / VBO 구성
+<a id="sec-2"></a>
+
+## 2. VAO / VBO 구성
 
 오브젝트별(탱크·맵·블록·아이템·탄환·HP바) `VAO`, `VBO_pos / VBO_normal / VBO_uv`를 각각 구성하고, `glVertexAttribPointer`로 셰이더 attribute와 연결했습니다.
 
-<a class="btn" href="#" target="_blank">개발 상세 (Notion)</a>
-
 ---
 
-### RecvThread 분리
+<a id="sec-3"></a>
+
+## 3. RecvThread 분리
 
 `glutMainLoop()`는 단일 스레드에서 렌더링을 처리하기 때문에, 블로킹 `recv()`를 같은 스레드에서 호출하면 렌더링 루프가 멈춥니다. `RecvThread`를 별도 스레드로 생성하여 렌더링 지연을 막고, `CRITICAL_SECTION`으로 공유 데이터를 보호했습니다.
 
 ---
 
-### Fine-Grained Locking
+<a id="sec-4"></a>
+
+## 4. Fine-Grained Locking
 
 플레이어 배열이 전역으로 관리되어 2개의 스레드에서 동시 접근 → 락을 세분화하여 동시성 최적화
 
@@ -103,7 +122,9 @@ do_send Thread    ← 33Hz 상태 브로드캐스트
 
 ---
 
-### 아이템 시스템 서버 동기화
+<a id="sec-5"></a>
+
+## 5. 아이템 시스템 서버 동기화
 
 3종 아이템의 상태를 서버에서 관리하고, 획득 시 `SC_SET_ITEM` 패킷으로 전체 클라이언트에 브로드캐스트하여 아이템 정보를 동기화했습니다.
 
@@ -115,7 +136,9 @@ do_send Thread    ← 33Hz 상태 브로드캐스트
 
 ---
 
-### 충돌 검증 패턴
+<a id="sec-6"></a>
+
+## 6. 충돌 검증 패턴
 
 ```
 CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처리
@@ -126,6 +149,58 @@ CS_MOVE_PACKET { direction, bodyYaw }  →  Server: 충돌 계산 후 이동 처
 
 ---
 
-<div class="card-links" style="margin-top:40px;">
+<div class="card-links" style="margin-top: 40px;">
   <a class="btn btn-primary" href="/">← 목록으로</a>
 </div>
+
+<nav class="floating-toc" id="floatingToc">
+  <p class="ftoc-title">구현 상세</p>
+  <ol>
+    <li><a href="#sec-1">OBJ 파서 구현</a></li>
+    <li><a href="#sec-2">VAO / VBO 구성</a></li>
+    <li><a href="#sec-3">RecvThread 분리</a></li>
+    <li><a href="#sec-4">Fine-Grained Locking</a></li>
+    <li><a href="#sec-5">아이템 시스템 서버 동기화</a></li>
+    <li><a href="#sec-6">충돌 검증 패턴</a></li>
+  </ol>
+</nav>
+
+<a class="scroll-up-left" id="scrollUpLeft" href="#" aria-label="맨 위로 이동">↑</a>
+
+<script>
+  (function () {
+    var btn = document.getElementById('scrollUpLeft');
+    var toc = document.getElementById('floatingToc');
+    var tocLinks = Array.from(toc.querySelectorAll('a'));
+    var sections = [1,2,3,4,5,6].map(function(n) {
+      return document.getElementById('sec-' + n);
+    }).filter(Boolean);
+    var trigger = document.querySelector('.detail-toc');
+
+    function onScroll() {
+      var y = window.scrollY;
+
+      btn.classList.toggle('visible', y > 300);
+
+      if (trigger) {
+        toc.classList.toggle('visible', trigger.getBoundingClientRect().bottom < 0);
+      }
+
+      var current = -1;
+      sections.forEach(function(sec, i) {
+        if (sec.getBoundingClientRect().top <= 100) current = i;
+      });
+      tocLinks.forEach(function(link, i) {
+        link.classList.toggle('ftoc-active', i === current);
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+</script>
