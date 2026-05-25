@@ -191,7 +191,8 @@ HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코
 **설계 포인트**
 
 - `DT_ItemData` DataTable로 아이템 데이터 관리 → 행만 추가하면 새 아이템 확장, C++ 수정 불필요
-- `BBBInventoryComponent`를 ActorComponent로 분리 → 캐릭터 외 다른 Actor에도 부착 가능
+- `FName` Row Name(ItemID)으로 아이템 식별 → 별도 enum 추가 없이 DataTable 행 키만으로 구별
+- `BBBItemBase`를 AActor 기반으로 추상화 → OnPickup() 오버라이드만으로 아이템별 독립 동작 구현
 
 <img class="detail-img" src="{{ '/assets/img/DataTable.png' | relative_url }}" alt="DT_ItemData 구조">
 
@@ -206,6 +207,9 @@ HP 회복 아이템(사과)을 추가하는 과정에서 아이템마다 C++ 코
 
 **설계 포인트**
 
+- OnInventoryChanged Multicast Delegate 브로드캐스트 — InventoryComponent가 UI를 직접 참조하지 않는 구조
+- RefreshInventory 시 WBP_InventorySlot 동적 생성으로 슬롯 구성
+- 아이템 사용 전 사용 가능 확인
 - 슬롯 클릭 → 컨텍스트 메뉴 방식 / BgDismiss(전체화면 투명 버튼, ZOrder 0)로 외부 클릭 감지
 
 **픽업 → 보관 → 사용 흐름**
