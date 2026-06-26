@@ -187,24 +187,6 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
   </div>
 </div>
 
-<div class="ts-box" markdown="1">
-
-#### Trouble Shooting
-
-**증상** : G-Buffer가 의도대로 구성되는지 시각적으로 확인할 방법이 없었습니다. 최종 합성 화면만으로는 Albedo·Normal·Depth 각 채널이 올바르게 기록되고 있는지 파악하기 어려웠습니다.
-
----
-
-**해결 1 — PIX on Windows로 GPU 레벨 분석**
-
-PIX on Windows를 사용해 각 렌더 패스를 GPU 레벨에서 캡처하였습니다. MRT Write 패스와 합성 패스를 분리해 확인할 수 있어, G-Buffer 텍스처에 실제로 어떤 값이 기록되고 있는지 직접 검증하였습니다.
-
-**해결 2 — G-Buffer 채널별 디버그 렌더링 직접 구현**
-
-PIX는 별도 툴 실행이 필요해 반복 확인에 불편함이 있었습니다. 이를 보완하기 위해 `m_nDrawOption` 변수와 F6 토글 키를 연결해 런타임에서 채널별 출력(0=Composite, 1=Albedo, 2=Shadow/Light, 3=LightNoShadow, 4=Depth)을 즉시 전환할 수 있는 디버그 뷰를 직접 구현하였습니다. 합성 셰이더(**CTextureDeferdShader**)의 픽셀 셰이더에서 `PS_CB_DRAW_OPTIONS`의 `m_nDrawOption` 값에 따라 분기 처리하여, 별도 파이프라인 변경 없이 원하는 채널을 바로 확인할 수 있었습니다.
-
-</div>
-
 ---
 
 <a id="sec-5"></a>
