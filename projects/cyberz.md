@@ -93,10 +93,9 @@ GameFramework  ── 메인 루프 / DX12 초기화
 ### 설계 포인트
 
 - **CGameFramework::FrameAdvance** — ProcessInput → AnimateObjects → Render → UI Draw → Present 순으로 고정
-- **CScene** 추상 클래스로 씬별 BuildObjects / Render / AnimateObjects / ProcessInput 인터페이스 통일
-- CBV/SRV Descriptor Heap을 **CScene** 내 static으로 공유해 씬 간 리소스 참조 일관성 확보
+- CScene 추상 클래스로 씬별 BuildObjects / Render / AnimateObjects / ProcessInput **인터페이스 통일**
+- CBV/SRV Descriptor Heap을 CScene 내 static으로 공유해 씬 간 **리소스 참조 일관성 확보**
 - Root Signature에 Constant Buffer, SRV, Sampler 슬롯을 용도별로 정의
-- BuildObject - ExecuteCommandLists → WaitForGpuComplete → ReleaseUploadBuffers 순서로 GPU 전송 완료 후 UploadHeap 즉시 해제
 
 ---
 
@@ -112,7 +111,7 @@ DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 
 
 ### 설계 포인트
 
-- BuildObjects — Upload Heap 적재 → ExecuteCommandLists → WaitForGpuComplete → ReleaseUploadBuffers 즉시 정리
+- BuildObjects — Upload Heap 적재 → ExecuteCommandLists → WaitForGpuComplete → ReleaseUploadBuffers 순서로 GPU 전송 완료 후 **UploadHeap 즉시 해제**
 - **ChangeScene** — **ReleaseObjects** 완전 해제 후 새 씬 **BuildObjects** 순서로 진행
 - 모든 DX12 리소스에 Reference Count 기반 **AddRef / Release** 패턴 일관 적용
 - 캐릭터 선택 씬 진입 시 모든 캐릭터를 미리 생성, 선택 시 렌더링 활성화 상태만 전환
@@ -169,6 +168,7 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
 - MRT 4채널 (**Albedo**, **Normal**, **Material**, **Depth(R32F)**) 에 G-Buffer 기록
 - **CTextureDeferdShader**가 Screen-space Quad에서 4채널을 합성해 최종 픽셀 색상 출력
 - **PS_CB_DRAW_OPTIONS** 상수 버퍼로 그림자 ON/OFF 등 드로우 옵션을 픽셀 셰이더에 전달
+- **G-Buffer 디버그 모드** — Albedo / Shadow / Depth 채널 개별 확인
 
 **섀도우 맵**
 
