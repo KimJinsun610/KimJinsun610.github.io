@@ -88,14 +88,14 @@ GameFramework  ── 메인 루프 / DX12 초기화
 
 ### 설계 목표
 
-엔진 없이 DX12 저수준 API만으로 게임 루프와 렌더링 파이프라인을 처음부터 구현하였습니다. Command List 제출, Descriptor Heap 관리, Root Signature 정의 등 DX12가 요구하는 모든 설정을 직접 다루면서, 엔진이 추상화해주는 계층 아래에서 어떤 일이 일어나는지 직접 설계하는 것이 목표였습니다. 씬 단위 인터페이스 통일과 셰이더 파이프라인 분리를 통해 기능 추가와 씬 전환이 용이한 구조를 갖추었습니다.
+엔진 없이 DX12 저수준 API만으로 게임 루프와 렌더링 파이프라인을 처음부터 구현하였습니다. Command List 제출, Descriptor Heap 관리, Root Signature 정의 등 DX12가 요구하는 모든 설정을 직접 다루면서, 엔진이 추상화해주는 계층 아래에서 어떤 일이 일어나는지 설계하는 것이 목표였습니다. 씬 단위 인터페이스 통일과 셰이더 파이프라인 분리를 통해 기능 추가와 씬 전환이 용이한 구조를 갖추었습니다.
 
 ### 설계 포인트
 
 - **CGameFramework::FrameAdvance** — ProcessInput → AnimateObjects → Render → UI Draw → Present 순으로 고정
 - **CScene** 추상 클래스로 씬별 BuildObjects / Render / AnimateObjects / ProcessInput 인터페이스 통일
 - CBV/SRV Descriptor Heap을 **CScene** 내 static으로 공유해 씬 간 리소스 참조 일관성 확보
-- Root Signature에 Constant Buffer, SRV, Sampler 슬롯을 용도별로 직접 정의
+- Root Signature에 Constant Buffer, SRV, Sampler 슬롯을 용도별로 정의
 - BuildObject - ExecuteCommandLists → WaitForGpuComplete → ReleaseUploadBuffers 순서로 GPU 전송 완료 후 UploadHeap 즉시 해제
 
 ---
@@ -106,7 +106,7 @@ GameFramework  ── 메인 루프 / DX12 초기화
 
 ### 설계 목표
 
-DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 시점을 잘못 잡으면 GPU가 아직 사용 중인 메모리를 CPU가 해제하는 문제가 발생합니다. 씬 전환 시 Upload Heap을 즉시 해제하고, 씬 간 리소스 충돌 없이 재생성할 수 있는 명확한 생명주기 패턴을 직접 설계하였습니다.
+DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 시점을 잘못 잡으면 GPU가 아직 사용 중인 메모리를 CPU가 해제하는 문제가 발생합니다. 씬 전환 시 Upload Heap을 즉시 해제하고, 씬 간 리소스 충돌 없이 재생성할 수 있는 명확한 생명주기 패턴을 설계하였습니다.
 
 캐릭터 선택 씬(**CPrepareRoomScene**)에서는 별도의 리소스 관리 문제가 발생하여 선행 로딩 구조를 추가로 적용하였습니다.
 
@@ -141,13 +141,13 @@ DX12는 GPU 동기화를 직접 관리해야 하기 때문에, 리소스 해제 
 
 ### 설계 목표
 
-DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 타겟이나 외부 라이브러리 없이 구현하려면 D3D11On12 인터롭 레이어를 직접 구성해야 합니다. 게임에 필요한 버튼·텍스트 입력·프로그레스바 등 커스텀 UI 컴포넌트를 직접 제어하기 위해 이 방식을 선택하였으며, DX12 파이프라인과 동일한 백버퍼 위에 2D UI를 오버레이하여 별도의 렌더 타겟 없이 통합된 렌더링 흐름을 유지하였습니다.
+DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 타겟이나 외부 라이브러리 없이 구현하려면 D3D11On12 인터롭 레이어를 구성해야 합니다. 게임에 필요한 버튼·텍스트 입력·프로그레스바 등 커스텀 UI 컴포넌트를 제어하기 위해 이 방식을 선택하였으며, DX12 파이프라인과 동일한 백버퍼 위에 2D UI를 오버레이하여 별도의 렌더 타겟 없이 통합된 렌더링 흐름을 유지하였습니다.
 
 ### 설계 포인트
 
 - **D3D11On12CreateDevice**로 D3D11 장치를 DX12 Command Queue에 연결
 - SwapChain 백버퍼를 D2D RenderTarget으로 래핑 → 3D 렌더 완료 후 동일 백버퍼에 2D UI 오버레이
-- DirectWrite 텍스트, WIC 이미지 로더, 버튼·텍스트 입력·프로그레스바 컴포넌트 직접 구현
+- DirectWrite 텍스트, WIC 이미지 로더, 버튼·텍스트 입력·프로그레스바 컴포넌트 구현
 - 씬별 독립 **CUI** 인스턴스로 타이틀 / 로비 / 인게임 UI 분리 관리
 
 <img class="detail-img" src="{{ '/assets/img/UI.gif' | relative_url }}" alt="Direct2D UI 오버레이 시연">
@@ -195,7 +195,7 @@ DX12는 Direct2D와 직접 호환되지 않기 때문에, UI를 별도 렌더 �
 
 ### 설계 목표
 
-Stage 2는 대형 실내 맵으로 구성되어 있어 카메라 시야 밖에 배치된 오브젝트에도 매 프레임 드로우콜이 발생하고 있었습니다. DX12에서는 렌더 여부 판단을 직접 구현해야 하므로, 카메라 프러스텀 6개 평면과 오브젝트 AABB의 교차 여부를 검사해 시야 밖 오브젝트의 GPU 호출을 차단하는 컬링 로직을 직접 구현하였습니다.
+Stage 2는 대형 실내 맵으로 구성되어 있어 카메라 시야 밖에 배치된 오브젝트에도 매 프레임 드로우콜이 발생하고 있었습니다. DX12에서는 렌더 여부 판단을 구현해야 하므로, 카메라 프러스텀 6개 평면과 오브젝트 AABB의 교차 여부를 검사해 시야 밖 오브젝트의 GPU 호출을 차단하는 컬링 로직을 구현하였습니다.
 
 ### 설계 포인트
 
