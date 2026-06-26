@@ -96,6 +96,7 @@ GameFramework  ── 메인 루프 / DX12 초기화
 - **CScene** 추상 클래스로 씬별 BuildObjects / Render / AnimateObjects / ProcessInput 인터페이스 통일
 - CBV/SRV Descriptor Heap을 **CScene** 내 static으로 공유해 씬 간 리소스 참조 일관성 확보
 - Root Signature에 Constant Buffer, SRV, Sampler 슬롯을 용도별로 직접 정의
+- BuildObject - ExecuteCommandLists → WaitForGpuComplete → ReleaseUploadBuffers 순서로 GPU 전송 완료 후 UploadHeap 즉시 해제
 
 ---
 
