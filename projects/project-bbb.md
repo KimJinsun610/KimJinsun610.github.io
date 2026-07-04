@@ -356,10 +356,10 @@ Root
 기존 구조는 사망 즉시 재화·아이템을 GameInstance에 반영하고 있어서, 재시도를 선택해도 이미 반영된 값을 되돌릴 방법이 없는 구조적 한계가 있었습니다. 이를 해결하기 위해 "영구 상태 반영은 이벤트가 발생한 시점이 아니라 유저가 선택을 확정한 시점에 이뤄져야 한다"는 원칙으로 사망 처리 흐름을 재설계하였습니다.
 
 ### 설계 포인트
-- 사망 시점엔 결과를 캐시(`CachedSlots`, `CachedGold`)만 해두고, GameInstance 반영은 `ConfirmReturnToLobby` 단 한 곳에서만 수행
-- "이번 판에서 번 재화"(`RoundEarnedGold`)를 뱅크 잔액 누적 표시값(`Gold`)과 분리 추적 → GameInstance엔 항상 신규 획득분만 커밋
+- 사망 시점엔 결과를 캐시(**CachedSlots**, **CachedGold**)만 해두고, GameInstance 반영은 **ConfirmReturnToLobby** 단 한 곳에서만 수행
+- 던전 라운드에서 번 재화(**RoundEarnedGold**)를 재화 누적 표시값(**Gold**)과 분리 추적 → GameInstance엔 항상 신규 획득분만 커밋
 - 재시도는 캐시를 폐기하고 레벨만 재로드 — Character/Inventory가 새 액터로 자동 초기화되어 별도 롤백 로직 불필요
-- Game Over UI 데이터도 살아있는 `InventoryComponent*` 포인터 대신 `TArray<FBBBInventorySlot>` 스냅샷으로 전달 — Pawn 소멸 타이밍에 따른 댕글링 위험 제거
+- Game Over UI 데이터도 살아있는 **InventoryComponent** 포인터 대신 **TArray<FBBBInventorySlot>** 스냅샷으로 전달 — Pawn 소멸 타이밍에 따른 댕글링 위험 제거
 
 <div class="flow-card">
   <div class="flow-phase">
@@ -384,11 +384,11 @@ Root
 
 #### Trouble Shooting
 
-**증상** : 사망을 반복할수록 보유 재화(Jem) 뱅크 잔액이 기하급수적으로 불어나는 문제가 발생했습니다. (예: 뱅크 100 + 이번 판 20 획득 후 사망 → 220으로 반영, 정답은 120)
+**증상** : 사망을 반복할수록 보유 재화(Jem) 뱅크 잔액이 기하급수적으로 불어나는 문제가 발생했습니다. (예: 뱅크 100 + 이번 판 20 획득 후 사망 → 220으로 기존 재화가 추가 반영)
 
-**원인** : `Gold`는 **BeginPlay** 시점에 `GI->Gold`(뱅크 잔액)를 복사해서 시작하는 "뱅크 잔액 + 이번 판 획득량" 누적값이었습니다. 사망 시 `GI->Gold += Gold`를 호출하면서 이미 포함되어 있던 뱅크 잔액을 통째로 또 더해버리는 구조였고, 이 커밋마저 유저의 선택보다 먼저 사망 즉시 무조건 실행되고 있었습니다.
+**원인** : **Gold**는 **BeginPlay** 시점에 **GI->Gold**(뱅크 잔액)를 복사해서 시작하는 "뱅크 잔액 + 이번 판 획득량" 누적값이었습니다. 사망 시 **GI->Gold += Gold**를 호출하면서 이미 포함되어 있던 뱅크 잔액을 통째로 또 더해버리는 구조였고, 이 커밋마저 유저의 선택보다 먼저 사망 즉시 무조건 실행되고 있었습니다.
 
-**해결** : "이번 판에서만 번 양"을 `RoundEarnedGold`라는 별도 변수로 처음부터 같이 누적하여, GameInstance에는 항상 신규 획득분만 더하도록 분리하였습니다.
+**해결** : "이번 판에서만 번 양"을 **RoundEarnedGold**라는 별도 변수로 처음부터 같이 누적하여, GameInstance에는 항상 신규 획득분만 더하도록 분리하였습니다.
 
 ```cpp
 void ABBBCharacterPlayer::AddGold(int32 Amount)
