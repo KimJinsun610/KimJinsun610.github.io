@@ -356,10 +356,10 @@ Root
 기존 구조는 사망 즉시 재화·아이템을 GameInstance에 반영하고 있어서, 재시도를 선택해도 이미 반영된 값을 되돌릴 방법이 없는 구조적 한계가 있었습니다. 이를 해결하기 위해 "영구 상태 반영은 이벤트가 발생한 시점이 아니라 유저가 선택을 확정한 시점에 이뤄져야 한다"는 원칙으로 사망 처리 흐름을 재설계하였습니다.
 
 ### 설계 포인트
-- 사망 시점엔 결과를 캐시(**CachedSlots**, **CachedGold**)만 해두고, GameInstance 반영은 **ConfirmReturnToLobby** 단 한 곳에서만 수행
-- 던전 라운드에서 번 재화(**RoundEarnedGold**)를 재화 누적 표시값(**Gold**)과 분리 추적 → GameInstance엔 항상 신규 획득분만 커밋
+- **ConfirmReturnToLobby** 단 한 곳에서만 GameInstance 반영 — 사망 시점엔 결과를 캐시만 해두고 실제 커밋은 유저 확정 시점까지 지연
+- **RoundEarnedGold** 신규 추적 — 재화 누적 표시값과 분리해서 GameInstance엔 항상 이번 판 신규 획득분만 커밋
 - 재시도는 캐시를 폐기하고 레벨만 재로드 — Character/Inventory가 새 액터로 자동 초기화되어 별도 롤백 로직 불필요
-- Game Over UI 데이터도 살아있는 **InventoryComponent** 포인터 대신 **TArray<FBBBInventorySlot>** 스냅샷으로 전달 — Pawn 소멸 타이밍에 따른 댕글링 위험 제거
+- Game Over UI 데이터는 스냅샷 배열로 전달 — 살아있는 InventoryComponent 포인터 대신 스냅샷을 넘겨 Pawn 소멸 타이밍에 따른 댕글링 위험 제거
 
 <div class="flow-card">
   <div class="flow-phase">

@@ -473,8 +473,8 @@ body {
 }
 
 .page-body ul li {
-  display: flex;
-  gap: 10px;
+  position: relative;
+  padding-left: 20px;
   font-size: 0.97rem;         /* 0.9 → 0.97 */
   color: var(--text-2);
   line-height: 1.5;           /* 1.65 → 1.5 */
@@ -482,9 +482,11 @@ body {
 
 .page-body ul li::before {
   content: '—';
+  position: absolute;
+  left: 0;
+  top: 0;
   color: var(--accent);
   font-weight: 700;
-  flex-shrink: 0;
 }
 
 .page-body code {
