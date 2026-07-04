@@ -85,11 +85,13 @@ Blueprint Interface
   <span class="toc-sep">*</span>
   <a href="#sec-5">5. Niagara 이펙트</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-6">6. 사망 처리 재설계</a>
+  <a href="#sec-6">6. 로비-던전 & GameInstance</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-7">7. 캐릭터 계층 구조</a>
+  <a href="#sec-7">7. 사망 처리 재설계</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-8">8. WeaponBase 추상화</a>
+  <a href="#sec-8">8. 캐릭터 계층 구조</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-9">9. WeaponBase 추상화</a>
 </div>
 
 
@@ -347,7 +349,72 @@ Root
 
 <a id="sec-6"></a>
 
-## 6. 사망 처리 재설계 — GameInstance 커밋 시점 분리 (재시도 / 로비 복귀 대응)
+## 6. 로비-던전 구조 & GameInstance 기반 영속 데이터
+
+### 설계 목표
+
+단일 던전 레벨 구조에서 로비-던전을 오가는 구조로 확장하면서, 레벨이 전환되어도 유지되어야 하는 데이터(창고 아이템, 보유 재화)를 관리할 저장소가 필요해졌습니다.
+
+레벨 전환 시 소멸하는 Actor에 상태를 두지 않고 UGameInstance를 단일 영속 저장소로 두어, 던전에서 벌어들인 자원이 로비로 넘어가는 흐름을 명확한 구조로 설계하였습니다.
+
+### 설계 포인트
+- **UBBBGameInstance**에 WarehouseSlots/Gold만 두고 모든 레벨은 이 값을 참조만 함 — 레벨 전환마다 데이터를 수동으로 옮겨 담을 필요 없음
+- 로비 상호작용(납품 상자 등)은 C++ 인터페이스 대신 **BPI_Interactable**(Blueprint Interface)로 구현 — C++/BP 혼용 프로젝트에서 빌드 안정성 확보
+- 납품은 "등록"과 "제출"을 분리 — 등록 시 창고에서 즉시 차감하고 제출은 재화 지급만 수행해 이중 차감 방지
+- 제출을 취소하면 등록해둔 아이템을 창고에 그대로 복구 — 유저가 등록을 잘못해도 손해 없음
+
+```
+UBBBGameInstance
+├─ WarehouseSlots (TArray<FBBBInventorySlot>)  ← 레벨 간 유지되는 보유 아이템
+├─ Gold (int32)                                ← 보유 재화
+├─ MergeInventory(Slots)                       ← 누적 합산 (덮어쓰기 아님)
+├─ AddGold(Amount)
+├─ RemoveFromWarehouse(ItemID, Count)
+└─ ClearWarehouse()
+```
+
+<div class="flow-card">
+  <div class="flow-phase">
+    <span class="flow-phase-label">등록 (Register)</span>
+    <ul class="flow-steps">
+      <li>창고 슬롯 클릭 → 수량 입력(WBP_DeliveryContext)</li>
+      <li>DeliveryMap에 추가 + RemoveFromWarehouse로 창고 즉시 차감</li>
+    </ul>
+  </div>
+  <div class="flow-switch">제출 또는 취소 ↓</div>
+  <div class="flow-phase">
+    <span class="flow-phase-label">제출 / 초기화</span>
+    <ul class="flow-steps">
+      <li>제출하기 → AddGold만 호출 — 차감 없이 재화만 지급</li>
+      <li>초기화 → DeliveryMap → MergeInventory로 창고 복구</li>
+    </ul>
+  </div>
+</div>
+
+<div class="ts-box" markdown="1">
+
+#### Trouble Shooting
+
+**증상** : 상호작용 인터페이스를 C++ **UInterface**로 구현하고 작업을 반복하다 보니, 어느 시점부터 **DT_ItemData** DataTable이 에디터에서 열리지 않고 재시작 후에도 복구되지 않는 문제가 발생했습니다.
+
+**원인** : C++ 코드 수정 후 에디터를 재시작하지 않고 계속 **Hot Reload**로 반영하는 과정이 누적되면서, DataTable의 Row Structure가 임시 클래스를 참조하도록 바뀌어 원본 구조체 참조가 깨졌습니다. 상호작용처럼 자주 수정하는 인터페이스일수록 Hot Reload 빈도가 높아 이 문제를 유발할 가능성이 컸습니다.
+
+**해결** : C++/BP 혼용 프로젝트에서 자주 바뀌는 인터페이스는 Blueprint Interface로 전환했습니다. **BPI_Interactable**은 Blueprint Actor에서 바로 구현할 수 있고, C++ Actor에서도 ImplementsInterface()로 동일하게 체크할 수 있어 Hot Reload 위험 없이 요구사항을 충족했습니다.
+
+```cpp
+if (OtherActor->GetClass()->ImplementsInterface(UBPI_Interactable::StaticClass()))
+{
+    // BP로 구현된 Interact 이벤트 호출
+}
+```
+
+</div>
+
+---
+
+<a id="sec-7"></a>
+
+## 7. 사망 처리 재설계 — GameInstance 커밋 시점 분리 (재시도 / 로비 복귀 대응)
 
 ### 설계 목표
 
@@ -402,9 +469,9 @@ void ABBBCharacterPlayer::AddGold(int32 Amount)
 
 ---
 
-<a id="sec-7"></a>
+<a id="sec-8"></a>
 
-## 7. 캐릭터 계층 구조 (CharacterBase 공통화)
+## 8. 캐릭터 계층 구조 (CharacterBase 공통화)
 
 ### 설계 목표
 
@@ -418,9 +485,9 @@ void ABBBCharacterPlayer::AddGold(int32 Amount)
 
 ---
 
-<a id="sec-8"></a>
+<a id="sec-9"></a>
 
-## 8. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
+## 9. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
 
 ### 설계 목표
 
@@ -451,9 +518,10 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
     <li><a href="#sec-3">HittableInterface</a></li>
     <li><a href="#sec-4">BehaviorTree AI</a></li>
     <li><a href="#sec-5">Niagara 이펙트</a></li>
-    <li><a href="#sec-6">사망 처리 재설계</a></li>
-    <li><a href="#sec-7">캐릭터 계층 구조</a></li>
-    <li><a href="#sec-8">WeaponBase 추상화</a></li>
+    <li><a href="#sec-6">로비-던전 & GameInstance</a></li>
+    <li><a href="#sec-7">사망 처리 재설계</a></li>
+    <li><a href="#sec-8">캐릭터 계층 구조</a></li>
+    <li><a href="#sec-9">WeaponBase 추상화</a></li>
   </ol>
 </nav>
 
@@ -464,7 +532,7 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
     var btn = document.getElementById('scrollUpLeft');
     var toc = document.getElementById('floatingToc');
     var tocLinks = Array.from(toc.querySelectorAll('a'));
-    var sections = [1,2,3,4,5,6,7,8].map(function(n) {
+    var sections = [1,2,3,4,5,6,7,8,9].map(function(n) {
       return document.getElementById('sec-' + n);
     }).filter(Boolean);
     var trigger = document.querySelector('.detail-toc');
