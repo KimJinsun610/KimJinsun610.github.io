@@ -19,7 +19,7 @@ permalink: /projects/project-bbb/
 | 항목 | 내용 |
 |------|------|
 | 개발 언어 | C++ |
-| 개발 환경 | Visual Studio 2022, Unreal Engine 5.4, GitHub |
+| 개발 환경 | Visual Studio 2022, Unreal Engine 5.8, GitHub |
 | 개발 인원 | 1인 |
 | 개발 기간 | 2026.02 ~ 진행 중 |
 
@@ -30,28 +30,43 @@ permalink: /projects/project-bbb/
 ```
 AActor
 └── ABBBCharacterBase          ← 무기 장착/교환, StatComponent, DebuffComponent
-    ├── ABBBCharacterPlayer    ← 입력/이동, 조준, 무기 전환, 인벤토리
-    └── ABBBEnemyBase          ← AI, 아이템 드롭, 사망 처리
+    ├── ABBBCharacterPlayer    ← 입력/이동, 조준, 무기 전환, 인벤토리/퀵슬롯
+    └── ABBBEnemyBase          ← IBBBCharacterAIInterface, AI, 아이템 드롭, 사망 처리
         ├── ABBBEnemyMelee
-        ├── ABBBEnemyRange
-        └── ABBBAppleOnTree    ← 피격 낙하 오브젝트
+        ├── ABBBEnemyRanged
+        └── ABBBAppleOnTree    ← IBBBHittableInterface, 피격 낙하 오브젝트
 
 AActor
 └── ABBBItemBase               ← OnPickup() 추상화
-    └── ABBBItemApple          ← HP 회복 아이템
+    ├── ABBBItemApple          ← HP 회복 아이템
+    └── ABBBItemCoin           ← 재화 아이템
 
 AActor
 └── ABBBWeaponBase             ← Attack() / StopAttack() 순수 가상 함수
     ├── ABBBWeaponMelee        ← HitBox 기반 콤보 공격
     └── ABBBWeaponRanged       ← 디버프 발사체 스폰, 쿨다운 관리
 
+AActor
+└── ABBBProjectileBase
+    └── ABBBProjectileDebuff   ← 디버프 적용, HittableInterface 피격 판정 분기
+
 UActorComponent
 ├── UBBBStatComponent          ← HP, 데미지, 사망
 ├── UBBBDebuffComponent        ← 디버프 적용/만료/UI 연동
-└── UBBBInventoryComponent     ← 아이템 보관/사용
+├── UBBBInventoryComponent     ← 아이템 보관/사용/퀵슬롯
+└── UBBBAudioManager           ← BGM/2D SFX 관리 (GameMode 부착)
 
 interface
-└── IBBBHittableInterface      ← 피격 가능 오브젝트 인터페이스
+├── IBBBHittableInterface      ← 피격 가능 오브젝트 인터페이스
+└── IBBBCharacterAIInterface   ← AI 캐릭터 공용 인터페이스 (EnemyBase 구현)
+
+게임 프레임워크
+├── AGameModeBase → ABBBGameModeBase          ← AudioManager 부착, 사망 처리·재화 커밋 흐름 관리
+├── UGameInstance → UBBBGameInstance          ← 레벨 간 영속 데이터 (창고 아이템, 재화)
+└── APlayerController → ABBBPlayerController  ← HUD/인벤토리/GameOver UI 표시 제어
+
+Blueprint Interface
+└── BPI_Interactable            ← 로비 상호작용 오브젝트(BP_DeliveryBox 등)에서 구현
 
 ```
 
@@ -70,9 +85,11 @@ interface
   <span class="toc-sep">*</span>
   <a href="#sec-5">5. Niagara 이펙트</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-6">6. 캐릭터 계층 구조</a>
+  <a href="#sec-6">6. 사망 처리 재설계</a>
   <span class="toc-sep">*</span>
-  <a href="#sec-7">7. WeaponBase 추상화</a>
+  <a href="#sec-7">7. 캐릭터 계층 구조</a>
+  <span class="toc-sep">*</span>
+  <a href="#sec-8">8. WeaponBase 추상화</a>
 </div>
 
 
@@ -330,7 +347,64 @@ Root
 
 <a id="sec-6"></a>
 
-## 6. 캐릭터 계층 구조 (CharacterBase 공통화)
+## 6. 사망 처리 재설계 — GameInstance 커밋 시점 분리 (재시도 / 로비 복귀 대응)
+
+### 설계 목표
+
+로비-던전 구조를 도입하면서 사망 시 "이대로 돌아가기"(획득분 유지)와 "라운드 재시도"(획득분 포기) 두 선택지를 제공해야 했습니다.
+
+기존 구조는 사망 즉시 재화·아이템을 GameInstance에 반영하고 있어서, 재시도를 선택해도 이미 반영된 값을 되돌릴 방법이 없는 구조적 한계가 있었습니다. 이를 해결하기 위해 "영구 상태 반영은 이벤트가 발생한 시점이 아니라 유저가 선택을 확정한 시점에 이뤄져야 한다"는 원칙으로 사망 처리 흐름을 재설계하였습니다.
+
+### 설계 포인트
+- 사망 시점엔 결과를 캐시(`CachedSlots`, `CachedGold`)만 해두고, GameInstance 반영은 `ConfirmReturnToLobby` 단 한 곳에서만 수행
+- "이번 판에서 번 재화"(`RoundEarnedGold`)를 뱅크 잔액 누적 표시값(`Gold`)과 분리 추적 → GameInstance엔 항상 신규 획득분만 커밋
+- 재시도는 캐시를 폐기하고 레벨만 재로드 — Character/Inventory가 새 액터로 자동 초기화되어 별도 롤백 로직 불필요
+- Game Over UI 데이터도 살아있는 `InventoryComponent*` 포인터 대신 `TArray<FBBBInventorySlot>` 스냅샷으로 전달 — Pawn 소멸 타이밍에 따른 댕글링 위험 제거
+
+<div class="flow-card">
+  <div class="flow-phase">
+    <span class="flow-phase-label">사망 시점 (OnPlayerDeath)</span>
+    <ul class="flow-steps">
+      <li>InventoryComponent → GetMergedSlots() 스냅샷 캐시</li>
+      <li>RoundEarnedGold 캐시</li>
+      <li>GameInstance 반영 없음</li>
+    </ul>
+  </div>
+  <div class="flow-switch">2초 후 Game Over UI 표시 ↓</div>
+  <div class="flow-phase">
+    <span class="flow-phase-label">유저 선택 확정</span>
+    <ul class="flow-steps">
+      <li>"이대로 돌아가기" → ConfirmReturnToLobby(캐시) → GameInstance 반영</li>
+      <li>"라운드 재시도" → 캐시 폐기, 레벨 재로드</li>
+    </ul>
+  </div>
+</div>
+
+<div class="ts-box" markdown="1">
+
+#### Trouble Shooting
+
+**증상** : 사망을 반복할수록 보유 재화(Jem) 뱅크 잔액이 기하급수적으로 불어나는 문제가 발생했습니다. (예: 뱅크 100 + 이번 판 20 획득 후 사망 → 220으로 반영, 정답은 120)
+
+**원인** : `Gold`는 **BeginPlay** 시점에 `GI->Gold`(뱅크 잔액)를 복사해서 시작하는 "뱅크 잔액 + 이번 판 획득량" 누적값이었습니다. 사망 시 `GI->Gold += Gold`를 호출하면서 이미 포함되어 있던 뱅크 잔액을 통째로 또 더해버리는 구조였고, 이 커밋마저 유저의 선택보다 먼저 사망 즉시 무조건 실행되고 있었습니다.
+
+**해결** : "이번 판에서만 번 양"을 `RoundEarnedGold`라는 별도 변수로 처음부터 같이 누적하여, GameInstance에는 항상 신규 획득분만 더하도록 분리하였습니다.
+
+```cpp
+void ABBBCharacterPlayer::AddGold(int32 Amount)
+{
+    Gold += Amount;            // HUD 표시용 누적값 (뱅크 + 이번 판)
+    RoundEarnedGold += Amount; // GameInstance 커밋용 (이번 판 획득분만)
+}
+```
+
+</div>
+
+---
+
+<a id="sec-7"></a>
+
+## 7. 캐릭터 계층 구조 (CharacterBase 공통화)
 
 ### 설계 목표
 
@@ -344,9 +418,9 @@ Root
 
 ---
 
-<a id="sec-7"></a>
+<a id="sec-8"></a>
 
-## 7. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
+## 8. WeaponBase 추상화 — Base 수정 없이 원거리/근거리 무기 독립 확장
 
 ### 설계 목표
 
@@ -377,8 +451,9 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
     <li><a href="#sec-3">HittableInterface</a></li>
     <li><a href="#sec-4">BehaviorTree AI</a></li>
     <li><a href="#sec-5">Niagara 이펙트</a></li>
-    <li><a href="#sec-6">캐릭터 계층 구조</a></li>
-    <li><a href="#sec-7">WeaponBase 추상화</a></li>
+    <li><a href="#sec-6">사망 처리 재설계</a></li>
+    <li><a href="#sec-7">캐릭터 계층 구조</a></li>
+    <li><a href="#sec-8">WeaponBase 추상화</a></li>
   </ol>
 </nav>
 
@@ -389,7 +464,7 @@ WeaponBase::Attack()   ← PURE_VIRTUAL
     var btn = document.getElementById('scrollUpLeft');
     var toc = document.getElementById('floatingToc');
     var tocLinks = Array.from(toc.querySelectorAll('a'));
-    var sections = [1,2,3,4,5,6,7].map(function(n) {
+    var sections = [1,2,3,4,5,6,7,8].map(function(n) {
       return document.getElementById('sec-' + n);
     }).filter(Boolean);
     var trigger = document.querySelector('.detail-toc');
