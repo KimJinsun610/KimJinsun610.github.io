@@ -403,6 +403,34 @@ body {
 
 .page-body h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
 
+/* ── Collapsible block (class hierarchy 등) ─── */
+.page-body details.collapse-block {
+  margin-bottom: 16px;
+}
+
+.page-body details.collapse-block summary {
+  list-style: none;
+  width: fit-content;
+}
+
+.page-body details.collapse-block summary::-webkit-details-marker {
+  display: none;
+}
+
+.page-body details.collapse-block summary .chevron {
+  display: inline-block;
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+}
+
+.page-body details.collapse-block[open] summary .chevron {
+  transform: rotate(180deg);
+}
+
+.page-body details.collapse-block[open] summary {
+  margin-bottom: 4px;
+}
+
 .page-body h3 {
   font-size: 1.05rem;         /* 0.95 → 1.05 */
   font-weight: 700;

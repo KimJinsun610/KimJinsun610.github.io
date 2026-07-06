@@ -27,6 +27,9 @@ permalink: /projects/project-bbb/
 
 ## 클래스 계층 구조
 
+<details class="collapse-block" markdown="1">
+<summary class="btn">클래스 계층 구조 펼쳐보기 <span class="chevron">▾</span></summary>
+
 ```
 AActor
 └── ABBBCharacterBase          ← 무기 장착/교환, StatComponent, DebuffComponent
@@ -69,6 +72,8 @@ Blueprint Interface
 └── BPI_Interactable            ← 로비 상호작용 오브젝트(BP_DeliveryBox 등)에서 구현
 
 ```
+
+</details>
 
 ---
 
