@@ -131,6 +131,14 @@
           <span class="tag tag-dim">Git</span>
         </div>
       </a>
+      <a class="proj-exp-item" href="#roll-into-dungeon">
+        <span class="proj-exp-name">Roll Into Dungeon</span>
+        <div class="tag-row">
+          <span class="tag tag-dim">Unity</span>
+          <span class="tag tag-dim">C#</span>
+          <span class="tag tag-dim">URP</span>
+        </div>
+      </a>
       <a class="proj-exp-item" href="#tank-shoot">
         <span class="proj-exp-name">Tank Shoot</span>
         <div class="tag-row">
@@ -237,6 +245,40 @@
           <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
           <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
           <a class="btn btn-primary" href="projects/cyberz">상세보기 →</a>
+        </div>
+      </div>
+
+      <!-- Roll Into Dungeon -->
+      <div class="card" id="roll-into-dungeon">
+        <div class="card-head">
+          <h2 class="card-title">🎲 Roll Into Dungeon</h2>
+          <span class="badge badge-wip">In Progress</span>
+        </div>
+        <p class="card-desc">Unity(URP) 기반 주사위 턴제 RPG · AI 바이브 코딩 해커톤(2026 NHN) 출품작</p>
+
+        <div class="card-meta">
+          <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2026.07.20 ~ 2026.08.06</span></div>
+          <div class="meta-row"><span class="meta-k">인원</span><span class="meta-v">2명</span></div>
+          <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C#</span></div>
+          <div class="meta-row"><span class="meta-k">환경</span><span class="meta-v">Unity 6, URP</span></div>
+        </div>
+
+        <p class="card-sub">개발 개요</p>
+        <p class="card-goal">"AI 바이브 코딩을 통한 게임 개발과 응용"을 목표삼아 제작한 해커톤 출품작으로, Claude Code를 페어 프로그래머로 활용해 개발했습니다. 전투 로직을 제외한 주사위 시스템·로비씬·사운드·씬 전환 전반을 담당했습니다.</p>
+
+        <p class="card-sub">담당 및 주요 구현 (전투 로직 제외 전체)</p>
+        <ul class="card-impl">
+          <li>주사위 시스템 — 물리 기반 굴리기/판정, 클릭 선택·고정(Fix) + 개수 제한, 리롤 3회 제한 턴 흐름, 강공격(3배) 판정, 합산 데이터 계약(DiceTotals)으로 전투 시스템과 연동</li>
+          <li>로비씬 — 소지 주사위 목록/장착(3슬롯), 드래그 회전 3D 프리뷰 정보 패널, 던전 적 정보 스크롤 리스트, 장착 충족 시 입장 버튼 활성화</li>
+          <li>사운드 — 충돌 기반 랜덤 주사위 클랙, 버튼/픽스 토글 사운드, 씬 전환에도 끊기지 않는 배경음악 시스템</li>
+          <li>씬 흐름 — 시작 화면 → 로딩 → 로비 → 플레이 전환 구조 설계, 재사용 가능한 SceneLoader 분리</li>
+          <li>팀원과 독립적으로 작업한 브랜치를 병합하며 발생한 Unity 씬/프리팹 3-way 충돌을 UnityYAMLMerge로 해결</li>
+        </ul>
+
+        <div class="card-links">
+          <a class="btn btn-primary" href="projects/roll-into-dungeon-play/" target="_blank">🎮 플레이하기</a>
+          <a class="btn" href="https://github.com/KimJinsun610/2026NHN_Hackathon" target="_blank">GitHub</a>
+          <a class="btn btn-primary" href="projects/roll-into-dungeon">상세보기 →</a>
         </div>
       </div>
 
