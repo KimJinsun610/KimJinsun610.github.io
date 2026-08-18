@@ -9,6 +9,7 @@ permalink: /projects/roll-into-dungeon/
 <div class="card-links">
   <a class="btn btn-primary" href="/projects/roll-into-dungeon-play/" target="_blank">🎮 플레이하기</a>
   <a class="btn" href="https://github.com/KimJinsun610/2026NHN_Hackathon" target="_blank">GitHub</a>
+  <a class="btn" href="https://youtu.be/4GJdbWePcOM" target="_blank">YouTube</a>
 </div>
 
 ---
