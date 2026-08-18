@@ -4,7 +4,7 @@ title: Roll Into Dungeon
 permalink: /projects/roll-into-dungeon/
 ---
 
-> Unity(URP) 기반 주사위 턴제 RPG | AI 바이브 코딩 해커톤(2026 NHN) 출품작
+> Unity(WebGL) 기반 주사위 턴제 RPG | AI 바이브 코딩 해커톤(2026 NHN) 출품작
 
 <div class="card-links">
   <a class="btn btn-primary" href="/projects/roll-into-dungeon-play/" target="_blank">🎮 플레이하기</a>
@@ -19,7 +19,7 @@ permalink: /projects/roll-into-dungeon/
 | 항목 | 내용 |
 |------|------|
 | 개발 언어 | C# |
-| 개발 환경 | Unity 6, URP |
+| 개발 환경 | Unity 6, WebGL |
 | 개발 인원 | 2명 |
 | 개발 기간 | 2026.07.20 ~ 2026.08.06 |
 | 담당 역할 | 전투 로직을 제외한 전체 시스템 |
