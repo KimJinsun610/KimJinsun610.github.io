@@ -4,7 +4,7 @@ title: Project BBB
 permalink: /projects/project-bbb/
 ---
 
-> Unreal Engine 5 기반 1인 액션 게임 | 개인 프로젝트 (개발 중)
+> Unreal Engine 5 기반 1인 액션 게임 | 개인 프로젝트 (개발 중단)
 
 <div class="card-links">
   <a class="btn" href="https://github.com/KimJinsun610/Project_BBB" target="_blank">GitHub</a>
@@ -21,7 +21,9 @@ permalink: /projects/project-bbb/
 | 개발 언어 | C++ |
 | 개발 환경 | Visual Studio 2022, Unreal Engine 5.8, GitHub |
 | 개발 인원 | 1인 |
-| 개발 기간 | 2026.02 ~ 진행 중 |
+| 개발 기간 | 2026.02 ~ 2026.07 |
+
+<p class="status-note" style="margin-top: 8px;">※ 2026.07 이후 타 팀 프로젝트 참여로 인해 개발 일시 중단 중입니다.</p>
 
 ---
 
