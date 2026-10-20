@@ -12,24 +12,24 @@
 
   var STORAGE_KEY = 'pf-role';
 
-  // WebGL 빌드는 별도 앱이므로 링크 재작성에서 제외
-  var EXCLUDE_PATH = /\/projects\/roll-into-dungeon-play\//;
+  // 별도 앱(WebGL 빌드 등)은 링크 재작성에서 제외 — 지금은 없음
+  var EXCLUDE_PATH = /\/projects\/[^/]+-play\//;
 
   var ROLES = {
     client: {
       role:  'Game Client Developer',
       title: '김진선 | Game Client Developer',
-      order: ['project-bbb', 'cyberz', 'roll-into-dungeon', 'tank-shoot']
+      order: ['instruction', 'project-bbb', 'cyberz']
     },
     engine: {
       role:  'Game Engine / Graphics Programmer',
       title: '김진선 | Game Engine / Graphics Programmer',
-      order: ['cyberz', 'project-bbb', 'roll-into-dungeon', 'tank-shoot']
+      order: ['cyberz', 'instruction', 'project-bbb']
     },
     ta: {
       role:  'Technical Artist / Graphics Programmer',
       title: '김진선 | Technical Artist / Graphics Programmer',
-      order: ['cyberz', 'project-bbb', 'roll-into-dungeon', 'tank-shoot']
+      order: ['cyberz', 'instruction', 'project-bbb']
     }
   };
 

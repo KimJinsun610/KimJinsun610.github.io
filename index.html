@@ -116,6 +116,14 @@
   <section class="section" id="project-experience">
     <p class="section-eyebrow">Project Experience</p>
     <div class="proj-exp-list">
+      <a class="proj-exp-item" href="#instruction">
+        <span class="proj-exp-name">Instruction</span>
+        <div class="tag-row">
+          <span class="tag tag-dim">Unity 6</span>
+          <span class="tag tag-dim">URP</span>
+          <span class="tag tag-dim">Claude Code</span>
+        </div>
+      </a>
       <a class="proj-exp-item" href="#project-bbb">
         <span class="proj-exp-name">Project BBB</span>
         <div class="tag-row">
@@ -131,21 +139,6 @@
           <span class="tag tag-dim">Git</span>
         </div>
       </a>
-      <a class="proj-exp-item" href="#roll-into-dungeon">
-        <span class="proj-exp-name">Roll Into Dungeon</span>
-        <div class="tag-row">
-          <span class="tag tag-dim">Unity</span>
-          <span class="tag tag-dim">C#</span>
-          <span class="tag tag-dim">WebGL</span>
-        </div>
-      </a>
-      <a class="proj-exp-item" href="#tank-shoot">
-        <span class="proj-exp-name">Tank Shoot</span>
-        <div class="tag-row">
-          <span class="tag tag-dim">OpenGL</span>
-          <span class="tag tag-dim">TCP</span>
-        </div>
-      </a>
     </div>
   </section>
 
@@ -155,6 +148,54 @@
   <section class="section">
     <p class="section-eyebrow">Projects</p>
     <div class="projects-list">
+
+      <!-- Instruction -->
+      <div class="card" id="instruction">
+        <div class="card-head">
+          <h2 class="card-title">🔦 Instruction</h2>
+          <span class="badge badge-award">🏆 우수상 (1팀 선정)</span>
+        </div>
+        <p class="card-desc">Unity 6 기반 1인칭 규칙 준수 공포 게임 · 2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(NC AI)</p>
+
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/4G3LkPagvS8?rel=0"
+                  title="Instruction 게임플레이"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+
+        <div class="card-meta">
+          <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2026.08 ~ 2026.10 (8주)</span></div>
+          <div class="meta-row"><span class="meta-k">인원</span><span class="meta-v">4명 (프로그래머 2, 기획 1, 아트 1)</span></div>
+          <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C# (Claude Code 활용)</span></div>
+          <div class="meta-row"><span class="meta-k">환경</span><span class="meta-v">Unity 6, URP 17, Timeline</span></div>
+        </div>
+        <p class="status-note">※ 영문 버전을 추가해 itch.io에 데모 버전을 공개할 예정입니다.</p>
+
+        <p class="card-sub">프로젝트 소개</p>
+        <p class="card-goal">2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(NC AI)에서 제작한 프로젝트입니다. 폐교의 야간 경비원이 되어 순찰하는 1인칭 공포 게임으로, 나폴리탄 괴담을 컨셉으로 제작했습니다. 플레이어에게 공개되지 않는 내부 수칙을 통해, 같은 학교에서도 다양한 경험을 할 수 있도록 기획했습니다.</p>
+        <p class="card-goal">그중 <strong>게임 플로우와 기본 플레이 시스템, 태블릿, 연출, 화면 효과, 형상관리</strong>를 담당했으며, 최종 발표에서 <strong>우수상(전체 1위)</strong>을 수상했습니다.</p>
+
+        <p class="card-sub">담당 및 주요 구현</p>
+        <ul class="card-impl">
+          <li>게임 플로우 — 메인 → 오프닝 → 계약서 → 로딩 → 근무 → 결과 → 엔딩 전체 씬 흐름, 비동기 로딩, 로딩 팁 테이블</li>
+          <li>기본 플레이 시스템 — 1인칭 이동 · 시점, 시간과 소리를 함께 멈추는 일시정지, 여러 연출이 겹쳐도 안전한 시계 정지</li>
+          <li>태블릿 시스템 (전담) — 근무수칙 · 메시지 화면과 스크롤, 새 메시지 알람, 엑셀(CSV)로 작성하는 연속 메시지 연출</li>
+          <li>태블릿 1인칭 연출 — 손에 든 태블릿 들기 모션, 호흡 · 걸음 흔들림, 화면 글리치, 조명 · 후처리와 분리한 렌더링</li>
+          <li>공포 연출 — 구역 · 응시 · 수치 구간에 반응하는 연출 프레임워크, 축별 사망 컷신, 피 · 물 액체 연출</li>
+          <li>화면 효과 — 질식 · 암전 · 위화감 화면 톤, 화면 일렁임, 오프닝 글리치 전환</li>
+          <li>개발자 모드 — 일차 다시 시작 · 즉시 사망 · 배속 · 시각 이동, 메시지 보내기 · CSV 메시지 이벤트 실행 테스트</li>
+          <li>형상관리 — 저장소 · Git LFS · 씬 잠금 규칙 설계와 팀 매뉴얼 작성, 파트별 브랜치 운영</li>
+          <li>에디터 자동화 — 씬 · 프리팹 · Timeline을 만드는 메뉴 32개, 사운드 파형 분석으로 컷신 소리 자동 정렬</li>
+        </ul>
+
+        <div class="card-links">
+          <a class="btn" href="https://github.com/KimJinsun610/NCAI_BrokenCompass" target="_blank">GitHub</a>
+          <a class="btn" href="https://youtu.be/4G3LkPagvS8" target="_blank">YouTube</a>
+          <a class="btn btn-primary" href="projects/instruction">상세보기 →</a>
+        </div>
+      </div>
 
       <!-- Project BBB -->
       <div class="card" id="project-bbb">
@@ -244,81 +285,6 @@
           <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
           <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
           <a class="btn btn-primary" href="projects/cyberz">상세보기 →</a>
-        </div>
-      </div>
-
-      <!-- Roll Into Dungeon -->
-      <div class="card" id="roll-into-dungeon">
-        <div class="card-head">
-          <h2 class="card-title">🎲 Roll Into Dungeon</h2>
-        </div>
-        <p class="card-desc">Unity(WebGL) 기반 주사위 턴제 RPG · AI 바이브 코딩 해커톤(2026 NHN) 출품작</p>
-
-        <div class="video-wrap">
-          <iframe src="https://www.youtube.com/embed/4GJdbWePcOM?rel=0"
-                  title="Roll Into Dungeon 게임플레이"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-        </div>
-
-        <div class="card-meta">
-          <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2026.07.20 ~ 2026.08.06</span></div>
-          <div class="meta-row"><span class="meta-k">인원</span><span class="meta-v">2명</span></div>
-          <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C#</span></div>
-          <div class="meta-row"><span class="meta-k">환경</span><span class="meta-v">Unity 6, WebGL</span></div>
-        </div>
-
-        <p class="card-sub">개발 개요</p>
-        <p class="card-goal">"AI 바이브 코딩을 통한 게임 개발과 응용"을 목표삼아 제작한 해커톤 출품작으로, Claude Code를 페어 프로그래머로 활용해 개발했습니다. 전투 로직을 제외한 주사위 시스템·로비씬·사운드·씬 전환 전반을 담당했습니다.</p>
-
-        <p class="card-sub">담당 및 주요 구현 (전투 로직 제외 전체)</p>
-        <ul class="card-impl">
-          <li>주사위 시스템 — 물리 기반 굴리기/판정, 클릭 선택·고정(Fix) + 개수 제한, 리롤 3회 제한 턴 흐름, 강공격(3배) 판정, 합산 데이터 계약(DiceTotals)으로 전투 시스템과 연동</li>
-          <li>로비씬 — 소지 주사위 목록/장착(3슬롯), 드래그 회전 3D 프리뷰 정보 패널, 던전 적 정보 스크롤 리스트, 장착 충족 시 입장 버튼 활성화</li>
-          <li>사운드 — 충돌 기반 랜덤 주사위 클랙, 버튼/픽스 토글 사운드, 씬 전환에도 끊기지 않는 배경음악 시스템</li>
-          <li>씬 흐름 — 시작 화면 → 로딩 → 로비 → 플레이 전환 구조 설계, 재사용 가능한 SceneLoader 분리</li>
-          <li>팀원과 독립적으로 작업한 브랜치를 병합하며 발생한 Unity 씬/프리팹 3-way 충돌을 UnityYAMLMerge로 해결</li>
-        </ul>
-
-        <div class="card-links">
-          <a class="btn btn-primary" href="projects/roll-into-dungeon-play/" target="_blank">🎮 플레이하기</a>
-          <a class="btn" href="https://github.com/KimJinsun610/2026NHN_Hackathon" target="_blank">GitHub</a>
-          <a class="btn" href="https://youtu.be/4GJdbWePcOM" target="_blank">YouTube</a>
-          <a class="btn btn-primary" href="projects/roll-into-dungeon">상세보기 →</a>
-        </div>
-      </div>
-
-      <!-- Tank Shoot -->
-      <div class="card" id="tank-shoot">
-        <div class="card-head">
-          <h2 class="card-title">🟩 Tank Shoot</h2>
-        </div>
-        <p class="card-desc">OpenGL / TCP 기반 네트워크 2인 대전 게임</p>
-
-        <div class="card-meta">
-          <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2023.11 ~ 2023.12</span></div>
-          <div class="meta-row"><span class="meta-k">인원</span><span class="meta-v">3명</span></div>
-          <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C, C++</span></div>
-          <div class="meta-row"><span class="meta-k">환경</span><span class="meta-v">OpenGL, TCP</span></div>
-        </div>
-
-        <p class="card-sub">개발 개요</p>
-        <p class="card-goal">OpenGL 클라이언트와 멀티스레드 TCP 서버를 처음부터 구현한 2인 대전 게임입니다.</p>
-
-        <p class="card-sub">담당 및 주요 구현</p>
-        <ul class="card-impl">
-          <li>OBJ 파서 구현 — v/vt/vn/f 파싱, min-max 정규화로 모델 크기 통일</li>
-          <li>오브젝트별 VAO / VBO 구성 — 정점·법선·UV 분리, 셰이더 attribute 바인딩</li>
-          <li>RecvThread 분리 — glutMainLoop 단일 스레드 한계 해소, CRITICAL_SECTION으로 공유 데이터 보호</li>
-          <li>Fine-Grained Locking — 연산 유형별 락 분리, std::lock_guard RAII 패턴으로 데드락 방지</li>
-          <li>아이템 시스템 서버 동기화 — 클라이언트 감지 → 서버 처리 후 전체 브로드캐스트</li>
-          <li>충돌 검증 패턴 — 이동은 서버 권위(Authoritative Server), 탄환은 클라이언트 감지 후 서버 처리</li>
-        </ul>
-
-        <div class="card-links">
-          <a class="btn" href="https://github.com/KimJinsun610/NetworkGPTerm" target="_blank">GitHub</a>
-          <a class="btn btn-primary" href="projects/tank-shoot">상세보기 →</a>
         </div>
       </div>
 
