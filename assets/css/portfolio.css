@@ -251,6 +251,7 @@ body {
 .badge-team  { background: var(--accent-bg); color: var(--accent); }
 .badge-solo  { background: #F0FDF4; color: #16A34A; }
 .badge-wip   { background: #FFF7ED; color: #EA580C; }
+.badge-award { background: #FEF9C3; color: #A16207; }
 
 .card-desc {
   font-size: 0.95rem;         /* 0.88 → 0.95 */
@@ -298,6 +299,8 @@ body {
   color: var(--text-2);
   line-height: 1.55;          /* 1.7 → 1.55 */
 }
+
+.card-goal + .card-goal { margin-top: 10px; }
 
 .card-impl {
   list-style: none;
