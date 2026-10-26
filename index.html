@@ -109,7 +109,7 @@
         <div class="tag-row">
           <span class="tag tag-dim">Unity 6</span>
           <span class="tag tag-dim">URP</span>
-          <span class="tag tag-dim">Claude Code</span>
+          <span class="tag tag-dim">C#</span>
         </div>
       </a>
       <a class="proj-exp-item" href="#project-bbb">
@@ -138,12 +138,12 @@
     <div class="projects-list">
 
       <!-- Instruction -->
-      <div class="card" id="instruction">
+      <div class="card instruction-card" id="instruction">
         <div class="card-head">
           <h2 class="card-title">🔦 Instruction</h2>
           <span class="badge badge-award">🏆 우수상 (1팀 선정)</span>
         </div>
-        <p class="card-desc">Unity 6 기반 1인칭 규칙 준수 공포 게임 · 2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(NC AI)</p>
+        <p class="card-desc">Unity 6 · URP · C# / 1인칭 규칙 준수 공포 게임</p>
 
         <div class="video-wrap">
           <iframe src="https://www.youtube.com/embed/4G3LkPagvS8?rel=0"
@@ -159,30 +159,44 @@
           <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C# (Claude Code 활용)</span></div>
           <div class="meta-row"><span class="meta-k">환경</span><span class="meta-v">Unity 6, URP, Claude Code + Unity CLI</span></div>
         </div>
-        <p class="status-note">※ 영문 버전을 추가해 itch.io에 데모 버전을 공개할 예정입니다.</p>
 
-        <p class="card-sub">프로젝트 소개</p>
-        <p class="card-goal">2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(NC AI)에서 제작한 프로젝트입니다. 폐교의 야간 경비원이 되어 순찰하는 1인칭 공포 게임으로, 나폴리탄 괴담을 컨셉으로 제작했습니다. 플레이어에게 공개되지 않는 내부 수칙을 통해, 같은 학교에서도 다양한 경험을 할 수 있도록 기획했습니다.</p>
-        <p class="card-goal">그중 <strong>게임 플로우와 기본 플레이 시스템, 태블릿, 연출, 화면 효과, 형상관리</strong>를 담당했으며, 최종 발표에서 <strong>우수상(전체 1위)</strong>을 수상했습니다.</p>
+        <p class="card-goal">폐교를 순찰하며 근무수칙을 지키는 공포 게임입니다. <strong>게임 플로우, 1인칭 플레이, 태블릿, 공포 연출, 화면 효과</strong>를 담당했습니다.</p>
 
-        <p class="card-sub">담당 및 주요 구현</p>
-        <ul class="card-impl">
-          <li>게임 플로우 — 메인 → 오프닝 → 계약서 → 로딩 → 근무 → 결과 → 엔딩 전체 씬 흐름, 비동기 로딩, 로딩 팁 테이블</li>
-          <li>기본 플레이 시스템 — 1인칭 이동 · 시점, 시간과 소리를 함께 멈추는 일시정지, 여러 연출이 겹쳐도 안전한 시계 정지</li>
-          <li>태블릿 시스템 (전담) — 근무수칙 · 메시지 화면과 스크롤, 새 메시지 알람, 엑셀(CSV)로 작성하는 연속 메시지 연출</li>
-          <li>태블릿 1인칭 연출 — 손에 든 태블릿 들기 모션, 호흡 · 걸음 흔들림, 화면 글리치, 조명 · 후처리와 분리한 렌더링</li>
-          <li>공포 연출 — 구역 · 응시 · 수치 구간에 반응하는 연출 프레임워크, 축별 사망 컷신, 피 · 물 액체 연출</li>
-          <li>화면 효과 — 질식 · 암전 · 위화감 화면 톤, 화면 일렁임, 오프닝 글리치 전환</li>
-          <li>개발자 모드 — 일차 다시 시작 · 즉시 사망 · 배속 · 시각 이동, 메시지 보내기 · CSV 메시지 이벤트 실행 테스트</li>
-          <li>형상관리 — 저장소 · Git LFS · 씬 잠금 규칙 설계와 팀 매뉴얼 작성, 파트별 브랜치 운영</li>
-          <li>에디터 자동화 — 씬 · 프리팹 · Timeline을 만드는 메뉴 32개, 사운드 파형 분석으로 컷신 소리 자동 정렬</li>
-        </ul>
+        <section class="instruction-tech" aria-labelledby="instruction-tech-title">
+          <h3 id="instruction-tech-title">사용한 주요 기술</h3>
+          <ul>
+            <li><a href="projects/instruction/#render-isolation">URP Camera Stacking · Rendering Layers</a> — 1인칭 뷰모델의 렌더링·조명 분리</li>
+            <li><a href="projects/instruction/#screen-shader">HLSL · URP Full Screen Pass</a> — 화면 UV 왜곡·색수차, 다중 연출 강도 제어</li>
+            <li><a href="projects/instruction/#animation-correction">절차적 애니메이션 · Quaternion</a> — 본 회전 증폭·흔들림 합성, 회전 누적 보정</li>
+            <li><a href="projects/instruction/#dynamic-mesh">동적 Mesh 생성 · 사전 계산 데이터 보간</a> — 수위에 따라 용기 형상을 따르는 수면 메시 갱신</li>
+            <li><a href="projects/instruction/#time-control">게임 시간 제어 · HashSet</a> — 요청 주체별 정지 관리, 게임·뷰모델 시간축 분리</li>
+            <li><a href="projects/instruction/#timeline-camera">Timeline · PlayableDirector</a> — 컷신 목표와 플레이어 카메라의 위치·회전 보간</li>
+          </ul>
+        </section>
 
-        <div class="card-links">
-          <a class="btn" href="https://github.com/KimJinsun610/NCAI_BrokenCompass" target="_blank">GitHub</a>
-          <a class="btn" href="https://youtu.be/4G3LkPagvS8" target="_blank">YouTube</a>
-          <a class="btn btn-primary" href="projects/instruction">상세보기 →</a>
+        <h3 class="instruction-section-title">주요 문제 해결</h3>
+        <div class="instruction-cases" aria-label="Instruction 주요 문제 해결">
+          <a class="instruction-case" href="projects/instruction/#render-isolation">
+            <span class="case-copy"><strong>뷰모델 렌더링·조명 분리</strong><span>Overlay 카메라와 URP 라이트의 Rendering Layers를 함께 설정해 씬 조명·후처리의 간섭을 해결했습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="instruction-case" href="projects/instruction/#time-control">
+            <span class="case-copy"><strong>다중 정지 요청의 상태 충돌 해결</strong><span>단일 bool 상태를 주체별 Hold / Release로 변경하고, 전체 일시정지의 시간·오디오 복원을 통합했습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="instruction-case" href="projects/instruction/#animation-correction">
+            <span class="case-copy"><strong>Animator 미갱신 본의 회전 누적 보정</strong><span>원본 자세와 마지막 보정값을 분리하고, 대상 본 선별과 실행 순서 조정으로 회전 누적을 해결했습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
         </div>
+
+        <p class="instruction-support">기타 구현: CSV 메시지 연출 · EventBus 기반 시스템 연동 · 개발자 모드 · 에디터 자동화 · Git LFS 형상관리</p>
+        <div class="card-links instruction-actions">
+          <a class="btn btn-primary" href="projects/instruction/">구현 상세 · 코드 보기 →</a>
+          <a class="btn" href="https://github.com/KimJinsun610/NCAI_BrokenCompass" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="btn" href="https://youtu.be/4G3LkPagvS8" target="_blank" rel="noopener noreferrer">YouTube</a>
+        </div>
+        <p class="instruction-program">2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(NC AI) · 영문 데모 공개 준비 중</p>
       </div>
 
       <!-- Project BBB -->

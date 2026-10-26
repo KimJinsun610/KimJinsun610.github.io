@@ -4,389 +4,398 @@ title: Instruction
 permalink: /projects/instruction/
 ---
 
-> Unity 6 기반 1인칭 규칙 준수 공포 게임 | 2026 미래내일 일경험사업(프로젝트형) · NC AI 팀 프로젝트
-
-<div class="box_highlight">🏆 <strong>우수상 (참여 팀 중 1팀 선정)</strong> — 고용노동부 주최 · 대한상공회의소 주관 「2026 미래내일 일경험사업(프로젝트형)」의 <strong>「Design Your World : VARCO로 완성하는 게임 직무」</strong>(참여기업 NC AI)에 2조 BrokenCompass로 참여해, 최종 발표에서 단 한 팀에게 주어지는 우수상을 받았습니다.</div>
-
+<div class="instruction-detail">
+<div class="instruction-summary tag-row" role="list" aria-label="주요 구현 기술">
+  <span class="tag" role="listitem">URP 뷰모델 렌더링</span>
+  <span class="tag" role="listitem">HLSL 화면 효과</span>
+  <span class="tag" role="listitem">절차적 애니메이션</span>
+  <span class="tag" role="listitem">동적 수면 메시</span>
+  <span class="tag" role="listitem">게임 시간 제어</span>
+  <span class="tag" role="listitem">Timeline 컷신</span>
+</div>
 <div class="card-links">
-  <a class="btn" href="https://github.com/KimJinsun610/NCAI_BrokenCompass" target="_blank">GitHub</a>
-  <a class="btn" href="https://youtu.be/4G3LkPagvS8" target="_blank">YouTube</a>
+  <a class="btn" href="https://github.com/KimJinsun610/NCAI_BrokenCompass" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <a class="btn" href="https://youtu.be/4G3LkPagvS8" target="_blank" rel="noopener noreferrer">게임플레이 영상</a>
+  <a class="btn" href="#development">담당 범위 · AI 활용 방식</a>
+</div>
 </div>
 
-<p class="status-note" style="margin-top: 8px;">※ 영문 버전을 추가해 itch.io에 데모 버전을 공개할 예정입니다.</p>
-
----
-
-## 개요
+폐교의 야간 경비원이 되어 근무수칙을 지키며 순찰하는 **1인칭 규칙 준수 공포 게임**입니다. 위험을 수치·게이지로 보여 주지 않고, 학교의 변화와 태블릿 메시지로 전달합니다. 저는 이 정보를 플레이어가 보고 듣고 조작하는 **클라이언트 영역**을 담당했습니다.
 
 | 항목 | 내용 |
-|------|------|
-| 개발 언어 | C# (Claude Code 기반 AI 협업 개발) |
-| 개발 환경 | Unity 6 (6000.3), URP 17 (Forward+), Timeline, DOTween, Claude Code + Unity CLI, Git LFS |
-| 개발 인원 | 4명 (프로그래머 2 — 시스템 1 · 클라이언트 1, 기획 1, 아트 1) |
-| 개발 기간 | 2026.08.27 ~ 2026.10.15 (8주) |
-| 담당 역할 | **클라이언트** — 게임 플로우 · 기본 플레이 시스템 · 태블릿 · 연출 · 화면 효과 · 형상관리 |
+|---|---|
+| 기간 · 인원 | 2026.08.27 ~ 2026.10.15 (8주) · 4명 (프로그래머 2, 기획 1, 아트 1) |
+| 담당 | 게임 플로우 · 1인칭 플레이 · 태블릿 · 공포 연출 · 화면 효과 · 형상관리 |
+| 환경 | C# · Unity 6 (6000.3) · URP 17 (Forward+) · Timeline · DOTween |
+| 개발 방식 | Claude Code로 대부분의 코드 작성 · 요구사항 정의, 플레이 검증, 버그 재현 조건 정리와 팀 연동 담당 |
 
----
+<div class="box_highlight">🏆 <strong>우수상 — 참여 팀 중 1팀 선정</strong><br>2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(참여기업 NC AI) · BrokenCompass 팀</div>
 
-## 프로젝트 소개
+## 주요 구현과 문제 해결
 
-2026 미래내일 일경험사업 「Design Your World : VARCO로 완성하는 게임 직무」(NC AI)에서 제작한 프로젝트입니다. 폐교의 야간 경비원이 되어 순찰하는 1인칭 공포 게임으로, **나폴리탄 괴담**을 컨셉으로 제작했습니다. 플레이어에게 공개되지 않는 내부 수칙을 통해, 같은 학교에서도 다양한 경험을 할 수 있도록 기획했습니다.
+<nav class="detail-toc" aria-label="Instruction 기술 사례">
+  <a href="#render-isolation">01 렌더링·조명 분리</a>
+  <span class="toc-sep">/</span>
+  <a href="#time-control">02 시간 제어</a>
+  <span class="toc-sep">/</span>
+  <a href="#animation-correction">03 본 회전 보정</a>
+  <span class="toc-sep">/</span>
+  <a href="#rendering-effects">셰이더·메시·컷신</a>
+  <span class="toc-sep">/</span>
+  <a href="#supporting-work">보조 구현</a>
+</nav>
 
-그중 저는 **게임 플로우와 기본 플레이 시스템, 태블릿, 연출, 화면 효과, 형상관리**를 담당했으며, 최종 발표에서 **우수상(전체 1위)**을 수상했습니다.
+<a id="render-isolation"></a>
 
-### 게임 특징
+## 01. URP Camera Stacking 기반 뷰모델 렌더링·조명 분리
 
-- 철거를 앞둔 폐교에 5일간 파견된 야간 경비원이 되어, 태블릿에 실리는 **근무수칙**을 지키며 학교를 순찰합니다.
-- 수칙을 어기면 보이지 않는 **청각 · 조도 · 배치** 수치가 오르고, 그 대가는 숫자가 아니라 **학교가 변하는 모습**으로 돌아옵니다. 하나라도 끝까지 차면 붙잡히고 그 밤을 다시 시작합니다.
-- 수칙을 잘 지킬수록 태블릿 문자와 수칙이 서로 부딪히는 **역설**이 늘어나, 무엇을 믿을지 선택해야 합니다.
+**URP Camera Stacking · Culling Mask · Rendering Layers**
 
-플레이 중에는 수치·게이지를 전혀 보여 주지 않고, 플레이어는 환경의 변화만으로 자신이 무엇을 어겼는지 짐작하게 됩니다.
+<div class="experience-summary" markdown="1">
 
----
+**문제** · 씬의 조명·후처리가 손과 태블릿에도 적용되어 정보를 읽기 어려워졌습니다.
 
-## 담당 범위와 협업 구조
+**해결** · 카메라의 표시 대상과 조명의 적용 대상을 따로 분리하고, URP에서 실제로 사용하는 라이트 데이터의 설정까지 수정했습니다.
 
-<details class="collapse-block" markdown="1">
-<summary class="btn">담당 범위와 협업 구조 펼쳐보기 <span class="chevron">▾</span></summary>
-
-프로그래머 2명이 **판정(시스템)** 과 **연출(클라이언트)** 을 나눠 개발했습니다. 저는 클라이언트를 맡아, 판정 결과를 화면·소리·흐름으로 보여 주는 모든 부분을 담당했습니다. 판정 로직(수칙 판정 · 수치 · 편성 · 조우 시점)은 시스템 담당 팀원의 작업이라 이 페이지에서는 다루지 않습니다.
-
-두 파트는 **서로의 코드를 고치지 않고**, 아래 두 통로로만 연결되도록 경계를 정했습니다.
-
-| 방향 | 무엇이 오가나 | 예시 |
-|------|------|------|
-| **시스템 → 클라이언트** | 시스템이 판정 결과를 이벤트(`EventBus`)로 알리면, 클라이언트는 **받아서 보여 주기만** 합니다. 판정 값은 바꾸지 않습니다. | 수치가 다음 구간으로 오름 → 공포 연출 재생<br>하루가 끝남 → 결과창(근무 일지) 표시 |
-| **클라이언트 → 시스템** | 제가 만든 기능을 시스템 쪽 코드가 **그대로 불러 씁니다.** | 역설 문자 도착 → 태블릿 화면 글리치<br>놀람 연출 타이밍 → 공포 연출 실행<br>붙잡힘 연출 중 → 근무 시계 정지 |
-
-- 제가 만든 공포 연출 프리셋(사물함 · 벌레 떼 · 사람 나무 · 피 식수대 · 천장 핏방울 · 변기 연출)은 시스템 파트의 **점검 이상현상과 배치 축 맵 변화에 재사용**됐고, 청각 · 조도 사망 컷신은 최종 게임의 **붙잡힘 연출**로 쓰였습니다.
-- 다른 파트가 바로 쓸 수 있도록 공포 연출 · 크리처 · 태블릿 · 화면 효과 · 사망 컷신 · 액체 연출 · 엔딩 **사용 가이드 7종**을 노션에 작성해 공유했습니다.
-
-</details>
-
----
-
-## 개발 방식 — Claude Code 바이브 코딩
-
-<details class="collapse-block" markdown="1">
-<summary class="btn">개발 방식 펼쳐보기 <span class="chevron">▾</span></summary>
-
-「VARCO로 완성하는 게임 직무」라는 프로그램 취지에 맞춰, 코드는 대부분 **Claude Code**로 작성하고 저는 **무엇을 만들지 정하고, 결과를 검증하고, 팀과 맞추는 역할**에 집중했습니다. C# 문법보다 Unity 구조를 이해하고 AI에게 정확히 요구하는 것이 이 프로젝트에서 제 핵심 역량이었습니다.
-
-- **에디터 직접 연결** — 프로젝트에 Unity CLI 파이프라인(`com.unity.pipeline`)을 연결해, AI가 실행 중인 에디터에서 씬 · 프리팹을 만들고 콘솔 · 테스트 결과로 스스로 확인하게 했습니다.
-- **요구사항을 문서로** — 작업마다 「결정 사항 · 만든 것 · 바꾼 것 · 검증」을 문서로 남겨, 다음 세션과 팀원이 같은 맥락에서 이어 가게 했습니다.
-- **다시 만들 수 있는 결과물** — 씬 · 프리팹 · Timeline을 손으로 고치지 않고 에디터 빌더 메뉴로 생성하게 해, 기획 · 아트 값이 바뀌어도 메뉴만 다시 돌리면 같은 결과가 나오도록 했습니다.
-- **플레이로 검증** — 연출의 타이밍 · 밝기 · 소리 크기는 직접 플레이하며 조율하고, 버그는 재현 조건을 정리해 원인을 함께 추적했습니다. 아래 트러블슈팅이 그 과정의 기록입니다.
-- **팀과의 경계** — 시스템 담당 팀원도 Claude Code로 개발해, 서로의 파일을 고치지 않는 규칙과 공개 API · 이벤트 계약을 먼저 정한 뒤 작업했습니다.
-
-</details>
-
----
-
-## 구현 상세
-
-<div class="detail-toc">
-  <a href="#sec-1">1. 게임 플로우</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-2">2. 기본 플레이 시스템</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-3">3. 태블릿 시스템</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-4">4. 공포 연출 · 화면 효과</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-5">5. 축별 사망 컷신</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-6">6. 액체 연출</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-7">7. 개발자 모드</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-8">8. 에디터 자동화 툴</a>
-  <span class="toc-sep">*</span>
-  <a href="#sec-9">9. 형상관리</a>
 </div>
 
+### 문제 상황
 
-<a id="sec-1"></a>
+태블릿은 근무수칙과 메시지를 읽는 핵심 인터페이스입니다. 그런데 실내 볼륨의 노출 보정·블룸을 적용하자 화면이 하얗게 날아가고, 손전등의 빛이 손과 태블릿에도 닿았습니다. 공간의 분위기를 위한 조명 설정이 플레이에 필요한 정보까지 훼손한 것입니다.
 
-## 1. 게임 플로우 · 씬 전환
+해결의 기준은 **월드의 조명·후처리는 유지하면서, 손과 태블릿의 표시 조건을 독립적으로 제어하는 것**이었습니다.
 
-### 구현 내용
+<figure class="instruction-media">
+  <img class="detail-img" src="{{ '/assets/img/instruction-tablet.gif' | relative_url }}" alt="손에 든 태블릿에서 수칙과 메시지를 확인하는 플레이 시연" width="549" height="485" loading="lazy">
+  <figcaption>태블릿 플레이 시연. 들기·내리기, 화면 UI와 1인칭 연출을 함께 담당했습니다.</figcaption>
+</figure>
 
-```
-Main ─▶ Opening(전화 · 나레이션) ─▶ Contract(서명) ─▶ Loading ─▶ Play ─┬─ 근무 종료 ─▶ Result(근무 일지) ─▶ 다음 날
-                                                                      ├─ 사망 ─▶ 사망 화면
-                                                                      └─ 5일차 ─▶ Ending ─▶ 크레딧
-```
+### 원인 분석과 해결 방향
 
-- 무거운 Play 씬만 로딩 씬을 거치고, 가벼운 UI 씬(계약서 · 결과창)은 바로 넘어가 근무 종료 순간의 긴장이 끊기지 않게 했습니다.
-- **비동기 로딩** — `allowSceneActivation = false` 상태에서 진행률이 0.9에서 멈추는 점을 보정하고, 「최소 표시 시간」과 「실제 진행」 중 느린 쪽을 따라가도록 했습니다. 씬 활성화 순간의 멈칫함은 페이드로 가렸습니다.
-- **로딩 팁 테이블** — ScriptableObject + CSV(RFC 4180 파서, BOM 처리)로 기획자가 엑셀로 문구를 관리합니다. 스포일러가 될 수 있는 팁은 2일차 이후에만 나오도록 해금 구분을 두었습니다.
-- `SceneFlowConfig`(ScriptableObject)에 씬 경로를 모으고, 커스텀 PropertyDrawer(`[ScenePath]`)로 Build Settings 누락을 인스펙터에서 바로 경고합니다.
-- **오프닝** — sin 강도 곡선 · 두 이미지 플리커 · 색 분리 · 가로 찢김 · 절차적 노이즈 텍스처를 조합한 글리치 전환.
-- **계약서 서명** — 런타임 `Texture2D`에 브러시를 찍고, 드래그 사이를 보간해 끊김 없는 서명 패드를 만들었습니다. 서명해야 출근 버튼이 켜집니다.
-- **결과창** — 그날 수칙 목록에 어긴 줄만 빨간 줄이 그어지는 「야간 근무 일지」, 5일차 수치 결산, 사망 화면, 엔딩 크레딧.
-- 씬 BGM 크로스페이드, 메뉴 커서, UI 클릭음은 `RuntimeInitializeOnLoadMethod`로 씬 파일을 고치지 않고 자동 생성되게 했습니다.
+카메라의 **Culling Mask는 무엇을 그릴지**, 조명의 **Rendering Layers는 무엇을 비출지** 결정합니다. 카메라만 나누면 씬 조명이 뷰모델에 닿는 문제는 남습니다. 화면 합성과 조명 적용을 별개의 문제로 보고, 두 경계를 함께 분리했습니다.
 
+월드와 뷰모델의 설정은 다음과 같이 나눴습니다.
 
+| 구분 | 월드 | 손·태블릿(뷰모델) |
+|---|---|---|
+| 그리는 카메라 | 메인 Base 카메라 | 스택에 추가한 Overlay 카메라 |
+| 표시 대상 | 뷰모델 레이어 제외 | 뷰모델 레이어만 포함 |
+| 후처리 | 씬의 공포 연출 유지 | Overlay 카메라의 후처리 비활성화 |
+| 조명 | 씬 조명·손전등 | 뷰모델 전용 Rendering Layer와 전용 조명 |
+
+### 해결 과정
+
+분리한 설정은 `ViewmodelRig` 한 컴포넌트에 모았습니다. 시작할 때 뷰모델 하위 오브젝트와 Renderer에 전용 레이어를 적용하고, 메인 카메라에서 해당 대상을 제외합니다. 이어서 뷰모델만 그리는 Overlay 카메라와 전용 조명을 런타임에 생성합니다.
+
+- **카메라 분리** — 메인 카메라의 FOV를 기준으로 Overlay 카메라를 구성하고 `cameraStack`에 추가합니다. 후처리는 끄고 깊이를 별도로 처리해 월드에 의해 손이 잘려 보이는 현상을 줄였습니다.
+- **조명 분리** — 씬 조명의 Rendering Layers에서 뷰모델 비트를 제외하고, 전용 조명에는 그 비트만 설정합니다.
+- **수명 관리** — `OnDestroy`에서 생성한 카메라를 스택에서 제거하고, 카메라·조명 오브젝트를 정리합니다.
+
+### 구현 중 추가로 해결한 문제
+
+<div class="ts-box" markdown="1">
+
+기존 작업에서는 `Light.renderingLayerMask`를 조정해도 씬 조명이 계속 영향을 주었습니다. 이 프로젝트의 URP 설정에서 사용하는 `UniversalAdditionalLightData.renderingLayers`를 수정하도록 처리 지점을 바꿨습니다.
+
+`GetUniversalAdditionalLightData()`로 URP의 추가 라이트 데이터를 얻고, `renderingLayers`에서 뷰모델 비트를 제거했습니다. `customShadowLayers`가 켜진 라이트는 그림자 레이어도 함께 조정했습니다.
+
+</div>
+
+### 결과와 한계
+
+씬의 공포 분위기를 유지하면서 태블릿 밝기는 전용 조명으로 조정할 수 있게 했습니다. **화면 합성과 조명 영향을 별개의 문제로 나누고, 각각의 제어 지점을 찾은 것**이 이 사례의 핵심입니다.
+
+이 구성은 1인칭 뷰모델의 가독성을 우선합니다. 깊이 분리는 벽과 손의 물리적 충돌을 해결하는 방식은 아니며, Overlay 후처리 비활성화도 모든 렌더러 기능의 영향을 일괄 차단한다는 의미는 아닙니다.
+
+**구현 코드:** [ViewmodelRig.cs — 레이어 적용, 카메라 스택, 조명 분리][source-rig]
+
+<a id="time-control"></a>
 <a id="sec-2"></a>
 
-## 2. 기본 플레이 시스템
+## 02. 요청 소유권 기반 게임 시간 제어
 
-### 구현 내용
+**요청 소유권 · HashSet · 게임 시간과 연출 시간의 분리**
 
-- **1인칭 조작** — WASD 이동 · 마우스 시점, 태블릿을 확대해 읽는 동안의 감속, 기획 의도(무력감)에 맞춘 점프 제거와 조작 키 정리.
-- **손전등 소리** — 손전등을 실제로 켜고 끄는 시스템 쪽 발신기는 고치지 않고 켜짐 상태가 바뀌는 순간만 지켜보게 해, 태블릿을 연 동안처럼 켜지지 않았을 때는 소리도 나지 않게 했습니다(씬 시작 첫 프레임의 딸깍 소리 방지 포함).
-- **조작 안내 HUD** — 초반 며칠만 보이는 조작 안내. 근무 씬 HUD가 프리팹이 아니어서, 씬 파일을 고치지 않고 실행 시 스스로 붙도록 했습니다.
-- **일시정지 메뉴 · 커서** — 일시정지 메뉴와, 커서를 숨기는 주체가 여럿이라 프레임 마지막에 한 번 바로잡는 커서 관리.
+<div class="experience-summary" markdown="1">
 
-### 시간 · 일시정지 구조
+**문제** · 한 연출이 정지를 해제하면, 다른 시스템이 정지를 요청한 상태에서도 근무 시계가 다시 흘렀습니다.
 
-태블릿 확대, 컷신, 개발자 모드, 일시정지 메뉴처럼 **여러 주체가 동시에 시계를 멈추는** 상황에서도 서로를 덮어쓰지 않게 하는 것이 목표였습니다.
-
-- `GameTime.Hold(owner)` / `Release(owner)` — `HashSet<object>` 기반 정지 카운팅. 한 주체가 풀어도 다른 주체가 잡고 있으면 시계는 멈춘 채 유지됩니다.
-- `GamePause` — `Time.timeScale`, `AudioListener.pause`, 뷰모델 전용 시간축(`ViewmodelTime`)을 **한 곳에서** 관리해, 일시정지 중 알람이 울리던 버그를 구조적으로 막았습니다.
-- `GameMinutes` — 분 단위 절삭 오차가 쌓이지 않도록 프레임 누적으로 근무 시간을 셉니다.
-- Domain Reload를 끈 에디터 환경에서도 static 상태가 남지 않도록 `SubsystemRegistration` 초기화를 일관되게 적용했습니다.
-- 시스템 파트의 브리지 코드가 이 Hold / ViewmodelTime 분리 설계를 근거로 「태블릿을 보는 동안에도 시계는 흐른다」 규칙을 구현했습니다.
-
-<div class="ts-box" markdown="1">
-
-#### Trouble Shooting
-
-**증상** : 일시정지 중에도 태블릿 알람처럼 이미 재생 중이던 소리가 계속 울렸습니다.
-
-**원인** : 소리는 `Time.timeScale`과 무관해 시간만 멈춰서는 멈추지 않습니다. 반대로 소리를 `AudioListener.pause`로 멈추면, 일시정지 상태에서 씬을 바꿀 때 `timeScale`만 되돌려서는 다음 씬이 통째로 무음으로 시작합니다.
-
-**해결** : 시간 · 소리 · 연출 시계 · 조작을 함께 멈추고 함께 되돌리는 `GamePause`로 일시정지 관리를 한 곳에 모으고, 씬 전환 직전에는 `GamePause.Clear()`를 부르게 했습니다.
+**해결** · 단일 상태값을 요청 주체별 Hold / Release 구조로 바꾸고, 근무 시계·전체 일시정지·뷰모델 시간의 책임을 나눴습니다.
 
 </div>
 
+### 문제 상황
+
+하루 시작 안내와 태블릿이 각각 근무 시계를 멈추던 시기에, 안내가 끝나면서 시계를 다시 켜면 태블릿이 열려 있어도 시간이 흐르는 문제가 있었습니다.
+
+### 원인 분석과 해결 방향
+
+여러 호출부가 하나의 `bool`을 바꾸는 구조에서는 **마지막으로 쓴 값이 다른 주체의 의도까지 덮어썼습니다.** 정지 여부만 저장하는 대신 누가 정지를 요청했는지 보관하고, 자신의 요청만 해제하도록 바꿨습니다.
+
+여기에 전체 일시정지, 시간 감속, 손·태블릿 연출이 더해지면서 “멈춘다”는 상태를 하나로 취급할 수 없었습니다. 근무 시계의 정지와 게임 전체의 일시정지를 구분했습니다.
+
+### 해결 과정
+
+**요청이 모두 해제되어야 시계가 진행할 수 있도록** 구성했습니다. 아래는 두 주체 A·B가 근무 시계 정지를 요청하는 순서를 설명한 예시입니다.
+
+| 호출 | 남아 있는 요청 주체 | 근무 시계 |
+|---|---|---|
+| `Hold(A)` | A | 정지 |
+| `Hold(B)` | A, B | 정지 |
+| `Release(A)` | B | 정지 유지 |
+| `Release(B)` | 없음 | 진행 가능 |
+
+진행 가능 상태에서도 전체 일시정지로 `Time.deltaTime`이 0이면 시계는 흐르지 않습니다. **개별 요청의 해제와 실제 시간 진행을 구분**한 구조입니다.
+
+**요청 주체를 저장하는 자료구조와 시간축 분리**
+
+`GameTime`은 `HashSet<object>`에 요청 주체를 보관합니다. 동일한 주체의 중복 요청은 한 번으로 처리되고, 해제할 때는 자신의 요청만 제거합니다. 단순 증가·감소 카운터와 달리 중복 호출 때문에 정지 횟수가 늘어나지 않습니다.
+
+아래는 실제 `GameTime.cs`의 요청·해제 메서드입니다.
+
+```csharp
+public void Hold(object owner)
+{
+    if (owner != null) holds.Add(owner);
+}
+
+public void Release(object owner)
+{
+    if (owner != null) holds.Remove(owner);
+}
+```
+
+`Update()`는 종료 상태이거나 요청이 남아 있으면 진행하지 않습니다. 이 API는 **한 주체당 하나의 정지 요청**을 표현하므로, 요청 주체는 종료 경로에서 자신의 `Release`를 호출해야 합니다.
+
+| 담당 모듈 | 책임 |
+|---|---|
+| `GameTime` | 근무 시계 진행과 주체별 Hold / Release |
+| `GamePause` | 전체 일시정지 상태, `Time.timeScale`, `AudioListener.pause` 변경·복원 |
+| `ViewmodelTime` | 손·태블릿에 사용할 시간 제공. 정지 중에는 0, 진행 중에는 `unscaledDeltaTime` |
+
+손·태블릿에 `deltaTime`을 그대로 쓰면 감속 연출에 손까지 느려지고, `unscaledDeltaTime`만 쓰면 일시정지 중에도 움직입니다. 전용 시간축은 **감속과 정지를 구분**하고, 별도의 강제 정지·timeScale 무시 설정으로 연출 정책을 연결합니다.
+
+### 구현 중 추가로 해결한 문제
+
+<div class="ts-box" markdown="1">
+
+`Time.timeScale = 0`만으로는 이미 재생 중인 태블릿 알람이 멈추지 않았습니다. `GamePause.Set()`에서 시간 배율과 `AudioListener.pause`를 함께 변경하도록 모았습니다.
+
+복원 경로도 중요했습니다. 일시정지 상태에서 씬을 이동하면 다음 씬에도 무음·정지 상태가 남을 수 있어, 전환 시 `GamePause.Clear()`로 둘을 함께 복원했습니다. Domain Reload를 끈 에디터에서는 `SubsystemRegistration`으로 정적 일시정지 상태와 이벤트도 초기화합니다.
+
+</div>
+
+### 결과와 한계
+
+근무 시계에서는 한 연출의 종료가 다른 요청을 해제하지 않도록 했고, 전체 일시정지는 시간과 소리의 복원을 한곳에서 관리하게 했습니다. 이후 시스템 담당 팀원이 이 구조를 연결해 **태블릿을 보는 동안에도 근무 시계는 흐르는 정책**을 적용했습니다. 요청을 처리하는 구조와 실제 플레이 규칙을 분리한 사례입니다.
+
+주체별 요청 관리는 `GameTime`의 책임입니다. `GamePause`까지 다중 요청을 관리하는 구조는 아니며, 현재 전체 정지 해제는 `timeScale`을 1로 복원합니다.
+
+**구현 코드:** [GameTime.cs][source-time] · [GamePause.cs][source-pause] · [ViewmodelTime.cs][source-viewmodel-time]
+
+**팀 연동 코드:** [TabletBridge.cs — 시스템 담당의 태블릿 정책 연결][source-bridge]
+
+<a id="animation-correction"></a>
+
+## 03. 절차적 애니메이션 합성과 본 회전 누적 보정
+
+**Animator 갱신 여부 · Quaternion · 원본 자세와 보정 결과 분리**
+
+<div class="experience-summary" markdown="1">
+
+**문제** · 애니메이션 증폭과 흔들림을 합성하자 본의 회전이 누적되며 자세가 무너졌습니다.
+
+**해결** · 이전 출력이 다음 프레임의 원본으로 재사용되는 조건을 확인하고, 대상 본·합성 순서·보정 기준 자세를 함께 정리했습니다.
+
+</div>
+
+### 문제 상황
+
+사람 나무 크리처의 애니메이션을 더 크게 움직이게 하고, 그 위에 절차적 흔들림을 합성했습니다. 그런데 두 효과를 함께 적용하자 자세가 점점 틀어지고 본이 크게 이탈했습니다. 의도한 공포 연출과 달리, 시간이 지날수록 모델의 자세 자체가 무너졌습니다.
+
+### 원인 분석
+
+Animator가 모든 본의 회전을 매 프레임 덮어쓴다고 가정하면, 현재 회전을 읽어 보정하는 방식은 자연스러워 보입니다. 하지만 클립에서 움직이지 않는 본이나 갱신이 생략된 본에서는 **이전 보정 결과가 Transform에 남아 있었습니다.**
+
+```text
+문제가 된 흐름
+원래 자세 → 동작 증폭·흔들림 → 보정된 자세
+                              ↓ 다음 프레임에 원본으로 다시 사용
+                         재증폭 → 회전 누적
+
+수정한 기준
+이번 프레임의 회전이 내가 마지막으로 쓴 값인가?
+  같음 → 저장한 원래 자세를 기준으로 보정
+  다름 → 새로 입력된 자세를 기준으로 보정
+```
+
+### 해결 과정
+
+보정값만 바꾸는 것으로 끝내지 않고, **어떤 본을 대상으로 어떤 순서로 계산할지**부터 정리했습니다.
+
+- **에디터 전처리** — 클립을 샘플링해 실제로 움직이는 본과 평균 자세를 구했습니다. 쿼터니언은 같은 회전도 반대 부호로 표현할 수 있어, 같은 반구로 부호를 맞춘 뒤 평균을 계산했습니다.
+- **동작 증폭** — `HorrorAnimAmplify`는 평균 자세(`reference`)와 현재 기준 자세 사이를 `Quaternion.SlerpUnclamped`로 외삽합니다. 평균 자세는 미리 전달받고, 런타임에는 클립을 다시 샘플링하지 않습니다.
+- **적용 순서** — 증폭 컴포넌트에 실행 순서 `-50`을 지정해 `HorrorTreeSway`보다 먼저 처리하고, 키운 동작 위에 흔들림을 더합니다.
+
+**보정 전 자세와 마지막 출력 분리**
+
+두 컴포넌트는 각각 `lastBase`(보정 전 자세), `lastWritten`(마지막 출력), `written`(출력 이력)을 보관합니다. 현재 회전이 자신이 마지막으로 쓴 값과 같으면 저장한 원래 자세를 사용합니다.
+
+아래는 `HorrorAnimAmplify.LateUpdate()`에서 발췌한 실제 코드입니다.
+
+```csharp
+Quaternion current = e.bone.localRotation;
+Quaternion basePose = e.written && current == e.lastWritten ? e.lastBase : current;
+// 평균 → 지금 자세의 차이를 strength배로(구면 외삽)
+Quaternion result = Quaternion.SlerpUnclamped(e.reference, basePose, strength);
+e.bone.localRotation = result;
+e.lastBase = basePose;
+e.lastWritten = result;
+e.written = true;
+```
+
+`OnDisable()`에서도 자신의 마지막 출력이 남아 있는 경우에만 원래 자세로 복원합니다. 다른 처리에서 이미 회전을 바꿨다면 그 값을 덮어쓰지 않습니다.
+
+### 결과와 한계
+
+애니메이션 대상 본을 선별하고, 갱신이 생략된 본이 이전 보정 결과를 원본으로 다시 사용하지 않도록 했습니다. **“회전이 이상하다”는 증상에서, 프레임마다 누가 어떤 값을 쓰는지 추적한 디버깅 사례**입니다.
+
+이 해결은 대상 본의 선별과 정해진 실행 순서를 함께 적용한 것입니다. 다른 회전 보정 컴포넌트를 추가할 때는 마지막 출력 비교만으로 구분되지 않는 경우가 있으므로, 본별 갱신 주체와 합성 순서를 다시 확인해야 합니다.
+
+**구현 코드:** [HorrorAnimAmplify.cs][source-amplify] · [HorrorTreeSway.cs][source-sway]
+
+<a id="rendering-effects"></a>
+
+## 추가 렌더링·컷신 구현
+
+<a id="screen-shader"></a>
+
+### HLSL 기반 화면 왜곡·색수차
+
+`ScreenWobble.shader`에서 주파수가 다른 사인·코사인 파형으로 화면 UV를 변위시키고, RGB 채널을 서로 다른 위치에서 샘플링해 색수차를 적용했습니다. 화면 중심보다 가장자리의 왜곡이 커지도록 중심으로부터의 거리를 가중치로 사용합니다.
+
+여러 연출이 동시에 효과를 요청하면 `ScreenWobble`이 활성 소스의 **최대 강도**를 선택해 `Shader.SetGlobalFloat`로 전달합니다. 합산으로 효과가 과도해지는 대신 하나의 강도로 제어하며, 사용자 배율 `userScale`로 전체 효과를 조절합니다.
+
+셰이더 내장 시간 대신 C#에서 `Time.deltaTime`으로 누적한 시간을 사용해 일시정지 시 왜곡도 멈추게 했습니다. 컴포넌트 비활성화 시에는 전역 강도를 0으로 초기화해 다음 씬에 효과가 남지 않도록 했습니다.
+
+**구현 코드:** [ScreenWobble.shader — UV 왜곡·RGB 분리][source-wobble-shader] · [ScreenWobble.cs — 강도·시간 관리][source-wobble]
+
+<a id="dynamic-mesh"></a>
+
+### 사전 계산한 단면 데이터로 수면 메시 갱신
+
+수위가 내려가면 용기 안쪽의 단면도 달라지므로, 수면을 평면 하나의 위치·스케일만으로 표현하기 어렵습니다. 에디터에서 준비한 **높이별·방향별 반지름 표**를 런타임에 보간해 수면의 외곽 정점을 갱신했습니다.
+
+`ToiletFlush.BuildMesh()`는 중심 정점과 외곽 정점으로 삼각형 팬 형태의 Mesh를 만들고 `MarkDynamic()`을 설정합니다. 정점 배열과 삼각형 연결은 초기화할 때 준비하고, `SetLevel()`에서는 현재 수위에 인접한 두 높이의 반지름을 `Mathf.Lerp`로 보간합니다. 보간한 반지름으로 외곽 정점을 배치한 뒤 정점 데이터와 바운드를 갱신합니다.
+
+형상 데이터를 미리 준비하는 단계와 재생 중 정점을 갱신하는 단계를 나눠, 수위 변화에 따라 용기 안쪽 형상을 따르는 수면을 구현했습니다.
+
+**구현 코드:** [ToiletFlush.cs — BuildMesh / SetLevel][source-flush]
+
+<a id="timeline-camera"></a>
+
+### Timeline과 플레이어 카메라 연동
+
+`DeathCutscene`은 Timeline이 움직이는 카메라 목표를 기존 플레이어 카메라가 따라가도록 구성했습니다. 진입 순간의 위치·회전을 저장하고, `LateUpdate()`에서 `Vector3.Lerp`와 `Quaternion.Slerp`로 목표 자세에 보간합니다. 전환 가중치는 `SmoothStep`으로 계산합니다.
+
+기존 카메라를 사용해 플레이 중의 후처리·손전등 구성을 이어가고, `PlayableDirector`의 재생·정지와 카메라 제어를 연결했습니다. 주변 소리를 정지한 상태에서도 컷신 소리는 재생할 수 있도록 `AudioSource.ignoreListenerPause`를 사용했습니다.
+
+**구현 코드:** [DeathCutscene.cs — 카메라 보간과 컷신 상태 관리][source-cutscene]
+
+<a id="supporting-work"></a>
+
+## 플레이를 완성하기 위한 보조 구현
+
+핵심 사례 외에도 게임 시작부터 결과·엔딩까지의 흐름과 연출 제작·검증 도구를 담당했습니다.
+
+<a id="sec-1"></a>
+<details class="collapse-block" markdown="1">
+<summary class="btn">게임 플로우 · 기본 플레이 <span class="chevron">▾</span></summary>
+
+- **전체 흐름** — 메인 → 오프닝 → 계약서 → 로딩 → 근무 → 결과 → 다음 날 / 사망 / 엔딩. 무거운 Play 씬에 비동기 로딩을 적용했습니다.
+- **로딩** — 씬 활성화 전 진행률과 최소 표시 시간을 함께 처리하고, ScriptableObject + CSV로 로딩 팁을 관리했습니다. 일차에 따라 팁을 해금하고, 씬 경로의 Build Settings 누락은 인스펙터에서 경고합니다.
+- **입력·UI** — 1인칭 이동·시점, 태블릿 확대 시 감속, 조작 안내 HUD와 커서 관리. 계약서에는 드래그 사이를 보간하는 서명 패드를 적용했습니다.
+- **결과 표현** — 위반한 수칙에 빨간 줄을 표시하는 근무 일지, 일차별 결과·사망 화면·엔딩 크레딧을 연결했습니다.
+
+</details>
 
 <a id="sec-3"></a>
+<details class="collapse-block" markdown="1">
+<summary class="btn">태블릿 · CSV 메시지 · 화면 글리치 <span class="chevron">▾</span></summary>
 
-## 3. 태블릿 시스템
+- **수칙·메시지 UI** — ScriptableObject의 수칙 데이터를 표시하고, 수신 시각·안 읽음 표시·반복 알람을 연결했습니다. 판정 수치와 상세 규칙은 노출하지 않습니다.
+- **CSV 메시지 연출** — 이벤트 이름, 메시지 간격·본문·색, 반복 시간, 읽음 대기, 종료 동작을 데이터로 작성합니다. 코드·Timeline Signal·개발자 모드에서 같은 이벤트를 실행합니다.
+- **1인칭 움직임** — `Mathf.SmoothDamp`를 이용한 들기·내리기, 호흡·시선 지연·걸음 흔들림과 절차적 손가락 움직임을 합성했습니다.
+- **글리치** — 강도 하나로 셰이더와 TMP 글자 정점·문자 변형을 함께 조정합니다. 글리치 이후 새 내용이 옛 글자로 덮이던 문제는 **원본 복원 → 새 내용 쓰기** 순서로 수정했습니다.
 
-태블릿은 이 게임에서 플레이어가 정보를 얻는 **유일한 창구**입니다. 수칙을 읽고, 지시 문자를 받고, 이상이 생기면 화면이 깨집니다. 화면 UI부터 메시지 · 알람, 손에 든 감각, 글리치 연출까지 태블릿 전체를 맡았습니다.
-
-<img class="detail-img" src="{{ '/assets/img/instruction-tablet.gif' | relative_url }}" alt="태블릿 시스템 시연">
-
-### ① 화면 구성 — 기획 문서 서식 그대로
-
-```
-상단 상태바   신호 · 배터리 / 현재 시각
-문서 헤더     발신 · 문서번호 · 발행시각
-근무 정보 바  근무일 · 근무 시간 · 순찰 지점 수
-탭            근무 수칙 / 메시지 (안 읽은 메시지가 있으면 점)
-본문          섹션 제목 + 항목 (세로 스크롤 · 넘치면 스크롤바)
-하단          항목 개수 · 조작 안내 · 고정 면책 문구
-```
-
-- 수칙 본문은 화면 코드에 적지 않고 **수칙 데이터(ScriptableObject)에서 읽어** 그립니다. 기획이 문구를 고쳐도 데이터만 바꾸면 되고, 시스템 파트가 그날 편성한 수칙을 그대로 보여 줍니다.
-- 태블릿에는 **수칙 본문만** 보여 주고 판정 상세 · 수치는 감춥니다(「보이지 않는 수칙」 컨셉).
-- 키 입력 스크롤과 길이에 맞춰 줄어드는 스크롤바, 화면비별 UI 배치.
-
-### ② 메시지 · 알람
-
-- 메시지는 발신자 없이 **수신 시각 + 본문**만, 최신순으로 보여 줍니다. 다른 시스템은 `Add(id, 본문)` 한 줄로 메시지를 넣고, 수신 시각은 게임 시계에서 자동으로 붙습니다.
-- 새 메시지가 오면 태블릿이 **진동하듯 흔들리고**, 내려놓은 상태에서도 알람 화면이 뜨며 소리가 반복됩니다. 플레이어가 태블릿을 들어 메시지 탭을 봐야 꺼집니다.
-
-### ③ 엑셀로 작성하는 연속 메시지 연출
-
-기획자가 코드 없이 「문자가 연달아 오는 연출」을 만들 수 있도록, 이벤트를 엑셀(CSV)로 적으면 그대로 재생되게 했습니다.
-
-| 열 | 내용 |
-|---|---|
-| A | 이벤트 이름 |
-| B | 메시지 간격(초) |
-| C | 메시지들 (세로 막대로 여러 개 구분) |
-| D | 글씨 색 (메시지마다 지정 가능) |
-| E | 반복 시간 (인게임 분) |
-| F | 확인 대기 여부 — 앞 메시지를 읽어야 다음이 오는지 |
-| G | 끝난 뒤 — 메시지 지우기 / 다른 이벤트 이어 실행 |
-
-- 코드 · Timeline Signal · 개발자 모드 버튼 어디서든 이벤트 이름으로 실행합니다.
-- 판정과는 완전히 분리된 **연출 전용** 기능이라, 기획이 마음껏 고쳐도 게임 판정에 영향이 없습니다.
-- 응용 — 플레이어가 경비실에 인게임 N분 이상 머물면 메시지 이벤트를 실행하는 트리거. 물리 트리거의 나감 이벤트는 콜라이더가 꺼지거나 씬이 바뀌면 오지 않을 수 있어, 매 프레임 콜라이더 안에 있는지를 직접 판정했습니다.
-
-### ④ 손에 든 태블릿 — 1인칭 연출
-
-- **들기 / 내리기** — `Mathf.SmoothDamp`로 자세를 보간하고, 동작 도중 다시 누르면 현재 속도를 이어받아 방향을 틉니다. 기준 자세 위에 흔들림을 얹는 구조라 다른 코드가 자세를 바꿔도 흔들림이 유지됩니다.
-- **손맛** — 호흡(Perlin 노이즈) · 시선 지연 · 걸음 8자 흔들림을 합성하고, 손가락마다 위상이 다른 움직임을 Animator 없이 절차적으로 넣었습니다.
-- **렌더 분리** — URP 카메라 스택에 오버레이 카메라를 런타임에 만들고, 전용 레이어 · 렌더링 레이어로 손과 태블릿을 씬 조명 · 후처리 · 벽 뚫림에서 분리했습니다.
-- 일시정지와 감속을 구분하는 뷰모델 전용 시간축 — 시간이 느려지는 연출에서도 손은 느려지지 않고, 일시정지하면 손도 멈춥니다.
-
-### ⑤ 화면 글리치
-
-- 강도 값 하나(0~1)로 셰이더(`MaterialPropertyBlock`)와 글자를 함께 흔듭니다.
-- 글자는 TMP 정점을 줄 단위로 밀어 찢어진 효과를 내고, 일부 글자를 깨진 기호로 바꿉니다. 시스템 파트는 역설 문자 · 수칙 위반 반응 같은 연출에 이 강도 값만 넘겨 그대로 썼습니다.
-
-<div class="ts-box" markdown="1">
-
-#### Trouble Shooting
-
-**증상** : 실내 볼륨의 노출 보정·블룸 때문에 태블릿 화면이 하얗게 날아가고, 손전등 같은 씬 조명이 손과 태블릿에 그대로 닿았습니다. 라이트의 렌더링 레이어 마스크를 바꿔도 달라지지 않았습니다.
-
-**원인** : URP는 `Light.renderingLayerMask`를 보지 않고, 같은 오브젝트에 붙는 `UniversalAdditionalLightData.renderingLayers`를 기준으로 라이트를 거릅니다. 기본 라이트 속성만 바꿔서는 분리가 적용되지 않았습니다.
-
-**해결** : 뷰모델을 후처리를 끈 오버레이 카메라로 따로 그리고, 씬의 라이트마다 `GetUniversalAdditionalLightData()`로 렌더링 레이어에서 뷰모델 비트를 뺀 뒤 카메라에 붙은 전용 라이트 하나로만 밝기를 정하게 했습니다.
-
-</div>
-
-<div class="ts-box" markdown="1">
-
-#### Trouble Shooting
-
-**증상** : 글리치가 한 번 지나간 뒤로는 탭을 바꿔도 태블릿 화면 내용이 바뀌지 않는 것처럼 보였습니다.
-
-**원인** : 글리치가 글자를 깨진 기호로 바꿔 둔 상태에서 새 내용을 먼저 쓰고 원본을 복원하니, 방금 쓴 새 내용이 옛 글자로 다시 덮이고 있었습니다.
-
-**해결** : 렌더 순서를 「원본 복원 → 새 내용 쓰기」로 바꿔 해결했습니다.
-
-</div>
-
+</details>
 
 <a id="sec-4"></a>
-
-## 4. 공포 연출 · 화면 효과
-
-### 설계 목표
-
-기획과 아트가 프리팹만 배치해도 연출이 동작하고, 시스템의 판정 시점이 바뀌어도 연출 코드는 고치지 않아도 되도록 **「무엇을 보여 줄지」와 「언제 보여 줄지」를 분리**했습니다.
-
-### 설계 포인트
-
-```
-HorrorTriggerZone (구역 진입) ─┐
-HorrorGazeTrigger (응시)       ├─▶ HorrorEvent.Play()  ─▶ Timeline / 소리 / 화면 효과
-HorrorAxisLink (축 구간 변화)  ─┘         ▲
-시스템 디렉터 (놀람 예산)  ────────────────┘   ※ 진입점은 하나
-```
-
-- **단일 진입점** — 모든 연출은 `HorrorEvent.Play()` 하나로 시작합니다. 트리거 종류와 무관하게 같은 연출을 재사용할 수 있어, 시스템 파트가 놀람 예산에 맞춰 직접 호출하는 방식으로도 그대로 쓰였습니다.
-- **응시 판정** — 시야각 · 거리 · `Linecast` 가림 검사, 대상 자신의 콜라이더는 가림에서 제외.
-- **안 보는 사이 되돌리기** — `HorrorUnseenReset`이 플레이어가 보지 않는 동안 Timeline을 `time = 0; Evaluate()`로 처음 상태로 돌립니다. `Stop()`을 쓰면 Activation 트랙의 Post-playback 상태가 적용돼 버려 이 방식을 택했습니다.
-- **화면 효과** — 질식 · 암전 · 위화감 · 스며듦 4종 볼륨 프로필, 여러 소스 중 최댓값을 `Shader.SetGlobalFloat`로 URP Full Screen Pass에 넘기는 화면 일렁임(일시정지에 맞춰 셰이더 시간 직접 누적).
-- **프리셋** — 사물함 삐걱 · 덜컹 · 요동, 서랍 요동, 문 쾅, 벌레 떼, 흔들리는 사람 나무 등. 크리처 애니메이션은 평균 자세에서 벗어난 만큼을 `Quaternion.SlerpUnclamped`로 증폭해 같은 동작을 더 기괴하게 보이게 했습니다.
-
-<div class="ts-box" markdown="1">
-
-#### Trouble Shooting
-
-**증상** : 사람 나무 크리처에 흔들림과 동작 증폭을 함께 걸자, 몇 초 만에 머리 뼈가 **9.6m** 날아가 버렸습니다.
-
-**원인** : 클립에서 움직이지 않는 뼈는 Animator가 매 프레임 회전을 다시 쓰지 않습니다. 그 뼈에서는 지난 프레임에 흔들림이 써 둔 값이 다음 프레임의 「원래 자세」가 되어, 증폭이 계속 누적되고 있었습니다.
-
-**해결** : 에디터 빌더에서 클립을 64번 샘플해 실제로 움직이는 뼈만 골라내고(쿼터니언은 같은 반구로 부호를 맞춰 평균), 런타임에서는 「지난 프레임에 내가 쓴 값」이면 원래 값을 기준으로 삼아 누적되지 않게 했습니다.
-
-</div>
-
-
 <a id="sec-5"></a>
-
-## 5. 축별 사망(붙잡힘) 컷신
-
-| 축 | 연출 | 방식 | 게임 사용 |
-|---|---|---|---|
-| 청각 | 소리가 쌓이며 두리번 → 쾅 · 정적 → 돌아보면 소년 얼굴 | Timeline (약 11.6초) | 최종 붙잡힘 연출 |
-| 조도 | 손전등 깜빡임 → 꺼짐 → 딸깍 4번 → 암흑 → 켜지는 순간 얼굴이 코앞 | Timeline (8.3초) | 최종 붙잡힘 연출 |
-| 배치 | 비틀대며 걷다 사람 나무 가지 사이로 끌려 들어감 / 피가 비처럼 쏟아짐(ver2) | 코드 | 프로토타입 |
-
-- 별도 카메라를 만들지 않고 **플레이어 카메라가 Timeline 목표를 따라가며** 섞여 들어가게 해, 후처리 · 손전등이 평소와 똑같이 이어집니다.
-- 시작 순간 `AudioListener.pause`로 모든 소리를 끊고, 컷신 자신의 소리만 `ignoreListenerPause`로 남겨 「정적」을 만들었습니다. 에코 · 잔향은 오디오 필터를 런타임에 붙여 점점 길어지게 했습니다.
-- **배치 컷신** — 걷는 거리가 매번 달라 Timeline 대신 코드로 진행합니다. 컷신 순간 플레이어 주변 구역만 **즉석 NavMesh**(`NavMeshBuilder.BuildNavMeshData`)로 굽고, `NavMesh.CalculatePath`로 실제로 걸어갈 수 있는 가장 가까운 사람 나무 자리를 고릅니다. 피 비 버전은 Raycast로 천장 · 바닥을 찾아 DecalProjector 핏자국과 파티클을 배치합니다.
-- 먹물처럼 번지는 암전 · 비네트 텍스처는 절차적으로 생성했습니다.
-
-
 <a id="sec-6"></a>
+<details class="collapse-block" markdown="1">
+<summary class="btn">공포 연출 · 사망 컷신 · 액체 효과 <span class="chevron">▾</span></summary>
 
-## 6. 액체 연출
+- **연출 진입점 통합** — 구역 진입·응시·수치 구간 변화가 `HorrorEvent.Play()`로 연결됩니다. 시스템 담당자가 판정 시점에 같은 연출을 호출할 수 있도록 트리거와 표현을 분리했습니다.
+- **되돌리기** — 플레이어가 안 보는 동안 Timeline을 `time = 0; Evaluate()`로 복원합니다. `Stop()`이 Activation 트랙의 Post-playback 상태를 적용하는 문제를 피했습니다.
+- **화면 효과** — 질식·암전·위화감·스며듦 볼륨과 화면 일렁임. 여러 입력 중 최댓값을 Full Screen Pass에 전달하고, 일시정지에 맞춰 셰이더 시간을 누적했습니다.
+- **사망 컷신** — 청각·조도 컷신은 최종 붙잡힘 연출로 적용했습니다. 플레이어 카메라를 Timeline 목표와 혼합해 기존 후처리·손전등을 이어가고, 컷신 소리에는 `ignoreListenerPause`를 적용했습니다.
+- **프로토타입 구분** — 배치 축 컷신은 런타임 NavMesh와 경로 계산을 이용한 프로토타입입니다. 최종 게임에 사용한 청각·조도 컷신과 구분합니다.
+- **액체 연출** — 물방울·핏물·수면 효과. 에디터에서 구운 높이·방향별 반지름 표로 수면 메시를 그릇에 맞추고, 물방울의 충돌 시점과 소리를 연결했습니다.
 
-<video class="detail-img" src="{{ '/assets/img/instruction-liquid.mp4' | relative_url }}" autoplay loop muted playsinline aria-label="액체 연출 시연"></video>
+<video class="detail-img" src="{{ '/assets/img/instruction-liquid.mp4' | relative_url }}" controls preload="none" muted playsinline aria-label="액체 연출 시연"></video>
 
-| 연출 | 내용 |
-|---|---|
-| 실험실 싱크대 | 수도꼭지에 맺혀 떨어지는 물방울, 닿는 순간 튐 · 방울 소리 |
-| 변기 — 핏물 분출 | 가까이 오면 핏물이 솟구치고 머리카락 · 바닥 핏자국 |
-| 변기 — 물 내림 | 소용돌이치며 내려가는 핏물 수면 |
-| 피 식수대 | 다가서면 물이 검붉게 변하고 천장에서도 핏방울, 안 보는 사이 원래대로 |
-| 천장 핏방울 | 천장 얼룩에서 불규칙하게 떨어지는 핏방울 · 바닥 튐 |
-
-- **수면 메시** — `MarkDynamic` 부채꼴 메시를 매 프레임 다시 만들고, 수면 반지름은 빌더가 미리 구운 「높이 × 방향」 표를 보간해 그릇 모양에 맞춥니다. 표는 LOD0 렌더 메시에 임시 MeshCollider를 붙여 Raycast로 그릇 가장자리를 재서 만듭니다.
-- **물방울** — 파티클 대신 스크립트 구 하나를 움직여, 바닥에 닿는 바로 그 프레임에 소리를 냅니다(프레임이 튀어도 보정).
-- **소리 손질** — 여러 방울이 한 파일에 녹음된 WAV를 에디터에서 한 방울씩 잘라 새 WAV로 저장했습니다.
-- 원본 에셋은 건드리지 않고 VFX · 재질은 사본을 만들어 수정했습니다. 씬에 프리팹을 놓기만 하면 동작합니다.
-
+</details>
 
 <a id="sec-7"></a>
-
-## 7. 개발자 모드
-
-### 설계 목표
-
-하루가 실시간 10분이고 5일차까지 이어지는 게임이라, 연출 하나를 확인하려고 처음부터 플레이하면 테스트가 끝나지 않습니다. 플레이 중 `-` 키로 여는 **개발자 모드 패널**을 만들어, 원하는 날 · 시각 · 상황으로 바로 이동해 확인할 수 있게 했습니다. 이후 시스템 파트가 같은 패널에 판정 · 조우 탭을 덧붙여, 팀 전체의 공용 테스트 도구가 됐습니다.
-
-<video class="detail-img" src="{{ '/assets/img/instruction-devmode.mp4' | relative_url }}" autoplay loop muted playsinline aria-label="개발자 모드 시연"></video>
-
-### 담당한 기능
-
-- **패널 틀** — 플레이 중 `-` 키로 여닫는, 화면 오른쪽의 탭형 패널.
-- **① 일차** — 원하는 날로 처음부터 다시 시작, 지금 자리에서 다른 일차로 다시 열기, 즉시 사망.
-- **② 시간** — 배속(일차를 바꾸거나 씬을 다시 불러와도 유지), 정각 단위 시각 이동.
-- **메시지** — 태블릿에 임의 메시지 보내기 · 모두 읽음 · 목록 비우기 · 알람 강제 끄기, CSV 메시지 이벤트 목록을 다시 읽어 이벤트별로 실행 / 멈춤.
-- **사망 컷신** — 축별 디버그 키로, 실제로 붙잡히지 않아도 컷신만 바로 재생해 확인할 수 있게 했습니다.
-- 개발 빌드 · 에디터에서만 컴파일되도록 조건부 컴파일로 묶었습니다.
-
-
 <a id="sec-8"></a>
+<details class="collapse-block" markdown="1">
+<summary class="btn">개발자 모드 · 에디터 자동화 <span class="chevron">▾</span></summary>
 
-## 8. 에디터 자동화 툴
+- **상황을 바로 재현하는 패널** — 일차 변경·다시 시작·즉시 사망·배속·시각 이동·메시지 주입·CSV 이벤트 실행. 이후 시스템 파트가 판정·조우 탭을 추가해 팀 공용 도구로 확장했습니다.
+- **개발용 빌드 분리** — 디버그 패널은 에디터·개발 빌드에서만 컴파일되도록 제한했습니다.
+- **에디터 빌더** — 씬·프리팹·Timeline 생성 메뉴로 반복 세팅을 자동화하고, 프리팹 배리언트로 원본 에셋을 보존했습니다.
+- **사운드 정렬** — WAV RIFF를 읽어 시작점·피크를 분석하고, 지정한 컷신 시각에 맞춰 Timeline의 `clipIn`을 조정했습니다. 압축 클립에서 `GetData`로 데이터를 얻지 못하던 상황은 원본 WAV를 읽는 방식으로 처리했습니다.
 
-### 설계 목표
+<video class="detail-img" src="{{ '/assets/img/instruction-devmode.mp4' | relative_url }}" controls preload="none" muted playsinline aria-label="개발자 모드 시연"></video>
 
-기획 · 아트 값이 계속 바뀌는 짧은 개발 기간에, 씬 · 프리팹 · Timeline을 손으로 다시 맞추는 시간을 없애는 것이 목표였습니다.
+</details>
 
-### 설계 포인트
-
-- `Tools ▸ Programmer_Kim` 아래 **MenuItem 32개** — 게임 흐름 씬 · 프리팹 · Build Settings, 사망 컷신, 액체 연출, 태블릿, 계약서 씬, 오프닝 씬을 코드로 생성합니다. 여러 번 실행해도 결과가 같고(idempotent), 원본은 보존하며 프리팹 배리언트로 확장합니다.
-- **컷신 사운드 자동 배치** — 사운드 담당이 준 시각표대로 Timeline 오디오 트랙을 깔고, WAV RIFF를 직접 읽어 소리가 시작되는 지점(onset)이나 가장 큰 지점(peak)이 그 시각에 오도록 `clipIn`을 맞춥니다. 압축 클립은 에디터에서 `GetData`가 0을 돌려줘 원본 WAV를 직접 파싱하는 방식으로 우회했습니다.
-- **낡은 지도 텍스처** — 조명을 받지 않던 UI 지도를 URP Lit 쿼드로 바꾸고, 고정 시드로 얼룩 · 그을림 · 접힘 · 긁힘 · 종이 섬유를 절차적으로 구운 텍스처를 입혔습니다.
-- **한글 폰트 설정** — Pretendard 동적 SDF가 아틀라스 한 장에 80~90자만 담아 한글이 □로 나오던 문제를 샘플 크기 · 아틀라스 크기 · 다중 아틀라스 설정을 한 번에 적용하는 메뉴로 해결했습니다.
-
-
+<a id="development"></a>
 <a id="sec-9"></a>
 
-## 9. 형상관리
+## 담당 범위와 개발 방식
 
-### 설계 목표
+### 시스템과 클라이언트의 경계
 
-프로그래머 · 기획 · 아트 4명이 하나의 Unity 프로젝트에서 동시에 작업하면서, 씬 충돌과 대용량 에셋 문제로 작업이 멈추지 않게 하는 것이 목표였습니다.
+프로그래머 2명이 판정과 표현을 나눴습니다. **수칙 판정·수치·편성·조우 시점은 시스템 담당 팀원**, 저는 판정 결과를 화면·소리·게임 흐름으로 전달하는 클라이언트 영역을 맡았습니다.
 
-### 구현 내용
+시스템은 `EventBus`로 판정 결과를 알리고, 클라이언트는 이를 받아 연출합니다. 태블릿 글리치·공포 연출·근무 시계 정지처럼 시스템에서 필요한 기능은 공개 API로 연결했습니다. 파트별 파일 수정 범위를 나누고, 기능 사용 가이드를 공유했습니다.
 
-- **저장소 · Git LFS 세팅** — 저장소를 만들고 텍스처 · 모델 · 오디오 · 영상 · 폰트를 LFS로 추적하도록 `.gitattributes`를 설계했습니다. 씬 · 프리팹은 텍스트(YAML)로 저장하되 LFS **파일 잠금** 대상으로 묶었습니다.
-- **씬 잠금 규칙** — 씬 · 프리팹을 고치기 전 잠금 확인 → 잠금 → 커밋 · 푸시 → 해제 순서를 정하고, 아트팀과 잠금 시간을 조율했습니다.
-- **브랜치 운영** — 파트별 개인 브랜치(시스템 · 클라이언트 · 기획 · 아트)에서 작업한 뒤 `main`에 병합하는 흐름. 잘못된 병합이 생겼을 때는 되돌리고 다시 병합해 복구했습니다.
-- **대용량 3rd-party 에셋 정책** — 용량이 큰 배경 에셋 팩은 저장소에서 제외(gitignore)하고 팀 드라이브로 배포해 같은 버전을 쓰도록 했습니다. 미추적 폴더가 Git 클라이언트의 「Discard All」로 통째로 지워질 수 있다는 점도 매뉴얼에 경고로 남겼습니다.
-- **형상관리 매뉴얼** — 신규 팀원 체크리스트(설치 → clone → LFS → 에셋 배치 → 잠금 확인), 일상 작업 흐름, 커밋 메시지 규칙, 하지 말아야 할 것, 문제 해결을 한 문서로 정리해 모든 팀원이 같은 절차로 작업하게 했습니다.
+### AI 활용과 본인 역할
 
----
+프로그램의 개발 방식에 맞춰 **대부분의 코드는 Claude Code를 활용해 작성**했습니다. 저는 요구사항을 정리하고, Unity에서 결과를 직접 플레이하며 타이밍·밝기·소리를 조율했습니다. 버그의 재현 조건을 정리해 원인을 함께 추적하고, 수정 결과와 팀 시스템의 연결을 확인했습니다.
 
-<div class="card-links" style="margin-top: 40px;">
-  <a class="btn btn-primary" href="/">← 목록으로</a>
+Unity CLI로 에디터·콘솔·테스트 결과를 확인하는 흐름을 연결하고, 결정 사항·변경 내용·검증 기록을 남겼습니다. 위 사례는 이 협업 과정에서 다룬 기술적 문제와 구현 근거를 설명합니다.
+
+### 형상관리와 팀 작업
+
+저장소·Git LFS 설정, 씬·프리팹 잠금 규칙, 파트별 브랜치 운영과 형상관리 매뉴얼을 담당했습니다. 대용량 외부 에셋은 팀 드라이브로 같은 버전을 공유하고, 씬 작업 전 잠금 확인부터 병합·잠금 해제까지 작업 절차를 맞췄습니다.
+
+<div class="card-links" style="margin-top: 32px;">
+  <a class="btn btn-primary" href="{{ '/' | relative_url }}#instruction">← 프로젝트 목록으로</a>
+  <a class="btn" href="https://github.com/KimJinsun610/NCAI_BrokenCompass" target="_blank" rel="noopener noreferrer">전체 코드 보기</a>
 </div>
 
-<nav class="floating-toc" id="floatingToc">
-  <p class="ftoc-title">구현 상세</p>
+<nav class="floating-toc" id="floatingToc" aria-label="Instruction 상세 목차">
+  <p class="ftoc-title">문제 해결 사례</p>
   <ol>
-    <li><a href="#sec-1">게임 플로우</a></li>
-    <li><a href="#sec-2">기본 플레이 시스템</a></li>
-    <li><a href="#sec-3">태블릿 시스템</a></li>
-    <li><a href="#sec-4">공포 연출 · 화면 효과</a></li>
-    <li><a href="#sec-5">축별 사망 컷신</a></li>
-    <li><a href="#sec-6">액체 연출</a></li>
-    <li><a href="#sec-7">개발자 모드</a></li>
-    <li><a href="#sec-8">에디터 자동화 툴</a></li>
-    <li><a href="#sec-9">형상관리</a></li>
+    <li><a href="#render-isolation">렌더링·조명 분리</a></li>
+    <li><a href="#time-control">시간 제어</a></li>
+    <li><a href="#animation-correction">본 회전 보정</a></li>
+    <li><a href="#rendering-effects">셰이더·메시·컷신</a></li>
+    <li><a href="#supporting-work">보조 구현</a></li>
+    <li><a href="#development">담당 범위·개발 방식</a></li>
   </ol>
 </nav>
 
@@ -396,36 +405,38 @@ HorrorAxisLink (축 구간 변화)  ─┘         ▲
   (function () {
     var btn = document.getElementById('scrollUpLeft');
     var toc = document.getElementById('floatingToc');
-    var tocLinks = Array.from(toc.querySelectorAll('a'));
-    var sections = [1,2,3,4,5,6,7,8,9].map(function(n) {
-      return document.getElementById('sec-' + n);
-    }).filter(Boolean);
+    var links = Array.from(toc.querySelectorAll('a'));
+    var sections = links.map(function (link) {
+      return document.getElementById(link.hash.slice(1));
+    });
     var trigger = document.querySelector('.detail-toc');
-
     function onScroll() {
-      var y = window.scrollY;
-
-      btn.classList.toggle('visible', y > 300);
-
-      if (trigger) {
-        toc.classList.toggle('visible', trigger.getBoundingClientRect().bottom < 0);
-      }
-
+      btn.classList.toggle('visible', window.scrollY > 300);
+      toc.classList.toggle('visible', trigger.getBoundingClientRect().bottom < 0);
       var current = -1;
-      sections.forEach(function(sec, i) {
-        if (sec.getBoundingClientRect().top <= 100) current = i;
+      sections.forEach(function (section, i) {
+        if (section && section.getBoundingClientRect().top <= 100) current = i;
       });
-      tocLinks.forEach(function(link, i) {
+      links.forEach(function (link, i) {
         link.classList.toggle('ftoc-active', i === current);
+        if (i === current) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
       });
     }
-
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('load', onScroll);
     onScroll();
-
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
   })();
 </script>
+
+[source-wobble-shader]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/04%20Materials/ScreenWobble/ScreenWobble.shader
+[source-wobble]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/HorrorEvent/ScreenWobble.cs
+[source-flush]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/Liquid/ToiletFlush.cs
+[source-cutscene]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/HorrorEvent/DeathCutscene.cs
+[source-rig]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/Tablet/ViewmodelRig.cs
+[source-time]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/GameFlow/GameTime.cs
+[source-pause]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/GameFlow/GamePause.cs
+[source-viewmodel-time]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/Tablet/ViewmodelTime.cs
+[source-bridge]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/_Game/Flow/TabletBridge.cs
+[source-amplify]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/HorrorEvent/HorrorAnimAmplify.cs
+[source-sway]: https://github.com/KimJinsun610/NCAI_BrokenCompass/blob/0a40cbc77a272a2ab25997793d784880020cd290/horror%20house/Assets/3.2%20Programmer_Kim/02%20Scripts/HorrorEvent/HorrorTreeSway.cs
