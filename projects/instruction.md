@@ -4,7 +4,7 @@ title: Instruction
 permalink: /projects/instruction/
 ---
 
-<div class="instruction-detail">
+<div class="instruction-detail case-detail">
 <div class="instruction-summary tag-row" role="list" aria-label="주요 구현 기술">
   <span class="tag" role="listitem">URP 뷰모델 렌더링</span>
   <span class="tag" role="listitem">HLSL 화면 효과</span>
