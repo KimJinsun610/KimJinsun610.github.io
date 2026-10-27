@@ -15,7 +15,7 @@ permalink: /projects/project-bbb/
 </div>
 <div class="card-links">
   <a class="btn" href="https://github.com/KimJinsun610/Project_BBB" target="_blank" rel="noopener noreferrer">GitHub</a>
-  <a class="btn" href="https://youtu.be/-PDFx8YqYMc" target="_blank" rel="noopener noreferrer">게임플레이 영상</a>
+  <a class="btn" href="https://youtu.be/PsLanfcQEXk" target="_blank" rel="noopener noreferrer">게임플레이 영상</a>
   <a class="btn" href="https://www.notion.so/UNREAL-2eaeaebf4a0d8040ba38c7a177fde2be" target="_blank" rel="noopener noreferrer">개발 일지(Notion)</a>
 </div>
 </div>
