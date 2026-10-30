@@ -266,11 +266,11 @@
       </div>
 
       <!-- CyberZ -->
-      <div class="card" id="cyberz">
+      <div class="card instruction-card" id="cyberz">
         <div class="card-head">
           <h2 class="card-title">🔷 CyberZ</h2>
         </div>
-        <p class="card-desc">DirectX 12 / IOCP 기반 3인 협동 멀티플레이 게임</p>
+        <p class="card-desc">DirectX 12 · C++ · HLSL / 3인 협동 멀티플레이 게임 (졸업작품)</p>
 
         <div class="video-wrap">
           <iframe src="https://www.youtube.com/embed/1F4cTjuyq-g?rel=0"
@@ -281,31 +281,52 @@
         </div>
 
         <div class="card-meta">
-          <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2024.01 ~ 2024.07</span></div>
-          <div class="meta-row"><span class="meta-k">인원</span><span class="meta-v">3명 (클라 2, 서버 1)</span></div>
-          <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C, C++, HLSL</span></div>
+          <div class="meta-row"><span class="meta-k">기간</span><span class="meta-v">2024.01 ~ 2024.07 (7개월)</span></div>
+          <div class="meta-row"><span class="meta-k">인원</span><span class="meta-v">3명 (클라이언트 2, 서버 1)</span></div>
+          <div class="meta-row"><span class="meta-k">언어</span><span class="meta-v">C++, HLSL</span></div>
           <div class="meta-row"><span class="meta-k">환경</span><span class="meta-v">DirectX 12, Direct2D, IOCP</span></div>
         </div>
 
-        <p class="card-sub">개발 개요</p>
-        <p class="card-goal">DirectX 12 기반 게임 클라이언트 프레임워크를 처음부터 설계·구현한 졸업작품입니다.</p>
+        <p class="card-goal">엔진 없이 DirectX 12로 만든 협동 멀티플레이 게임입니다. <strong>게임 프레임워크, 렌더링 파이프라인, 2D UI, 캐릭터 선택, 협동 미션 동기화</strong>를 담당했습니다.</p>
 
-        <p class="card-sub">담당 및 주요 구현</p>
-        <ul class="card-impl">
-          <li>DirectX 12 기반 게임 프레임워크 설계</li>
-          <li>Scene 단위 GPU 리소스 관리</li>
-          <li>Direct2D + D3D11On12 UI 오버레이</li>
-          <li>MRT 기반 디퍼드 렌더링 + 섀도우 맵</li>
-          <li>Frustum Culling</li>
-          <li>멀티플레이 씬 인터랙션 동기화</li>
-          <li>AABB 충돌 처리</li>
-        </ul>
+        <section class="instruction-tech" aria-labelledby="cyberz-tech-title">
+          <h3 id="cyberz-tech-title">사용한 주요 기술</h3>
+          <ul>
+            <li><a href="projects/cyberz/#framework">DirectX 12 게임 프레임워크</a> — 프레임 순서 고정, 씬 인터페이스, GPU 리소스 생명주기</li>
+            <li><a href="projects/cyberz/#character-preload">GPU 리소스 사전 생성</a> — 반복 생성·해제를 표시 전환으로 대체</li>
+            <li><a href="projects/cyberz/#mission-sync">패킷 필드 · 식별자 체계</a> — 서버 연결 ID와 게임 ID·캐릭터 슬롯 정합</li>
+            <li><a href="projects/cyberz/#rendering">MRT 디퍼드 렌더링</a> — G-Buffer 분리 기록과 화면 합성 패스</li>
+            <li><a href="projects/cyberz/#rendering">섀도우 맵 · PCF · HLSL</a> — 기울기 비례 깊이 바이어스, 텍셀 스냅</li>
+            <li><a href="projects/cyberz/#ui-overlay">D3D11On12 · Direct2D</a> — DX12 백버퍼 위 2D UI 오버레이</li>
+          </ul>
+        </section>
 
-        <div class="card-links">
-          <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank">GitHub</a>
-          <a class="btn" href="https://www.youtube.com/watch?v=1F4cTjuyq-g" target="_blank">YouTube</a>
-          <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d?source=copy_link" target="_blank">개발 일지(Notion)</a>
-          <a class="btn btn-primary" href="projects/cyberz">상세보기 →</a>
+        <h3 class="instruction-section-title">주요 문제 해결</h3>
+        <div class="instruction-cases" aria-label="CyberZ 주요 문제 해결">
+          <a class="instruction-case" href="projects/cyberz/#framework">
+            <span class="case-copy"><strong>DX12 프레임워크와 리소스 생명주기 설계</strong><span>프레임 순서를 한 곳에 고정하고, 씬 전환 시 GPU 전송이 끝난 뒤 업로드 버퍼를 해제하는 규칙을 만들었습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="instruction-case" href="projects/cyberz/#character-preload">
+            <span class="case-copy"><strong>캐릭터 선택 화면의 반복 생성·해제 제거</strong><span>슬롯별 캐릭터를 미리 만들고 표시만 바꿔, 선택할수록 메모리가 늘고 느려지던 문제를 해결했습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="instruction-case" href="projects/cyberz/#mission-sync">
+            <span class="case-copy"><strong>협동 미션에서 다른 플레이어 상태 미반영</strong><span>연결 ID와 게임 ID·캐릭터 슬롯이 섞여 쓰이던 세 지점을 서버 담당 팀원과 함께 추적해 고쳤습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="instruction-case" href="projects/cyberz/#rendering">
+            <span class="case-copy"><strong>섀도우 맵 미반영과 그림자 품질 문제</strong><span>여러 단계에 흩어진 원인 다섯 가지를 고치고, 텍셀 크기·깊이 바이어스·텍셀 스냅으로 번짐·얼룩·떨림을 해결했습니다.</span></span>
+            <span class="case-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <p class="instruction-support">기타 구현: D3D11On12 · Direct2D UI 오버레이 · 바운딩 박스 충돌 처리 · 서버 위치 보정</p>
+        <div class="card-links instruction-actions">
+          <a class="btn btn-primary" href="projects/cyberz/">구현 상세 · 코드 보기 →</a>
+          <a class="btn" href="https://github.com/KimJinsun610/CyberZ" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="btn" href="https://youtu.be/1F4cTjuyq-g" target="_blank" rel="noopener noreferrer">YouTube</a>
+          <a class="btn" href="https://www.notion.so/CyberZ-369eaebf4a0d803cb713d0058532b93d" target="_blank" rel="noopener noreferrer">개발 일지(Notion)</a>
         </div>
       </div>
 
